@@ -20,29 +20,20 @@ const connection = new Client({
 });
 connection.connect();//connectionを使ってデーターベース操作を行えるようになる
 
-//greeting_follow()
-const greeting_follow = async (ev) => {
-    const table_insert = {
-        text:'INSERT INTO users (line_uid,display_name,timestamp,cuttime,shampootime,colortime,spatime) VALUES($1,$2,$3,$4,$5,$6,$7);',
-        values:[ev.source.userId,profile.displayName,ev.timestamp,INITIAL_TREAT[0],INITIAL_TREAT[1],INITIAL_TREAT[2],INITIAL_TREAT[3]]   
-    };
-    connection.query(table_insert)
-    .then(()=>{
-        console.log('insert successfully!!')
-    })
-    .catch(e=>console.log(e));
-    const profile = await client.getProfile(ev.source.userId);
-    return client.replyMessage(ev.replyToken,{
-        "type":"text",
-        "text":`${profile.displayName}さん、フォローありがとうございます\uDBC0\uDC04`
-    });
+//顧客データーベースク作成
+const create_userTable = {
+    text:'CREATE TABLE IF NOT EXISTS users (id SERIAL NOT NULL, line_uid VARCHAR(255), display_name VARCHAR(255), timestamp VARCHAR(255), cuttime SMALLINT, shampootime SMALLINT, colortime SMALLINT, spatime SMALLINT);'
 }
+//顧客データーベースクエリ実行
+connection.query(create_userTable)
+.then(()=>{
+    console.log('table users created successfully!!');
+})
+.catch(e=>console.log(e));
 
 app
 .post('/hook',line.middleware(config),(req,res)=> lineBot(req,res))
 .listen(PORT,()=>console.log(`Listening on ${PORT}`));
-
-
 
 //lineBot関数
 const lineBot = (req,res) => {
@@ -78,13 +69,20 @@ const handleMessageEvent = async (ev) => {
     });
 }
 
-//顧客データーベースク作成
-const create_userTable = {
-    text:'CREATE TABLE IF NOT EXISTS users (id SERIAL NOT NULL, line_uid VARCHAR(255), display_name VARCHAR(255), timestamp VARCHAR(255), cuttime SMALLINT, shampootime SMALLINT, colortime SMALLINT, spatime SMALLINT);'
+//greeting_follow()
+const greeting_follow = async (ev) => {
+    const table_insert = {
+        text:'INSERT INTO users (line_uid,display_name,timestamp,cuttime,shampootime,colortime,spatime) VALUES($1,$2,$3,$4,$5,$6,$7);',
+        values:[ev.source.userId,profile.displayName,ev.timestamp,INITIAL_TREAT[0],INITIAL_TREAT[1],INITIAL_TREAT[2],INITIAL_TREAT[3]]   
+    };
+    connection.query(table_insert)
+    .then(()=>{
+        console.log('insert successfully!!')
+    })
+    .catch(e=>console.log(e));
+    const profile = await client.getProfile(ev.source.userId);
+    return client.replyMessage(ev.replyToken,{
+        "type":"text",
+        "text":`${profile.displayName}さん、フォローありがとうございます\uDBC0\uDC04`
+    });
 }
-//顧客データーベースクエリ実行
-connection.query(create_userTable)
-.then(()=>{
-    console.log('table users created successfully!!');
-})
-.catch(e=>console.log(e));
