@@ -24,6 +24,8 @@ app
 .post('/hook',line.middleware(config),(req,res)=> lineBot(req,res))
 .listen(PORT,()=>console.log(`Listening on ${PORT}`));
 
+const INITIAL_TREAT = [20,10,40,15,30,15,10];  //施術時間初期値
+
 //lineBot関数
 const lineBot = (req,res) => {
     res.status(200).end();
@@ -48,6 +50,15 @@ Promise
 
 //greeting_follow()
 const greeting_follow = async (ev) => {
+    const table_insert = {
+        text:'INSERT INTO users (line_uid,display_name,timestamp,cuttime,shampootime,colortime,spatime) VALUES($1,$2,$3,$4,$5,$6,$7);',
+        values:[ev.source.userId,profile.displayName,ev.timestamp,INITIAL_TREAT[0],INITIAL_TREAT[1],INITIAL_TREAT[2],INITIAL_TREAT[3]]   
+    };
+    connection.query(table_insert)
+    .then(()=>{
+        console.log('insert successfully!!')
+    })
+    .catch(e=>console.log(e));
     const profile = await client.getProfile(ev.source.userId);
     return client.replyMessage(ev.replyToken,{
         "type":"text",
