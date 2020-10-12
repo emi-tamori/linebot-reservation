@@ -60,19 +60,27 @@ Promise
 
 //handleMessageEvent()
 const handleMessageEvent = async (ev) => {
+    console.log('ev:',ev);
     const profile = await client.getProfile(ev.source.userId);
     const text = (ev.message.type === 'text') ? ev.message.text : '';
 
-    return client.replyMessage(ev.replyToken,{
-        "type":"text",
-        "text":`${profile.displayName}さん、今${text}って言いました？`
-    });
+    if(text === '予約する'){
+        return client.replyMessage(ev.replyToken,{
+            "type":"text",
+            "text":"かしこまりました。次回予約ですね。メニューは・・・"
+        });
+    }else{
+        return client.replyMessage(ev.replyToken,{
+            "type":"text",
+            "text":`${profile.displayName}さん、今${text}って言いました？`
+        });
+    }
 }
 
 //greeting_follow()
 const greeting_follow = async (ev) => {
     const profile = await client.getProfile(ev.source.userId);
-    
+
     const table_insert = {
         text:'INSERT INTO users (line_uid,display_name,timestamp,cuttime,shampootime,colortime,spatime) VALUES($1,$2,$3,$4,$5,$6,$7);',
         values:[ev.source.userId,profile.displayName,ev.timestamp,INITIAL_TREAT[0],INITIAL_TREAT[1],INITIAL_TREAT[2],INITIAL_TREAT[3]]   
