@@ -376,7 +376,7 @@ const askTime = (ev,orderedMenu,selectedDate) => {
                       "action": {
                         "type": "postback",
                         "label": "9時~",
-                        "data": "time&${orderedMenu}&${selectedDate}&0"
+                        "data": "time&0"
                       },
                       "margin": "md",
                       "style": "primary"
@@ -386,7 +386,7 @@ const askTime = (ev,orderedMenu,selectedDate) => {
                       "action": {
                         "type": "postback",
                         "label": "10時~",
-                        "data": "time&${orderedMenu}&${selectedDate}&1"
+                        "data": "time&1"
                       },
                       "margin": "md",
                       "style": "primary"
@@ -396,7 +396,7 @@ const askTime = (ev,orderedMenu,selectedDate) => {
                       "action": {
                         "type": "postback",
                         "label": "11時~",
-                        "data": "time&${orderedMenu}&${selectedDate}&2"
+                        "data": "time&2"
                       },
                       "margin": "md",
                       "style": "primary"
@@ -413,7 +413,7 @@ const askTime = (ev,orderedMenu,selectedDate) => {
                       "action": {
                         "type": "postback",
                         "label": "12時~",
-                        "data": "time&${orderedMenu}&${selectedDate}&3"
+                        "data": "time&3"
                       },
                       "margin": "md",
                       "style": "primary"
@@ -423,7 +423,7 @@ const askTime = (ev,orderedMenu,selectedDate) => {
                       "action": {
                         "type": "postback",
                         "label": "13時~",
-                        "data": "time&${orderedMenu}&${selectedDate}&4"
+                        "data": "time&4"
                       },
                       "margin": "md",
                       "style": "primary"
@@ -433,7 +433,7 @@ const askTime = (ev,orderedMenu,selectedDate) => {
                       "action": {
                         "type": "postback",
                         "label": "14時~",
-                        "data": "time&${orderedMenu}&${selectedDate}&5"
+                        "data": "time&5"
                       },
                       "margin": "md",
                       "style": "primary"
@@ -450,7 +450,7 @@ const askTime = (ev,orderedMenu,selectedDate) => {
                       "action": {
                         "type": "postback",
                         "label": "15時~",
-                        "data": "time&${orderedMenu}&${selectedDate}&6"
+                        "data": "time&6"
                       },
                       "margin": "md",
                       "style": "primary"
@@ -460,7 +460,7 @@ const askTime = (ev,orderedMenu,selectedDate) => {
                       "action": {
                         "type": "postback",
                         "label": "16時~",
-                        "data": "time&${orderedMenu}&${selectedDate}&7"
+                        "data": "time&7"
                       },
                       "margin": "md",
                       "style": "primary"
@@ -470,7 +470,7 @@ const askTime = (ev,orderedMenu,selectedDate) => {
                       "action": {
                         "type": "postback",
                         "label": "17時~",
-                        "data": "time&${orderedMenu}&${selectedDate}&8"
+                        "data": "time&8"
                       },
                       "margin": "md",
                       "style": "primary"
@@ -487,7 +487,7 @@ const askTime = (ev,orderedMenu,selectedDate) => {
                       "action": {
                         "type": "postback",
                         "label": "18時~",
-                        "data": "time&${orderedMenu}&${selectedDate}&9"
+                        "data": "time&9"
                       },
                       "margin": "md",
                       "style": "primary"
@@ -497,7 +497,7 @@ const askTime = (ev,orderedMenu,selectedDate) => {
                       "action": {
                         "type": "postback",
                         "label": "19時~",
-                        "data": "time&${orderedMenu}&${selectedDate}&10"
+                        "data": "time&10"
                       },
                       "margin": "md",
                       "style": "primary"
@@ -520,7 +520,7 @@ const askTime = (ev,orderedMenu,selectedDate) => {
                   "type": "separator"
                 }
               ]
-            });  
+            }
           }
     });
 }
