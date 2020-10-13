@@ -49,6 +49,9 @@ const lineBot = (req,res) => {
             case 'message':
                 promises.push(handleMessageEvent(ev));
                 break;
+            case 'postback':
+                promises.push(handlePostbackEvent(ev));
+                break;
     }   
 }
 Promise
@@ -264,5 +267,56 @@ const greeting_follow = async (ev) => {
     return client.replyMessage(ev.replyToken,{
         "type":"text",
         "text":`${profile.displayName}さん、フォローありがとうございます\uDBC0\uDC04`
+    });
+}
+
+//handlePostbackEvent()
+const handlePostbackEvent = async (ev) => {
+    const profile = await client.getProfile(ev.source.userId);
+    const data = ev.postback.data;
+    const splitData = data.split('&');
+
+    if(splitData[0] === 'menu'){
+        const orderedMenu = splitData[1];
+        askDate(ev,orderedMenu);
+    }
+}
+
+//askDate()
+const askDate = (ev,orderedMenu) => {
+    return client.replyMessage(ev.replyToken,{
+        "type":"flex",
+        "altText":"予約日選択",
+        "contents":
+        {
+            "type": "bubble",
+            "body": {
+              "type": "box",
+              "layout": "vertical",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "来店希望日を選んでください。",
+                  "size": "md",
+                  "align": "center"
+                }
+              ]
+            },
+            "footer": {
+              "type": "box",
+              "layout": "vertical",
+              "contents": [
+                {
+                  "type": "button",
+                  "action": {
+                    "type": "datetimepicker",
+                    "label": "希望日を選択する",
+                    "data": "date&${orderedMenu}",
+                    "mode": "date"
+                  }
+                }
+              ]
+            }
+          }
     });
 }
