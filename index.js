@@ -272,6 +272,7 @@ const greeting_follow = async (ev) => {
 
 //handlePostbackEvent()
 const handlePostbackEvent = async (ev) => {
+    console.log('postback ev:',ev);
     const profile = await client.getProfile(ev.source.userId);
     const data = ev.postback.data;
     const splitData = data.split('&');
@@ -283,6 +284,11 @@ const handlePostbackEvent = async (ev) => {
         const orderedMenu = splitData[1];
         const selectedDate = ev.postback.params.date;
         askTime(ev,orderedMenu,selectedDate);
+    }else if(splitData[0] === 'time'){
+        const orderedMenu = splitData[1];
+        const selectedDate = splitData[2];
+        const selectedTime = splitData[3];
+        confirmation(ev,orderedMenu,selectedDate,selectedTime);
     }
 }
 
@@ -515,6 +521,55 @@ const askTime = (ev,orderedMenu,selectedDate) => {
                     }
                   ],
                   "margin": "md"
+                }
+              ]
+            }
+          }
+    });
+}
+
+//confirmation()
+const confirmation = (ev,menu,date,time) => {
+    const splitDate = date.split('-');
+    const selectedTime = 9 + parseInt(time);
+
+    return client.replyMessage(ev.replyToken,{
+        "type":"flex",
+        "altText":"menuSelect",
+        "contents":
+        {
+            "type": "bubble",
+            "header": {
+              "type": "box",
+              "layout": "vertical",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "次回予約は${splitDate[1]}月${splitDate[2]}日 ${selectedTime}時〜でよろしいですか？",
+                  "size": "lg",
+                  "wrap": true
+                }
+              ]
+            },
+            "body": {
+              "type": "box",
+              "layout": "horizontal",
+              "contents": [
+                {
+                  "type": "button",
+                  "action": {
+                    "type": "postback",
+                    "label": "はい",
+                    "data": "yes&${menu}&${date}&${time}"
+                  }
+                },
+                {
+                  "type": "button",
+                  "action": {
+                    "type": "postback",
+                    "label": "いいえ",
+                    "data": "no&${menu}&${date}&${time}"
+                  }
                 }
               ]
             }
