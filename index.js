@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require('express');//express読み込み
 const app = express();
 const line = require('@line/bot-sdk');//@line/bot-sdk読み込み
 const { Client } = require('pg');//pgライブラリ読み込み
@@ -290,6 +290,20 @@ const handlePostbackEvent = async (ev) => {
         const selectedTime = splitData[3];
         confirmation(ev,orderedMenu,selectedDate,selectedTime);
     }
+    else if(splitData[0] === 'yes'){
+        const orderedMenu = splitData[1];
+        const selectedDate = splitData[2];
+        const selectedTime = splitData[3];
+        const startTimestamp = timeConversion(selectedDate,selectedTime);
+        console.log('その1');
+        const treatTime = calcTreatTime(ev.source.userId,orderedMenu);
+        const endTimestamp = startTimestamp + treatTime*60*1000;
+        console.log('その4');
+        console.log('endTime:',endTimestamp);
+        const endTimestamp = startTimestamp + treatTime*60*1000;
+    }else if(splitData[0] === 'no'){
+        // あとで何か入れる
+    }
 }
 
 //askDate()
@@ -523,7 +537,7 @@ const askTime = (ev,orderedMenu,selectedDate) => {
           }       
     });
  }
-//confirmation()
+//confirmation()予約確認をリプライする
 const confirmation = (ev,menu,date,time) => {
     const splitDate = date.split('-');
     const selectedTime = 9 + parseInt(time);
@@ -571,3 +585,33 @@ const confirmation = (ev,menu,date,time) => {
       }
     });
    }
+   
+//timeConversion関数(日付、時刻をタイムスタンプ形式へ変換)
+const timeConversion = (date,time) => {
+    const selectedTime = 9 + parseInt(time) - 9;
+    return new Date(`${date} ${selectedTime}:00`).getTime();
+}
+
+//calcTreatTime関数(施術時間を計算)
+const calcTreatTime = (id,menu) => {
+    console.log('その2');
+    const selectQuery = {
+        text: 'SELECT * FROM users WHERE line_uid = $1;',
+        values: [`${id}`]
+    };
+    connection.query(selectQuery)
+    .then(res=>{
+        console.log('その3');
+        if(res.rows.length){
+            const info = res.rows[0];
+            const treatArray = [info.cuttime,info.shampootime,info.colortime,info.spatime,INITIAL_TREAT[4],INITIAL_TREAT[5],INITIAL_TREAT[6]];
+            const menuNumber = parseInt(menu);
+            const treatTime = treatArray[menuNumber];
+            return treatTime;
+        }else{
+            console.log('LINE　IDに一致するユーザーが見つかりません。');
+            return;
+        }
+    })
+    .catch(e=>console.log(e));
+}
