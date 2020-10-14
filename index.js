@@ -4,6 +4,8 @@ const line = require('@line/bot-sdk');//@line/bot-sdk読み込み
 const { Client } = require('pg');//pgライブラリ読み込み
 const PORT = process.env.PORT || 5000
 const INITIAL_TREAT = [20,10,40,15,30,15,10];  //施術時間初期値
+const WEEK = [ "日", "月", "火", "水", "木", "金", "土" ];//曜日の表示を標準化
+const MENU = ['カット','シャンプー','カラーリング','ヘッドスパ','マッサージ＆スパ','眉整え','顔そり'];//メニュー名
 const config = {
     channelAccessToken:process.env.ACCESS_TOKEN,
     channelSecret:process.env.CHANNEL_SECRET
@@ -71,7 +73,7 @@ Promise
 .catch(e=>console.error(e.stack));
 }
 
-//orderChoice()
+//orderChoice関数
 const orderChoice = (ev) => {
     return client.replyMessage(ev.replyToken,{
         "type":"flex",
@@ -245,6 +247,27 @@ const orderChoice = (ev) => {
           }
     });
 }
+
+//checkNextReservation関数
+const checkNextReservation = (ev) => {
+  return new Promise((resolve,reject)=>{
+    const id = ev.source.userId;
+    const nowTime = new Date().getTime();
+    const selectQuery = {
+      text: 'SELECT * FROM reservations WHERE line_uid = $1 ORDER BY starttime ASC;',
+      values: [`${id}`]
+    };
+    connection.query(selectQuery)
+    .then(res=>{
+      const nextReservation = res.rows.filter(object=>{
+        return parseInt(object.starttime) >= nowTime;
+      });
+      resolve(nextReservation);
+    })
+    .catch(e=>console.log(e));
+  });
+}
+
 //handleMessageEvent()
 const handleMessageEvent = async (ev) => {
     console.log('ev:',ev);
@@ -253,6 +276,15 @@ const handleMessageEvent = async (ev) => {
 
     if(text === '予約する'){
         orderChoice(ev);
+    }else if(text === '予約確認'){
+      const nextReservation = await checkNextReservation(ev);
+      const startTimestamp = nextReservation[0].starttime;
+      const date = dateConversion(startTimestamp);
+      const menu = MENU[parseInt(nextReservation[0].menu)];
+      return client.replyMessage(ev.replyToken,{
+        "type":"text",
+        "text":`次回予約は${date}、${menu}でお取りしてます\uDBC0\uDC22`
+      });
     }else{
         return client.replyMessage(ev.replyToken,{
             "type":"text",
@@ -638,4 +670,13 @@ const calcTreatTime = (id,menu) => {
   });
  }
 
- //
+ //dateConversion関数(タイムスタンプを任意の日時、時刻の文字列へ変換)
+ const dateConversion = (timestamp) => {
+  const d = new Date(parseInt(timestamp));
+  const month = d.getMonth()+1;
+  const date = d.getDate();
+  const day = d.getDay();
+  const hour = ('0' + (d.getHours()+9)).slice(-2);
+  const min = ('0' + d.getMinutes()).slice(-2);
+  return `${month}月${date}日(${WEEK[day]}) ${hour}:${min}`;
+ }
