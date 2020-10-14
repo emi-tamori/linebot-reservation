@@ -295,7 +295,7 @@ const handlePostbackEvent = async (ev) => {
       const selectedTime = splitData[3];
       const startTimestamp = timeConversion(selectedDate,selectedTime);
       console.log('その1');
-      const treatTime = calcTreatTime(ev.source.userId,orderedMenu);
+      const treatTime = await calcTreatTime(ev.source.userId,orderedMenu);
       const endTimestamp = startTimestamp + treatTime*60*1000;
       console.log('その4');
       console.log('endTime:',endTimestamp);
@@ -593,24 +593,26 @@ const timeConversion = (date,time) => {
 
 //calcTreatTime(データベースから施術時間をとってくる)
 const calcTreatTime = (id,menu) => {
-  console.log('その2');
-  const selectQuery = {
-    text: 'SELECT * FROM users WHERE line_uid = $1;',
-    values: [`${id}`]
-  };
-  connection.query(selectQuery)
-  .then(res=>{
-    console.log('その3');
-    if(res.rows.length){
-      const info = res.rows[0];
-      const treatArray = [info.cuttime,info.shampootime,info.colortime,info.spatime,INITIAL_TREAT[4],INITIAL_TREAT[5],INITIAL_TREAT[6]];
-      const menuNumber = parseInt(menu);
-      const treatTime = treatArray[menuNumber];
-      return treatTime;
-    }else{
-      console.log('LINE　IDに一致するユーザーが見つかりません。');
-      return;
-    }
-  })
-  .catch(e=>console.log(e));
+  return new Promise((resolve,reject)=>{
+    console.log('その2');
+    const selectQuery = {
+      text: 'SELECT * FROM users WHERE line_uid = $1;',
+      values: [`${id}`]
+    };
+    connection.query(selectQuery)
+      .then(res=>{
+        console.log('その3');
+        if(res.rows.length){
+          const info = res.rows[0];
+          const treatArray = [info.cuttime,info.shampootime,info.colortime,info.spatime,INITIAL_TREAT[4],INITIAL_TREAT[5],INITIAL_TREAT[6]];
+          const menuNumber = parseInt(menu);
+          const treatTime = treatArray[menuNumber];
+          resolve(treatTime);
+        }else{
+          console.log('LINE　IDに一致するユーザーが見つかりません。');
+          return;
+        }
+      })
+      .catch(e=>console.log(e));
+  });
  }
