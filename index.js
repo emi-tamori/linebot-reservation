@@ -98,8 +98,7 @@ const handleMessageEvent = async (ev) => {
       }else{
         console.log('次回予約なし');
       }
-    }
-    else{
+    }else{
         return client.replyMessage(ev.replyToken,{
             "type":"text",
             "text":`${profile.displayName}さん、今${text}って言いました？`
@@ -286,26 +285,27 @@ const checkNextReservation = (ev) => {
   return new Promise((resolve,reject)=>{
     const id = ev.source.userId;
     const nowTime = new Date().getTime();
-
+    
     const selectQuery = {
       text: 'SELECT * FROM reservations WHERE line_uid = $1 ORDER BY starttime ASC;',
       values: [`${id}`]
     };
+    
     connection.query(selectQuery)
-     .then(res=>{
-       if(res.rows.length){
-         const nextReservation = res.rows.filter(object=>{
-           return parseInt(object.starttime) >= nowTime;
-         });
-         console.log('nextReservation:',nextReservation);
-         resolve(nextReservation);
-       }else{
-         resolve();
-       }
-     })
-     .catch(e=>console.log(e));
+      .then(res=>{
+        if(res.rows.length){
+          const nextReservation = res.rows.filter(object=>{
+            return parseInt(object.starttime) >= nowTime;
+          });
+          console.log('nextReservation:',nextReservation);
+          resolve(nextReservation);
+        }else{
+          resolve();
+        }
+      })
+      .catch(e=>console.log(e));
   });
-}
+ }
 
 //greeting_follow関数(友達登録時の処理)
 const greeting_follow = async (ev) => {
