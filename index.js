@@ -98,7 +98,7 @@ const handleMessageEvent = async (ev) => {
         });
     }
 }
-//orderChoice関数(予約する送信時の処理)
+//orderChoice関数(「予約する」処理。Flex Message表示)
 const orderChoice = (ev) => {
   return client.replyMessage(ev.replyToken,{
       "type":"flex",
@@ -273,7 +273,7 @@ const orderChoice = (ev) => {
   });
 }
 
-//checkNextReservation関数(予約確認でのデータベースやり取り)
+//checkNextReservation関数(「予約確認」処理。データベースやり取り)
 const checkNextReservation = (ev) => {
   return new Promise((resolve,reject)=>{
     const id = ev.source.userId;
@@ -643,7 +643,17 @@ const timeConversion = (date,time) => {
   const selectedTime = 9 + parseInt(time) - 9;
   return new Date(`${date} ${selectedTime}:00`).getTime();
 }
-
+ //dateConversion関数(タイムスタンプを任意の日時、時刻の文字列へ変換)
+ const dateConversion = (timestamp) => {
+  const d = new Date(parseInt(timestamp));
+  const month = d.getMonth()+1;
+  const date = d.getDate();
+  const day = d.getDay();
+  const hour = ('0' + (d.getHours()+9)).slice(-2);
+  const min = ('0' + d.getMinutes()).slice(-2);
+  return `${month}月${date}日(${WEEK[day]}) ${hour}:${min}`;
+ }
+ 
 //calcTreatTime(データベースから施術時間をとってくる)
 const calcTreatTime = (id,menu) => {
   return new Promise((resolve,reject)=>{
@@ -670,13 +680,3 @@ const calcTreatTime = (id,menu) => {
   });
  }
 
- //dateConversion関数(タイムスタンプを任意の日時、時刻の文字列へ変換)
- const dateConversion = (timestamp) => {
-  const d = new Date(parseInt(timestamp));
-  const month = d.getMonth()+1;
-  const date = d.getDate();
-  const day = d.getDay();
-  const hour = ('0' + (d.getHours()+9)).slice(-2);
-  const min = ('0' + d.getMinutes()).slice(-2);
-  return `${month}月${date}日(${WEEK[day]}) ${hour}:${min}`;
- }
