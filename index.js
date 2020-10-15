@@ -91,7 +91,15 @@ const handleMessageEvent = async (ev) => {
         "type":"text",
         "text":`次回予約は${date}、${menu}でお取りしてます\uDBC0\uDC22`
       });
-    }else{
+    }else if(text === '予約キャンセル'){
+      const nextReservation = await checkNextReservation(ev);
+      if(nextReservation.length){
+        console.log('次回予約があります');
+      }else{
+        console.log('次回予約なし');
+      }
+    }
+    else{
         return client.replyMessage(ev.replyToken,{
             "type":"text",
             "text":`${profile.displayName}さん、今${text}って言いました？`
@@ -273,27 +281,33 @@ const orderChoice = (ev) => {
   });
 }
 
-//checkNextReservation関数(「予約確認」処理。データベースやり取り)
+//checkNextReservation関数(未来の予約があるかどうかを確認)
 const checkNextReservation = (ev) => {
   return new Promise((resolve,reject)=>{
     const id = ev.source.userId;
     const nowTime = new Date().getTime();
+
     const selectQuery = {
       text: 'SELECT * FROM reservations WHERE line_uid = $1 ORDER BY starttime ASC;',
       values: [`${id}`]
     };
     connection.query(selectQuery)
-    .then(res=>{
-      const nextReservation = res.rows.filter(object=>{
-        return parseInt(object.starttime) >= nowTime;
-      });
-      resolve(nextReservation);
-    })
-    .catch(e=>console.log(e));
+     .then(res=>{
+       if(res.rows.length){
+         const nextReservation = res.rows.filter(object=>{
+           return parseInt(object.starttime) >= nowTime;
+         });
+         console.log('nextReservation:',nextReservation);
+         resolve(nextReservation);
+       }else{
+         resolve();
+       }
+     })
+     .catch(e=>console.log(e));
   });
 }
 
-//greeting_follow()
+//greeting_follow関数(友達登録時の処理)
 const greeting_follow = async (ev) => {
     const profile = await client.getProfile(ev.source.userId);
 
@@ -653,7 +667,7 @@ const timeConversion = (date,time) => {
   const min = ('0' + d.getMinutes()).slice(-2);
   return `${month}月${date}日(${WEEK[day]}) ${hour}:${min}`;
  }
- 
+
 //calcTreatTime(データベースから施術時間をとってくる)
 const calcTreatTime = (id,menu) => {
   return new Promise((resolve,reject)=>{
