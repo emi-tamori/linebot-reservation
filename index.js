@@ -248,27 +248,7 @@ const orderChoice = (ev) => {
     });
 }
 
-//checkNextReservation関数
-const checkNextReservation = (ev) => {
-  return new Promise((resolve,reject)=>{
-    const id = ev.source.userId;
-    const nowTime = new Date().getTime();
-    const selectQuery = {
-      text: 'SELECT * FROM reservations WHERE line_uid = $1 ORDER BY starttime ASC;',
-      values: [`${id}`]
-    };
-    connection.query(selectQuery)
-    .then(res=>{
-      const nextReservation = res.rows.filter(object=>{
-        return parseInt(object.starttime) >= nowTime;
-      });
-      resolve(nextReservation);
-    })
-    .catch(e=>console.log(e));
-  });
-}
-
-//handleMessageEvent()
+//handleMessageEvent関数(イベントタイプ"message"の処理)
 const handleMessageEvent = async (ev) => {
     console.log('ev:',ev);
     const profile = await client.getProfile(ev.source.userId);
@@ -291,6 +271,26 @@ const handleMessageEvent = async (ev) => {
             "text":`${profile.displayName}さん、今${text}って言いました？`
         });
     }
+}
+
+//checkNextReservation関数
+const checkNextReservation = (ev) => {
+  return new Promise((resolve,reject)=>{
+    const id = ev.source.userId;
+    const nowTime = new Date().getTime();
+    const selectQuery = {
+      text: 'SELECT * FROM reservations WHERE line_uid = $1 ORDER BY starttime ASC;',
+      values: [`${id}`]
+    };
+    connection.query(selectQuery)
+    .then(res=>{
+      const nextReservation = res.rows.filter(object=>{
+        return parseInt(object.starttime) >= nowTime;
+      });
+      resolve(nextReservation);
+    })
+    .catch(e=>console.log(e));
+  });
 }
 
 //greeting_follow()
