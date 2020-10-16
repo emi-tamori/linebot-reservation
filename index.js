@@ -94,11 +94,54 @@ const handleMessageEvent = async (ev) => {
     }else if(text === '予約キャンセル'){
       const nextReservation = await checkNextReservation(ev);
       if(typeof nextReservation === 'undefined'){
-        console.log('次回予約なし');
+        return client.replyMessage(ev.replyToken,{
+          "type":"text",
+          "text":"次回予約は入っておりません。"
+        });
       }else if(nextReservation.length){
-        console.log('次回予約があります。');
+        const startTimestamp = parseInt(nextReservation[0].starttime);
+        const menu = MENU[parseInt(nextReservation[0].menu)];
+        const date = dateConversion(startTimestamp);
+        const id = parseInt(nextReservation[0].id);
+        return client.replyMessage(ev.replyToken,{
+          "type":"flex",
+          "altText": "cancel message",
+          "contents":
+          {
+            "type": "bubble",
+            "body": {
+              "type": "box",
+              "layout": "vertical",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "次回の予約は${date}から、${menu}でおとりしてます。この予約をキャンセルしますか？",
+                  "size": "lg",
+                  "wrap": true
+                }
+              ]
+            },
+            "footer": {
+              "type": "box",
+              "layout": "horizontal",
+              "contents": [
+                {
+                  "type": "button",
+                  "action": {
+                    "type": "postback",
+                    "label": "予約をキャンセルする",
+                    "data": "delete&${id}"
+                  }
+                }
+              ]
+            }
+          }
+        });
       }else{
-        console.log('次回予約なし');
+        return client.replyMessage(ev.replyToken,{
+          "type":"text",
+          "text":"次回予約は入っておりません。"
+        });
       }
     }else{
         return client.replyMessage(ev.replyToken,{
@@ -370,6 +413,21 @@ const handlePostbackEvent = async (ev) => {
       .catch(e=>console.log(e));
     }else if(splitData[0] === 'no'){
       // あとで何か入れる
+    }else if(splitData[0] === 'delete'){
+      const id = parseInt(splitData[1]);
+      const deleteQuery = {
+        text:'DELETE FROM reservations WHERE id = $1;',
+        values:[`${id}`]
+      };
+      connection.query(deleteQuery)
+      .then(res=>{
+        console.log('予約キャンセル成功');
+        client.replyMessage(ev.replyToken,{
+          "type":"text",
+          "text":"予約をキャンセルしました。"
+        });
+      })
+      .catch(e=>console.log(e));
     }
 }
 
