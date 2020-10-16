@@ -115,7 +115,7 @@ const handleMessageEvent = async (ev) => {
               "contents": [
                 {
                   "type": "text",
-                  "text": "次回の予約は${date}から、${menu}でおとりしてます。この予約をキャンセルしますか？",
+                  "text": `次回の予約は${date}から、${menu}でおとりしてます。この予約をキャンセルしますか？`,
                   "size": "lg",
                   "wrap": true
                 }
