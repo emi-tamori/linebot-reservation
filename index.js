@@ -95,6 +95,7 @@ const handleMessageEvent = async (ev) => {
       const nextReservation = await checkNextReservation(ev);
       if(typeof nextReservation === 'undefined'){
         return client.replyMessage(ev.replyToken,{
+          console.log(予約なし);
           "type":"text",
           "text":"次回予約は入っておりません。"
         });
