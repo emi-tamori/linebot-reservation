@@ -130,7 +130,7 @@ const handleMessageEvent = async (ev) => {
                   "action": {
                     "type": "postback",
                     "label": "予約をキャンセルする",
-                    "data": "delete&${id}"
+                    "data": `delete&${id}`
                   }
                 }
               ]
