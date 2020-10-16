@@ -72,32 +72,6 @@ Promise
 .then(console.log('all promises passed'))
 .catch(e=>console.error(e.stack));
 }
-//checkNextReservation関数(未来の予約があるかどうかを確認)
-const checkNextReservation = (ev) => {
-  return new Promise((resolve,reject)=>{
-    const id = ev.source.userId;
-    const nowTime = new Date().getTime();
-    
-    const selectQuery = {
-      text: 'SELECT * FROM reservations WHERE line_uid = $1 ORDER BY starttime ASC;',
-      values: [`${id}`]
-    };
-    
-    connection.query(selectQuery)
-      .then(res=>{
-        if(res.rows.length){
-          const nextReservation = res.rows.filter(object=>{
-            return parseInt(object.starttime) >= nowTime;
-          });
-          console.log('nextReservation:',nextReservation);
-          resolve(nextReservation);
-        }else{
-          resolve();
-        }
-      })
-      .catch(e=>console.log(e));
-  });
- }
 
 
 //handleMessageEvent関数(イベントタイプ"message"の処理振り分け)
@@ -119,8 +93,10 @@ const handleMessageEvent = async (ev) => {
       });
     }else if(text === '予約キャンセル'){
       const nextReservation = await checkNextReservation(ev);
-      if(nextReservation.length){
-        console.log('次回予約があります');
+      if(typeof nextReservation === 'undefined'){
+        console.log('次回予約なし');
+      }else if(nextReservation.length){
+        console.log('次回予約があります。');
       }else{
         console.log('次回予約なし');
       }
@@ -306,6 +282,32 @@ const orderChoice = (ev) => {
   });
 }
 
+//checkNextReservation関数(未来の予約があるかどうかを確認)
+const checkNextReservation = (ev) => {
+  return new Promise((resolve,reject)=>{
+    const id = ev.source.userId;
+    const nowTime = new Date().getTime();
+    
+    const selectQuery = {
+      text: 'SELECT * FROM reservations WHERE line_uid = $1 ORDER BY starttime ASC;',
+      values: [`${id}`]
+    };
+    
+    connection.query(selectQuery)
+      .then(res=>{
+        if(res.rows.length){
+          const nextReservation = res.rows.filter(object=>{
+            return parseInt(object.starttime) >= nowTime;
+          });
+          console.log('nextReservation:',nextReservation);
+          resolve(nextReservation);
+        }else{
+          resolve();
+        }
+      })
+      .catch(e=>console.log(e));
+  });
+ }
 
 //greeting_follow関数(友達登録時の処理)
 const greeting_follow = async (ev) => {
@@ -693,4 +695,5 @@ const calcTreatTime = (id,menu) => {
       .catch(e=>console.log(e));
   });
  }
+
 
