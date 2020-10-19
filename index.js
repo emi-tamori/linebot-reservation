@@ -692,14 +692,7 @@ const askTime = (ev,orderedMenu,selectedDate) => {
 const confirmation = (ev,menu,date,time) => {
     const splitDate = date.split('-');
     const selectedTime = 9 + parseInt(time);
-    //現在の月日を取得
-    var dt = new Date();
-    var year = dt.getFullYear();
-    var month = dt.getMonth()+1;
-    var date = dt.getDate();
-    console.log(year + "年" + month + "月" + date + "日");
-
-    
+  
     return client.replyMessage(ev.replyToken,{
       "type":"flex",
       "altText":"menuSelect",
