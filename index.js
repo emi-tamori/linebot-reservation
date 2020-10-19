@@ -692,8 +692,8 @@ const askTime = (ev,orderedMenu,selectedDate) => {
 const confirmation = (ev,menu,date,time) => {
     const splitDate = date.split('-');
     const selectedTime = 9 + parseInt(time);
-    var today = new Date();//現在の日時を取得
-    console.log("現在の日時は" + today.getFullYear() + "/" +  today.getMonth() + 1 + "/"+ today.getDate()  + "/" + today.getDay());//today変数をコンソールに表示
+    const nowTime = new Date().getTime();//現在の日時を取得
+    console.log("現在の日時：" + nowTime);
     
     return client.replyMessage(ev.replyToken,{
       "type":"flex",
