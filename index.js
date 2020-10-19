@@ -81,7 +81,15 @@ const handleMessageEvent = async (ev) => {
     const text = (ev.message.type === 'text') ? ev.message.text : '';
 
     if(text === '予約する'){
+      const nextReservation = await checkNextReservation(ev);
+      if(nextReservation.length){
+        return client.replyMessage(ev.replyToken,{
+          "type":"text",
+          "text":`次回予約は${date}、${menu}でお取りしてます。変更の場合は予約キャンセル後改めて予約をお願いします。`
+        });
+      }else{
         orderChoice(ev);
+      }
     }else if(text === '予約確認'){
       const nextReservation = await checkNextReservation(ev);
       const startTimestamp = nextReservation[0].starttime;
@@ -94,7 +102,6 @@ const handleMessageEvent = async (ev) => {
     }else if(text === '予約キャンセル'){
       const nextReservation = await checkNextReservation(ev);
       if(typeof nextReservation === 'undefined'){
-        console.log('予約なし')
         return client.replyMessage(ev.replyToken,{
           "type":"text",
           "text":"次回予約は入っておりません。"
