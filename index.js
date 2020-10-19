@@ -692,8 +692,13 @@ const askTime = (ev,orderedMenu,selectedDate) => {
 const confirmation = (ev,menu,date,time) => {
     const splitDate = date.split('-');
     const selectedTime = 9 + parseInt(time);
-    const nowTime = new Date().getTime();//現在の日時を取得
-    console.log("現在の日時：" + nowTime);
+    //現在の月日を取得
+    var dt = new Date();
+    var year = dt.getFullYear();
+    var month = dt.getMonth()+1;
+    var date = dt.getDate();
+    console.log(year + "年" + month + "月" + date + "日");
+
     
     return client.replyMessage(ev.replyToken,{
       "type":"flex",
@@ -740,7 +745,7 @@ const confirmation = (ev,menu,date,time) => {
  }
    
 //timeConversion関数(日付、時刻をタイムスタンプ形式へ変更)
-const timeConversion = (date,time) => {
+  const timeConversion = (date,time) => {
   const selectedTime = 9 + parseInt(time) - 9;
   return new Date(`${date} ${selectedTime}:00`).getTime();
 }
