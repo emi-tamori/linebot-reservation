@@ -8,13 +8,13 @@ const WEEK = [ "日", "月", "火", "水", "木", "金", "土" ];//曜日の表�
 const MENU = ['カット','シャンプー','カラーリング','ヘッドスパ','マッサージ＆スパ','眉整え','顔そり'];//メニュー名
 //現在の日付取得
 function getToday (){
-  //const today = new Date();
-  //const year = today.getFullYear();//年
-  //const month = today.getMonth() + 1;//月
-  //const day = today.getDate(); //日
-  //console.log("現在の日付：" +  year + '年' + month + '月' + day + '日');
-  var date1 = new Date(Date.now());
-  console.log(date1);
+  const today = new Date();
+  const year = today.getFullYear();//年
+  const month = today.getMonth() + 1;//月
+  const day = today.getDate(); //日
+  console.log("現在の日付：" +  year + ',' + month + ',' + day );
+  //var date1 = new Date(Date.now());
+  //console.log(date1);
 }
 const config = {
     channelAccessToken:process.env.ACCESS_TOKEN,
