@@ -6,6 +6,14 @@ const PORT = process.env.PORT || 5000
 const INITIAL_TREAT = [20,10,40,15,30,15,10];  //施術時間初期値
 const WEEK = [ "日", "月", "火", "水", "木", "金", "土" ];//曜日の表示を標準化
 const MENU = ['カット','シャンプー','カラーリング','ヘッドスパ','マッサージ＆スパ','眉整え','顔そり'];//メニュー名
+//現在の日付取得
+function getToday (){
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth() + 1;
+  const day = today.getDate(); 
+  console.log("現在の日付：" +  year + '年' + month + '月' + day + '日');
+}
 const config = {
     channelAccessToken:process.env.ACCESS_TOKEN,
     channelSecret:process.env.CHANNEL_SECRET
@@ -692,12 +700,9 @@ const askTime = (ev,orderedMenu,selectedDate) => {
 const confirmation = (ev,menu,date,time) => {
     const splitDate = date.split('-');
     const selectedTime = 9 + parseInt(time);
-    var today = new Date();
-    var year = today.getFullYear();
-    var month = today.getMonth() + 1;
-    var day = today.getDate();
-    console.log( year + '年' + month + '月' + day + '日');
-  
+    //現在の日付取得
+    const today = getToday();
+    
     return client.replyMessage(ev.replyToken,{
       "type":"flex",
       "altText":"menuSelect",
