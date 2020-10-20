@@ -20,8 +20,6 @@ function getToday (){
   return present;
   //console.log(present);
 }
-//2ヶ月後の日付取得
-const month2later = today.getMonth() + 3;//2ヶ月後
 
 const client = new line.Client(config);
 //Postgresを使うためのパラメータ初期設定
@@ -713,12 +711,6 @@ const confirmation = (ev,menu,date,time) => {
       return client.replyMessage(ev.replyToken,{
         "type":"text",
         "text":`過去の日にちは指定できません\uDBC0\uDC1B`
-    });
-    }else if(splitDate >= month2later){
-      console.log("2ヶ月後：" + month2later);
-      return client.replyMessage(ev.replyToken,{
-        "type":"text",
-        "text":`2ヶ月以上先のご予約はできません\uDBC0\uDC1B`
     });
     }else{
       console.log("現在です");
