@@ -706,6 +706,11 @@ const confirmation = (ev,menu,date,time) => {
     const today = getToday();
     console.log("現在の日付：" + today);
     console.log("予約日：" + splitDate);
+    if(today > splitDate){
+      console.log("過去です");
+    }else{
+      console.log("現在");
+    }
 
     return client.replyMessage(ev.replyToken,{
       "type":"flex",
