@@ -6,16 +6,6 @@ const PORT = process.env.PORT || 5000
 const INITIAL_TREAT = [20,10,40,15,30,15,10];  //施術時間初期値
 const WEEK = [ "日", "月", "火", "水", "木", "金", "土" ];//曜日の表示を標準化
 const MENU = ['カット','シャンプー','カラーリング','ヘッドスパ','マッサージ＆スパ','眉整え','顔そり'];//メニュー名
-//現在の日付取得
-function getToday (){
-  const today = new Date();
-  const year = today.getFullYear();//年
-  const month = today.getMonth() + 1;//月
-  const day = today.getDate(); //日
-  const present =  year + ',' + month + ',' + day;
-  return present;
-  //console.log(present);
-}
 const config = {
     channelAccessToken:process.env.ACCESS_TOKEN,
     channelSecret:process.env.CHANNEL_SECRET
@@ -440,7 +430,10 @@ const handlePostbackEvent = async (ev) => {
       connection.query(insertQuery)
       .then(res=>{
         console.log('データ格納成功！');
-        ｃ
+        client.replyMessage(ev.replyToken,{
+          "type":"text",
+          "text":"予約が完了しました。"
+        });
       })
       .catch(e=>console.log(e));
     }else if(splitData[0] === 'no'){
@@ -699,66 +692,53 @@ const askTime = (ev,orderedMenu,selectedDate) => {
 const confirmation = (ev,menu,date,time) => {
     const splitDate = date.split('-');
     const selectedTime = 9 + parseInt(time);
-    //現在の日付取得
-    const today = getToday();
-    console.log("現在の日付：" + today);
-    console.log("予約日：" + splitDate);
-    if(today < splitDate){
-      console.log("過去の日付は選択できません");
-      return client.replyMessage(ev.replyToken,{
-        "type":"text",
-        "text":"過去の日付は選択できません。"
-      });
-    }else{
-      return client.replyMessage(ev.replyToken,{
-        "type":"flex",
-        "altText":"menuSelect",
-        "contents":
-        {
-          "type": "bubble",
-          "body": {
-            "type": "box",
-            "layout": "vertical",
-            "contents": [
-              {
-                "type": "text",
-                "text": `次回予約は${splitDate[1]}月${splitDate[2]}日 ${selectedTime}時〜でよろしいですか？`,
-                "size": "lg",
-                "wrap": true
-              }
-            ]
-          },
-          "footer": {
-            "type": "box",
-            "layout": "horizontal",
-            "contents": [
-              {
-                "type": "button",
-                "action": {
-                  "type": "postback",
-                  "label": "はい",
-                  "data": `yes&${menu}&${date}&${time}`
-                }
-              },
-              {
-                "type": "button",
-                "action": {
-                  "type": "postback",
-                  "label": "いいえ",
-                  "data": `no&${menu}&${date}&${time}`
-                }
-              }
-            ]
-          }
-        }
-      });
-    }
-
     
+    return client.replyMessage(ev.replyToken,{
+      "type":"flex",
+      "altText":"menuSelect",
+      "contents":
+      {
+        "type": "bubble",
+        "body": {
+          "type": "box",
+          "layout": "vertical",
+          "contents": [
+            {
+              "type": "text",
+              "text": `次回予約は${splitDate[1]}月${splitDate[2]}日 ${selectedTime}時〜でよろしいですか？`,
+              "size": "lg",
+              "wrap": true
+            }
+          ]
+        },
+        "footer": {
+          "type": "box",
+          "layout": "horizontal",
+          "contents": [
+            {
+              "type": "button",
+              "action": {
+                "type": "postback",
+                "label": "はい",
+                "data": `yes&${menu}&${date}&${time}`
+              }
+            },
+            {
+              "type": "button",
+              "action": {
+                "type": "postback",
+                "label": "いいえ",
+                "data": `no&${menu}&${date}&${time}`
+              }
+            }
+          ]
+        }
+      }
+    });
  }
    
 //timeConversion関数(日付、時刻をタイムスタンプ形式へ変更)
-  const timeConversion = (date,time) => {
+const timeConversion = (date,time) => {
   const selectedTime = 9 + parseInt(time) - 9;
   return new Date(`${date} ${selectedTime}:00`).getTime();
 }
