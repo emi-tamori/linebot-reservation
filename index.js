@@ -18,7 +18,13 @@ function getToday (){
   const day = today.getDate(); //日
   const present =  year + ',' + month + ',' + day;
   return present;
-  //console.log(present);
+}
+//2ヶ月後の日付を取得
+function getNextMonth(){
+  const date = new Date();
+  date.setMonth(date.getMonth() + 2); //2ヶ月後
+  const YYYYMMDD = Utilities.formatDate(date, 'JST', 'yyyy/MM/dd');
+  return YYYYMMDD;
 }
 
 const client = new line.Client(config);
@@ -703,9 +709,12 @@ const confirmation = (ev,menu,date,time) => {
     const splitDate = date.split('-');
     const selectedTime = 9 + parseInt(time);
 
+
+
     const today = getToday();
     console.log("現在の日付：" + today);
     console.log("予約日：" + splitDate);
+    console.log("2ヶ月後：" + YYYYMMDD);
     if(splitDate < today){
       console.log("過去です");
       return client.replyMessage(ev.replyToken,{
