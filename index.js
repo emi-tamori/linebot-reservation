@@ -706,7 +706,7 @@ const confirmation = (ev,menu,date,time) => {
     const today = getToday();
     console.log("現在の日付：" + today);
     console.log("予約日：" + splitDate);
-    if(splitDate > today){
+    if(splitDate < today){
       console.log("過去です");
     }else{
       console.log("現在です");
