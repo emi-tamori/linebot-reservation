@@ -12,9 +12,9 @@ function getToday (){
   const year = today.getFullYear();//年
   const month = today.getMonth() + 1;//月
   const day = today.getDate(); //日
-  console.log("現在の日付：" +  year + ',' + month + ',' + day );
-  //var date1 = new Date(Date.now());
-  //console.log(date1);
+  const present = year + month + day;
+  //console.log("現在の日付：" +  year + ',' + month + ',' + day );
+  console.log(present);
 }
 const config = {
     channelAccessToken:process.env.ACCESS_TOKEN,
