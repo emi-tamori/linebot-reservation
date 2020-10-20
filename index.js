@@ -708,6 +708,10 @@ const confirmation = (ev,menu,date,time) => {
     console.log("予約日：" + splitDate);
     if(splitDate < today){
       console.log("過去です");
+      return client.replyMessage(ev.replyToken,{
+        "type":"text",
+        "text":`過去の日にちは指定できません\uDB18`
+    });
     }else{
       console.log("現在です");
     }
