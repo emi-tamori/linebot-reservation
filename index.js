@@ -10,6 +10,16 @@ const config = {
     channelAccessToken:process.env.ACCESS_TOKEN,
     channelSecret:process.env.CHANNEL_SECRET
 };
+//現在の日付取得
+function getToday (){
+  const today = new Date();
+  const year = today.getFullYear();//年
+  const month = today.getMonth() + 1;//月
+  const day = today.getDate(); //日
+  const present =  year + ',' + month + ',' + day;
+  return present;
+  //console.log(present);
+}
 
 const client = new line.Client(config);
 //Postgresを使うためのパラメータ初期設定
@@ -692,6 +702,15 @@ const askTime = (ev,orderedMenu,selectedDate) => {
 const confirmation = (ev,menu,date,time) => {
     const splitDate = date.split('-');
     const selectedTime = 9 + parseInt(time);
+
+    const today = getToday();
+    console.log("現在の日付：" + today);
+    console.log("予約日：" + splitDate);
+    if(splitDate > today){
+      console.log("過去です");
+    }else{
+      console.log("現在です");
+    }
     
     return client.replyMessage(ev.replyToken,{
       "type":"flex",
