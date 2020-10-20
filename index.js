@@ -12,9 +12,8 @@ function getToday (){
   const year = today.getFullYear();//年
   const month = today.getMonth() + 1;//月
   const day = today.getDate(); //日
-  const present = "現在の日付：" +  year + ',' + month + ',' + day;
-  //console.log("現在の日付：" +  year + ',' + month + ',' + day );
-  console.log(present);
+  const present =  year + ',' + month + ',' + day;
+  //console.log(present);
 }
 const config = {
     channelAccessToken:process.env.ACCESS_TOKEN,
@@ -704,8 +703,9 @@ const confirmation = (ev,menu,date,time) => {
     const selectedTime = 9 + parseInt(time);
     //現在の日付取得
     const today = getToday();
-    console.log("予約日は：" + splitDate);
-    
+    console.log("現在の日付：" + present.split(','));
+    console.log("予約日：" + splitDate.split(','));
+
     return client.replyMessage(ev.replyToken,{
       "type":"flex",
       "altText":"menuSelect",
