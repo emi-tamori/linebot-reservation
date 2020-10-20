@@ -12,7 +12,7 @@ function getToday (){
   const year = today.getFullYear();//年
   const month = today.getMonth() + 1;//月
   const day = today.getDate(); //日
-  const present = year + month + day;
+  const present = "現在の日付：" +  year + ',' + month + ',' + day;
   //console.log("現在の日付：" +  year + ',' + month + ',' + day );
   console.log(present);
 }
