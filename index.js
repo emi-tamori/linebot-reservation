@@ -710,12 +710,11 @@ const confirmation = (ev,menu,date,time) => {
       console.log("過去です");
       return client.replyMessage(ev.replyToken,{
         "type":"text",
-        "text":`過去の日にちは指定できません\uDB18`
+        "text":`過去の日にちは指定できません\uDBC0\uDC1B`
     });
     }else{
       console.log("現在です");
-    }
-    
+    }    
     return client.replyMessage(ev.replyToken,{
       "type":"flex",
       "altText":"menuSelect",
