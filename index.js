@@ -704,8 +704,8 @@ const confirmation = (ev,menu,date,time) => {
     const selectedTime = 9 + parseInt(time);
     //現在の日付取得
     const today = getToday();
-    console.log("現在の日付：" + today.split(','));
-    console.log("予約日：" + splitDate.split(','));
+    console.log("現在の日付：" + today);
+    console.log("予約日：" + splitDate);
 
     return client.replyMessage(ev.replyToken,{
       "type":"flex",
