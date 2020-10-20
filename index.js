@@ -714,7 +714,7 @@ const confirmation = (ev,menu,date,time) => {
         "type":"text",
         "text":`過去の日にちは指定できません\uDBC0\uDC1B`
     });
-    }else if(today >= month2later){
+    }else if(splitDate >= month2later){
       console.log("2ヶ月後：" + month2later);
       return client.replyMessage(ev.replyToken,{
         "type":"text",
