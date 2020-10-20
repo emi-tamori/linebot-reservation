@@ -440,10 +440,7 @@ const handlePostbackEvent = async (ev) => {
       connection.query(insertQuery)
       .then(res=>{
         console.log('データ格納成功！');
-        client.replyMessage(ev.replyToken,{
-          "type":"text",
-          "text":"予約が完了しました。"
-        });
+        ｃ
       })
       .catch(e=>console.log(e));
     }else if(splitData[0] === 'no'){
@@ -707,53 +704,57 @@ const confirmation = (ev,menu,date,time) => {
     console.log("現在の日付：" + today);
     console.log("予約日：" + splitDate);
     if(today > splitDate){
-      console.log("過去です");
+      console.log("過去の日付は選択できません");
+      client.replyMessage(ev.replyToken,{
+        "type":"text",
+        "text":"過去の日付は選択できません。"
+      });
     }else{
-      console.log("現在");
+      return client.replyMessage(ev.replyToken,{
+        "type":"flex",
+        "altText":"menuSelect",
+        "contents":
+        {
+          "type": "bubble",
+          "body": {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+              {
+                "type": "text",
+                "text": `次回予約は${splitDate[1]}月${splitDate[2]}日 ${selectedTime}時〜でよろしいですか？`,
+                "size": "lg",
+                "wrap": true
+              }
+            ]
+          },
+          "footer": {
+            "type": "box",
+            "layout": "horizontal",
+            "contents": [
+              {
+                "type": "button",
+                "action": {
+                  "type": "postback",
+                  "label": "はい",
+                  "data": `yes&${menu}&${date}&${time}`
+                }
+              },
+              {
+                "type": "button",
+                "action": {
+                  "type": "postback",
+                  "label": "いいえ",
+                  "data": `no&${menu}&${date}&${time}`
+                }
+              }
+            ]
+          }
+        }
+      });
     }
 
-    return client.replyMessage(ev.replyToken,{
-      "type":"flex",
-      "altText":"menuSelect",
-      "contents":
-      {
-        "type": "bubble",
-        "body": {
-          "type": "box",
-          "layout": "vertical",
-          "contents": [
-            {
-              "type": "text",
-              "text": `次回予約は${splitDate[1]}月${splitDate[2]}日 ${selectedTime}時〜でよろしいですか？`,
-              "size": "lg",
-              "wrap": true
-            }
-          ]
-        },
-        "footer": {
-          "type": "box",
-          "layout": "horizontal",
-          "contents": [
-            {
-              "type": "button",
-              "action": {
-                "type": "postback",
-                "label": "はい",
-                "data": `yes&${menu}&${date}&${time}`
-              }
-            },
-            {
-              "type": "button",
-              "action": {
-                "type": "postback",
-                "label": "いいえ",
-                "data": `no&${menu}&${date}&${time}`
-              }
-            }
-          ]
-        }
-      }
-    });
+    
  }
    
 //timeConversion関数(日付、時刻をタイムスタンプ形式へ変更)
