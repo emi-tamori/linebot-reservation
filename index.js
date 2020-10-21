@@ -703,12 +703,11 @@ const confirmation = (ev,menu,date,time) => {
     const splitDate = date.split('-');
     const selectedTime = 9 + parseInt(time);
 
-    const today = getToday();
     const date = dateConversion(today);
 
     console.log("現在の日付：" + today);
     console.log("予約日：" + splitDate);
-    console.log("現在日" + today);
+
     if(splitDate < today){
       console.log("過去です");
       return client.replyMessage(ev.replyToken,{
