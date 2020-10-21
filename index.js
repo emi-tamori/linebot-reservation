@@ -20,6 +20,10 @@ function getToday (){
   return present;
   //console.log(present);
 }
+//現在の曜日を取得
+var now = new Date();
+var day = now.getDay();
+var dayName = WEEK[day];
 
 const client = new line.Client(config);
 //Postgresを使うためのパラメータ初期設定
@@ -705,6 +709,7 @@ const confirmation = (ev,menu,date,time) => {
 
     const today = getToday();
     console.log("現在の日付：" + today);
+    console.log("現在の曜日：" + dayName);
     console.log("予約日：" + splitDate);
     if(splitDate < today){
       console.log("過去です");
