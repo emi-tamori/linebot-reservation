@@ -6,6 +6,7 @@ const PORT = process.env.PORT || 5000
 const INITIAL_TREAT = [20,10,40,15,30,15,10];  //施術時間初期値
 const WEEK = [ "日", "月", "火", "水", "木", "金", "土" ];//曜日の表示を標準化
 const MENU = ['カット','シャンプー','カラーリング','ヘッドスパ','マッサージ＆スパ','眉整え','顔そり'];//メニュー名
+const HOLIDAY = ["月"];//定休日を設定
 const config = {
     channelAccessToken:process.env.ACCESS_TOKEN,
     channelSecret:process.env.CHANNEL_SECRET
@@ -716,6 +717,11 @@ const confirmation = (ev,menu,date,time) => {
       return client.replyMessage(ev.replyToken,{
         "type":"text",
         "text":`過去の日にちは指定できません\uDBC0\uDC1B`
+    });
+    }else if(dayName == HOLIDAY) {
+      return client.replyMessage(ev.replyToken,{
+        "type":"text",
+        "text":`申し訳ございません。${HOLIDAY}曜日 は定休日です。\uDBC0\uDC1B`
     });
     }else{
       console.log("現在です");
