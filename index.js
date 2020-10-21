@@ -18,6 +18,7 @@ function getToday (){
   const day = today.getDate(); //日
   const present =  year + ',' + month + ',' + day;
   return present;
+  //console.log(present);
 }
 
 const client = new line.Client(config);
@@ -701,12 +702,12 @@ const askTime = (ev,orderedMenu,selectedDate) => {
 const confirmation = (ev,menu,date,time) => {
     const splitDate = date.split('-');
     const selectedTime = 9 + parseInt(time);
-
-
+    const getTime = dateConversion();
 
     const today = getToday();
     console.log("現在の日付：" + today);
     console.log("予約日：" + splitDate);
+    console.log("現在の時間" + getTime);
     if(splitDate < today){
       console.log("過去です");
       return client.replyMessage(ev.replyToken,{
