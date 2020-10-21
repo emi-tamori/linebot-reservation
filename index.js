@@ -22,9 +22,9 @@ function getToday (){
   //console.log(present);
 }
 //現在の曜日を取得
-var now = new Date();
-var day = now.getDay();
-var dayName = WEEK[day];
+//var now = new Date();
+//var day = now.getDay();
+//var dayName = WEEK[day];
 
 const client = new line.Client(config);
 //Postgresを使うためのパラメータ初期設定
@@ -710,8 +710,13 @@ const confirmation = (ev,menu,date,time) => {
 
     const today = getToday();
     console.log("現在の日付：" + today);
-    console.log("現在の曜日：" + dayName);
+    //console.log("現在の曜日：" + dayName);
     console.log("予約日：" + splitDate);
+    //予約日の曜日を取得
+    var week = new Date(splitDate);
+    var day = week.getDay();
+    var dayName = WEEK[day];
+    
     if(splitDate < today){
       console.log("過去です");
       return client.replyMessage(ev.replyToken,{
