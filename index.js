@@ -702,12 +702,13 @@ const askTime = (ev,orderedMenu,selectedDate) => {
 const confirmation = (ev,menu,date,time) => {
     const splitDate = date.split('-');
     const selectedTime = 9 + parseInt(time);
-    const getTime = dateConversion();
 
     const today = getToday();
+    const date = dateConversion(today);
+    const week = date.WEEK.day;
     console.log("現在の日付：" + today);
     console.log("予約日：" + splitDate);
-    console.log("現在の時間" + getTime);
+    console.log("現在nの曜日" + week);
     if(splitDate < today){
       console.log("過去です");
       return client.replyMessage(ev.replyToken,{
