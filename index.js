@@ -705,10 +705,10 @@ const confirmation = (ev,menu,date,time) => {
 
     const today = getToday();
     const date = dateConversion(today);
-    const week = date.WEEK.day;
+
     console.log("現在の日付：" + today);
     console.log("予約日：" + splitDate);
-    console.log("現在nの曜日" + week);
+    console.log("現在日" + today);
     if(splitDate < today){
       console.log("過去です");
       return client.replyMessage(ev.replyToken,{
