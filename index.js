@@ -6,6 +6,7 @@ const PORT = process.env.PORT || 5000
 const INITIAL_TREAT = [20,10,40,15,30,15,10];  //施術時間初期値
 const WEEK = [ "日", "月", "火", "水", "木", "金", "土" ];//曜日の表示を標準化
 const MENU = ['カット','シャンプー','カラーリング','ヘッドスパ','マッサージ＆スパ','眉整え','顔そり'];//メニュー名
+const HOLIDAY = ["月"];//定休日を設定
 const config = {
     channelAccessToken:process.env.ACCESS_TOKEN,
     channelSecret:process.env.CHANNEL_SECRET
@@ -695,13 +696,15 @@ const confirmation = (ev,menu,date,time) => {
     
     //現在時刻のタイムスタンプを取得
     const present = new Date().getTime();
-    console.log("現在"+present);
     //2ヶ月後取得
     const twoMonthsLater = present + 2*30*24*3600*1000;
-    console.log("2ヶ月後"+twoMonthsLater);
     //予約日を数値へ変換
     const reservationDayTime = new Date(`${date} ${selectedTime-9}:00`).getTime();
-    console.log("予約日" + reservationDayTime);
+    //予約日の曜日を取得
+    const week = new Date(splitDate);
+    const day = week.getDay();
+    const dayName = WEEK[day];
+
     
     if(reservationDayTime < present){
       console.log("過去です");
@@ -710,13 +713,19 @@ const confirmation = (ev,menu,date,time) => {
         "text":`過去の日にちは指定できません\uDBC0\uDC1B`
     });
     }else if(reservationDayTime >= twoMonthsLater){
-      console.log("2ヶ月後以降です");
+      console.log("2ヶ月以上先です");
       return client.replyMessage(ev.replyToken,{
         "type":"text",
         "text":`２ヶ月以上先の日にちは指定できません\uDBC0\uDC1B`
     });
+    }else if(dayName == HOLIDAY){
+      console.log(HOLIDAY + "は定休日です");
+      return client.replyMessage(ev.replyToken,{
+        "type":"text",
+        "text":`申し訳ございません。${HOLIDAY}曜日 は定休日です。\uDBC0\uDC1B`
+    });
     }else{
-      console.log("未来です");
+      console.log("予約OKです");
       return client.replyMessage(ev.replyToken,{
         "type":"flex",
         "altText":"menuSelect",
