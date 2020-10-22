@@ -702,6 +702,14 @@ const confirmation = (ev,menu,date,time) => {
     const reservationDayTime = new Date(`${date} ${selectedTime}:00`).getTime();
     console.log("予約日" + reservationDayTime);
     
+    if(present > reservationDayTime ){
+      console.log("過去");
+    }else if(present == reservationDayTimev){
+      console.log("当日");
+    }else{
+      console.log("未来");
+    }
+
     return client.replyMessage(ev.replyToken,{
       "type":"flex",
       "altText":"menuSelect",
