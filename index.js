@@ -693,13 +693,10 @@ const confirmation = (ev,menu,date,time) => {
     const splitDate = date.split('-');
     const selectedTime = 9 + parseInt(time);
     
-    console.log("splitDate = " + splitDate);
-    console.log("electedTim = " + selectedTime);
-    console.log("date = " + date);
     //現在時刻のタイムスタンプを取得
     const present = new Date().getTime();
     console.log("現在"+present);
-    //2ヶ月後
+    //2ヶ月後取得
     const twoMonthsLater = present + 2*30*24*3600*1000;
     console.log("2ヶ月後"+twoMonthsLater);
     //予約日を数値へ変換
@@ -707,55 +704,62 @@ const confirmation = (ev,menu,date,time) => {
     console.log("予約日" + reservationDayTime);
     
     if(reservationDayTime < present){
-      console.log("過去は予約出来ない");
-    }else if(reservationDayTime >= twoMonthsLater){
-      console.log("2ヶ月後以降は予約できない");
-    }else{
-      console.log("未来OK");
-    }
-
-    return client.replyMessage(ev.replyToken,{
-      "type":"flex",
-      "altText":"menuSelect",
-      "contents":
-      {
-        "type": "bubble",
-        "body": {
-          "type": "box",
-          "layout": "vertical",
-          "contents": [
-            {
-              "type": "text",
-              "text": `次回予約は${splitDate[1]}月${splitDate[2]}日 ${selectedTime}時〜でよろしいですか？`,
-              "size": "lg",
-              "wrap": true
-            }
-          ]
-        },
-        "footer": {
-          "type": "box",
-          "layout": "horizontal",
-          "contents": [
-            {
-              "type": "button",
-              "action": {
-                "type": "postback",
-                "label": "はい",
-                "data": `yes&${menu}&${date}&${time}`
-              }
-            },
-            {
-              "type": "button",
-              "action": {
-                "type": "postback",
-                "label": "いいえ",
-                "data": `no&${menu}&${date}&${time}`
-              }
-            }
-          ]
-        }
-      }
+      console.log("過去です");
+      return client.replyMessage(ev.replyToken,{
+        "type":"text",
+        "text":`過去の日にちは指定できません\uDBC0\uDC1B`
     });
+    }else if(reservationDayTime >= twoMonthsLater){
+      console.log("2ヶ月後以降です");
+      return client.replyMessage(ev.replyToken,{
+        "type":"text",
+        "text":`２ヶ月以上先の日にちは指定できません\uDBC0\uDC1B`
+    });
+    }else{
+      console.log("未来です");
+      return client.replyMessage(ev.replyToken,{
+        "type":"flex",
+        "altText":"menuSelect",
+        "contents":
+        {
+          "type": "bubble",
+          "body": {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+              {
+                "type": "text",
+                "text": `次回予約は${splitDate[1]}月${splitDate[2]}日 ${selectedTime}時〜でよろしいですか？`,
+                "size": "lg",
+                "wrap": true
+              }
+            ]
+          },
+          "footer": {
+            "type": "box",
+            "layout": "horizontal",
+            "contents": [
+              {
+                "type": "button",
+                "action": {
+                  "type": "postback",
+                  "label": "はい",
+                  "data": `yes&${menu}&${date}&${time}`
+                }
+              },
+              {
+                "type": "button",
+                "action": {
+                  "type": "postback",
+                  "label": "いいえ",
+                  "data": `no&${menu}&${date}&${time}`
+                }
+              }
+            ]
+          }
+        }
+      });
+    }
  }
    
 //timeConversion関数(日付、時刻をタイムスタンプ形式へ変更)
