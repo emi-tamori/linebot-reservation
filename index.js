@@ -703,13 +703,13 @@ const confirmation = (ev,menu,date,time) => {
     const twoMonthsLater = present + 2*30*24*3600*1000;
     console.log("2ヶ月後"+twoMonthsLater);
     //予約日を数値へ変換
-    const reservationDayTime = new Date(`${date} ${selectedTime}:00`).getTime();
+    const reservationDayTime = new Date(`${date} ${selectedTime-9}:00`).getTime();
     console.log("予約日" + reservationDayTime);
     
     if(reservationDayTime < present){
       console.log("過去は予約出来ない");
     }else if(reservationDayTime >= twoMonthsLater){
-      console.log("2ヶ月後以降はよやくできない");
+      console.log("2ヶ月後以降は予約できない");
     }else{
       console.log("未来OK");
     }
