@@ -702,12 +702,12 @@ const confirmation = (ev,menu,date,time) => {
     const reservationDayTime = new Date(`${date} ${selectedTime}:00`).getTime();
     console.log("予約日" + reservationDayTime);
     
-    if(present > reservationDayTime ){
-      console.log("過去");
-    }else if(present == reservationDayTime){
-      console.log("当日");
+    if(reservationDayTime < present){
+      console.log("過去は予約出来ない");
+    }else if(reservationDayTime >= twoMonthsLater){
+      console.log("2ヶ月後以降はよやくできない");
     }else{
-      console.log("未来");
+      console.log("未来OK");
     }
 
     return client.replyMessage(ev.replyToken,{
