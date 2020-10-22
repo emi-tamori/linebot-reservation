@@ -704,7 +704,7 @@ const confirmation = (ev,menu,date,time) => {
     
     if(present > reservationDayTime ){
       console.log("過去");
-    }else if(present == reservationDayTimev){
+    }else if(present == reservationDayTime){
       console.log("当日");
     }else{
       console.log("未来");
