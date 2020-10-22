@@ -692,8 +692,10 @@ const askTime = (ev,orderedMenu,selectedDate) => {
 const confirmation = (ev,menu,date,time) => {
     const splitDate = date.split('-');
     const selectedTime = 9 + parseInt(time);
+    
     console.log("splitDate = " + splitDate);
     console.log("electedTim = " + selectedTime);
+    console.log("date = " + date);
     //現在時刻のタイムスタンプを取得
     const present = new Date().getTime();
     console.log("現在"+present);
