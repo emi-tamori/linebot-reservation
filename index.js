@@ -694,7 +694,10 @@ const confirmation = (ev,menu,date,time) => {
     const selectedTime = 9 + parseInt(time);
     //現在時刻のタイムスタンプを取得
     const present = new Date().getTime();
-    console.log(present);
+    console.log("現在"+present);
+    //2ヶ月後
+    const twoMonthsLater = present + 2*30*24*3600*1000;
+    console.log("2ヶ月後"+twoMonthsLater);
     
     return client.replyMessage(ev.replyToken,{
       "type":"flex",
