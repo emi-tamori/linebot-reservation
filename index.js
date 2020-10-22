@@ -699,7 +699,7 @@ const confirmation = (ev,menu,date,time) => {
     const twoMonthsLater = present + 2*30*24*3600*1000;
     console.log("2ヶ月後"+twoMonthsLater);
     //予約日を数値へ変換
-    const d = timeConversion();
+    const d = new Date(`${date} ${selectedTime}:00`).getTime();
     console.log(d);
     
     return client.replyMessage(ev.replyToken,{
