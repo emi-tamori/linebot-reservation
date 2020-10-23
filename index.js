@@ -703,7 +703,7 @@ const confirmation = (ev,menu,date,time) => {
     //const week = new Date(splitDate);
     //console.log("week = " + week);
     const week = new Date(reservationDayTime).getDay();
-    console.log("weekew = " + weekNew);
+    console.log("week = " + week);
     //const day = week.getDay();
     //console.log("day = " + day);
     const dayName = WEEK[week];
