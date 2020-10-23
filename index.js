@@ -701,11 +701,11 @@ const confirmation = (ev,menu,date,time) => {
     const reservationDayTime = new Date(`${date} ${selectedTime-9}:00`).getTime();
     //予約日の曜日を取得
     const week = new Date(splitDate);
-    console.log("week = "week);
+    console.log("week = " + week);
     const day = week.getDay();
-    console.log("day = "day);
+    console.log("day = " + day);
     const dayName = WEEK[day];
-    console.log("dayName = "dayName);
+    console.log("dayName = " + dayName);
 
     
     if(reservationDayTime < present){
@@ -720,11 +720,11 @@ const confirmation = (ev,menu,date,time) => {
         "type":"text",
         "text":`２ヶ月以上先の日にちは指定できません\uDBC0\uDC1B`
     });
-    }else if(dayName == HOLIDAY[0]){
-      console.log(HOLIDAY[0] + "は定休日です");
+    }else if(dayName == HOLIDAY){
+      console.log(HOLIDAY + "は定休日です");
       return client.replyMessage(ev.replyToken,{
         "type":"text",
-        "text":`申し訳ございません。${HOLIDAY[0]}曜日 は定休日です。\uDBC0\uDC1B`
+        "text":`申し訳ございません。${HOLIDAY}曜日 は定休日です。\uDBC0\uDC1B`
     });
     }else{
       console.log("予約OKです");
