@@ -723,11 +723,11 @@ const confirmation = (ev,menu,date,time) => {
         "type":"text",
         "text":`２ヶ月以上先の日にちは指定できません\uDBC0\uDC1B`
     });
-    }else if(dayName == HOLIDAY){
-      console.log(HOLIDAY + "は定休日です");
+    }else if(dayName == HOLIDAY[0]){
+      console.log(HOLIDAY[0] + "は定休日です");
       return client.replyMessage(ev.replyToken,{
         "type":"text",
-        "text":`申し訳ございません。${HOLIDAY}曜日 は定休日です。\uDBC0\uDC1B`
+        "text":`申し訳ございません。${HOLIDAY[0]}曜日 は定休日です。\uDBC0\uDC1B`
     });
     }else{
       console.log("予約OKです");
