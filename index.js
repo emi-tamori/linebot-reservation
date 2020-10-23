@@ -74,7 +74,6 @@ Promise
 .catch(e=>console.error(e.stack));
 }
 
-
 //handleMessageEvent関数(イベントタイプ"message"の処理振り分け)
 const handleMessageEvent = async (ev) => {
     console.log('ev:',ev);
@@ -116,7 +115,6 @@ const handleMessageEvent = async (ev) => {
           "text":"次回予約は入っておりません。"
         });
       }
-      
     }else if(text === '予約キャンセル'){
       const nextReservation = await checkNextReservation(ev);
       if(typeof nextReservation === 'undefined'){
@@ -176,6 +174,7 @@ const handleMessageEvent = async (ev) => {
         });
     }
 }
+
 //orderChoice関数(「予約する」処理。Flex Message表示)
 const orderChoice = (ev) => {
   return client.replyMessage(ev.replyToken,{
@@ -776,6 +775,7 @@ const timeConversion = (date,time) => {
   const selectedTime = 9 + parseInt(time) - 9;
   return new Date(`${date} ${selectedTime}:00`).getTime();
 }
+
  //dateConversion関数(タイムスタンプを任意の日時、時刻の文字列へ変換)
  const dateConversion = (timestamp) => {
   const d = new Date(parseInt(timestamp));
