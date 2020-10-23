@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 5000
 const INITIAL_TREAT = [20,10,40,15,30,15,10];  //施術時間初期値
 const WEEK = [ "日", "月", "火", "水", "木", "金", "土" ];//曜日の表示を標準化
 const MENU = ['カット','シャンプー','カラーリング','ヘッドスパ','マッサージ＆スパ','眉整え','顔そり'];//メニュー名
-const HOLIDAY = "月";//定休日を設定
+const HOLIDAY = ["月"];//定休日を設定
 const config = {
     channelAccessToken:process.env.ACCESS_TOKEN,
     channelSecret:process.env.CHANNEL_SECRET
@@ -700,13 +700,13 @@ const confirmation = (ev,menu,date,time) => {
     //予約日を数値へ変換
     const reservationDayTime = new Date(`${date} ${selectedTime-9}:00`).getTime();
     //予約日の曜日を取得
-    const week = new Date(splitDate);
-    console.log("week = " + week);
-    const weekNew = new Date(reservationDayTime).getDay();
+    //const week = new Date(splitDate);
+    //console.log("week = " + week);
+    const week = new Date(reservationDayTime).getDay();
     console.log("weekew = " + weekNew);
-    const day = week.getDay();
-    console.log("day = " + day);
-    const dayName = WEEK[day];
+    //const day = week.getDay();
+    //console.log("day = " + day);
+    const dayName = WEEK[week];
     console.log("dayName = " + dayName);
 
 
