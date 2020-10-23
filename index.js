@@ -702,10 +702,13 @@ const confirmation = (ev,menu,date,time) => {
     //予約日の曜日を取得
     const week = new Date(splitDate);
     console.log("week = " + week);
+    const weekNew = new Date(reservationDayTime).getDay();
+    console.log("weekew = " + weekNew);
     const day = week.getDay();
     console.log("day = " + day);
     const dayName = WEEK[day];
     console.log("dayName = " + dayName);
+
 
     
     if(reservationDayTime < present){
