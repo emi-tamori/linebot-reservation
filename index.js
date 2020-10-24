@@ -49,7 +49,7 @@ app
 .post('/hook',line.middleware(config),(req,res)=> lineBot(req,res))
 .listen(PORT,()=>console.log(`Listening on ${PORT}`));
 
-//lineBot関数
+//lineBot関数（イベントタイプによって実行関数を振り分け）
 const lineBot = (req,res) => {
     res.status(200).end();
     const events = req.body.events;
@@ -57,13 +57,13 @@ const lineBot = (req,res) => {
     for(let i=0;i<events.length;i++){
         const ev = events[i];
         switch(ev.type){
-            case 'follow':
+            case 'follow'://友達登録で発火
                 promises.push(greeting_follow(ev));
                 break;
-            case 'message':
+            case 'message'://テキストなどのメッセージ送信で発火
                 promises.push(handleMessageEvent(ev));
                 break;
-            case 'postback':
+            case 'postback'://ボタンが押されたらdataの値を返す
                 promises.push(handlePostbackEvent(ev));
                 break;
     }   
@@ -72,6 +72,26 @@ Promise
 .all(promises)
 .then(console.log('all promises passed'))
 .catch(e=>console.error(e.stack));
+}
+
+//greeting_follow関数(友達登録時の処理)
+const greeting_follow = async (ev) => {
+  const profile = await client.getProfile(ev.source.userId);
+
+  const table_insert = {
+      text:'INSERT INTO users (line_uid,display_name,timestamp,cuttime,shampootime,colortime,spatime) VALUES($1,$2,$3,$4,$5,$6,$7);',
+      values:[ev.source.userId,profile.displayName,ev.timestamp,INITIAL_TREAT[0],INITIAL_TREAT[1],INITIAL_TREAT[2],INITIAL_TREAT[3]]   
+  };
+  connection.query(table_insert)
+  .then(()=>{
+      console.log('insert successfully!!')
+  })
+  .catch(e=>console.log(e));
+ 
+  return client.replyMessage(ev.replyToken,{
+      "type":"text",
+      "text":`${profile.displayName}さん、フォローありがとうございます\uDBC0\uDC04`
+  });
 }
 
 //handleMessageEvent関数(イベントタイプ"message"の処理振り分け)
@@ -173,6 +193,66 @@ const handleMessageEvent = async (ev) => {
             "text":`${profile.displayName}さん、今${text}って言いました？`
         });
     }
+}
+
+//handlePostbackEvent関数（イベントタイプ"postback"の処理振り分け）
+const handlePostbackEvent = async (ev) => {
+  console.log('postback ev:',ev);
+  const profile = await client.getProfile(ev.source.userId);
+  const data = ev.postback.data;
+  const splitData = data.split('&');
+
+  if(splitData[0] === 'menu'){
+      const orderedMenu = splitData[1];
+      otherChoice(ev,orderedMenu);
+      //askDate(ev,orderedMenu);
+  }else if(splitData[0] === 'date'){
+      const orderedMenu = splitData[1];
+      const selectedDate = ev.postback.params.date;
+      askTime(ev,orderedMenu,selectedDate);
+  }else if(splitData[0] === 'time'){
+      const orderedMenu = splitData[1];
+      const selectedDate = splitData[2];
+      const selectedTime = splitData[3];
+      confirmation(ev,orderedMenu,selectedDate,selectedTime);
+  }else if(splitData[0] === 'yes'){
+    const orderedMenu = splitData[1];
+    const selectedDate = splitData[2];
+    const selectedTime = splitData[3];
+    const startTimestamp = timeConversion(selectedDate,selectedTime);
+    const treatTime = await calcTreatTime(ev.source.userId,orderedMenu);
+    const endTimestamp = startTimestamp + treatTime*60*1000;
+    const insertQuery = {
+      text:'INSERT INTO reservations (line_uid, name, scheduledate, starttime, endtime, menu) VALUES($1,$2,$3,$4,$5,$6);',
+      values:[ev.source.userId,profile.displayName,selectedDate,startTimestamp,endTimestamp,orderedMenu]
+    };
+    connection.query(insertQuery)
+    .then(res=>{
+      console.log('データ格納成功！');
+      client.replyMessage(ev.replyToken,{
+        "type":"text",
+        "text":"予約が完了しました。"
+      });
+    })
+    .catch(e=>console.log(e));
+  }else if(splitData[0] === 'no'){
+    // あとで何か入れる
+  }else if(splitData[0] === 'delete'){
+    const id = parseInt(splitData[1]);
+    const deleteQuery = {
+      text:'DELETE FROM reservations WHERE id = $1;',
+      values:[`${id}`]
+    };
+    connection.query(deleteQuery)
+    .then(res=>{
+      console.log('予約キャンセル成功');
+      client.replyMessage(ev.replyToken,{
+        "type":"text",
+        "text":"予約をキャンセルしました。"
+      });
+    })
+    .catch(e=>console.log(e));
+  }
 }
 
 //orderChoice関数(「予約する」処理。Flex Message表示)
@@ -349,111 +429,179 @@ const orderChoice = (ev) => {
         }
   });
 }
-
-//checkNextReservation関数(未来の予約があるかどうかを確認)
-const checkNextReservation = (ev) => {
-  return new Promise((resolve,reject)=>{
-    const id = ev.source.userId;
-    const nowTime = new Date().getTime();
-    
-    const selectQuery = {
-      text: 'SELECT * FROM reservations WHERE line_uid = $1 ORDER BY starttime ASC;',
-      values: [`${id}`]
-    };
-    
-    connection.query(selectQuery)
-      .then(res=>{
-        if(res.rows.length){
-          const nextReservation = res.rows.filter(object=>{
-            return parseInt(object.starttime) >= nowTime;
-          });
-          console.log('nextReservation:',nextReservation);
-          resolve(nextReservation);
-        }else{
-          resolve();
+//otherChoice関数(「他のメニューを聞く」処理。Flex Message表示)
+const otherChoice = (ev,orderedMenu) => {
+  return client.replyMessage(ev.replyToken,{
+      "type":"flex",
+      "altText":"menuSelect",
+      "contents":
+      {
+          "type": "bubble",
+          "header": {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+              {
+                "type": "text",
+                "text": "他にご希望はありますか？",
+                "size": "lg",
+                "align": "center"
+              }
+            ]
+          },
+          "hero": {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+              {
+                "type": "text",
+                "text": "選択中：",
+                "size": "md",
+                "align": "center"
+              },
+              {
+                "type": "separator"
+              }
+            ]
+          },
+          "body": {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+              {
+                "type": "box",
+                "layout": "horizontal",
+                "contents": [
+                  {
+                    "type": "button",
+                    "action": {
+                      "type": "postback",
+                      "label": "カット",
+                      "data": "menu&0"
+                    },
+                    "margin": "md",
+                    "style": "primary",
+                    "color": "#999999"
+                  },
+                  {
+                    "type": "button",
+                    "action": {
+                      "type": "postback",
+                      "label": "シャンプー",
+                      "data": "menu&1"
+                    },
+                    "margin": "md",
+                    "style": "primary",
+                    "color": "#999999"
+                  }
+                ],
+                "margin": "md"
+              },
+              {
+                "type": "box",
+                "layout": "horizontal",
+                "contents": [
+                  {
+                    "type": "button",
+                    "action": {
+                      "type": "postback",
+                      "label": "カラーリング",
+                      "data": "menu&2"
+                    },
+                    "margin": "md",
+                    "style": "primary",
+                    "color": "#999999"
+                  },
+                  {
+                    "type": "button",
+                    "action": {
+                      "type": "postback",
+                      "label": "ヘッドスパ",
+                      "data": "menu&3"
+                    },
+                    "margin": "md",
+                    "style": "primary",
+                    "color": "#999999"
+                  }
+                ],
+                "margin": "md"
+              },
+              {
+                "type": "box",
+                "layout": "horizontal",
+                "contents": [
+                  {
+                    "type": "button",
+                    "action": {
+                      "type": "postback",
+                      "label": "マッサージ＆スパ",
+                      "data": "menu&4"
+                    },
+                    "margin": "md",
+                    "style": "primary",
+                    "color": "#999999"
+                  },
+                  {
+                    "type": "button",
+                    "action": {
+                      "type": "postback",
+                      "label": "顔そり",
+                      "data": "menu&5"
+                    },
+                    "margin": "md",
+                    "style": "primary",
+                    "color": "#999999"
+                  }
+                ],
+                "margin": "md"
+              },
+              {
+                "type": "box",
+                "layout": "horizontal",
+                "contents": [
+                  {
+                    "type": "button",
+                    "action": {
+                      "type": "postback",
+                      "label": "眉整え",
+                      "data": "menu&6"
+                    },
+                    "margin": "md",
+                    "style": "primary",
+                    "color": "#999999"
+                  },
+                  {
+                    "type": "button",
+                    "action": {
+                      "type": "postback",
+                      "label": "選択終了",
+                      "data": "end"
+                    },
+                    "margin": "md",
+                    "style": "primary",
+                    "color": "#0000ff"
+                  }
+                ],
+                "margin": "md"
+              }
+            ]
+          },
+          "footer": {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+              {
+                "type": "button",
+                "action": {
+                  "type": "postback",
+                  "data": "cancel",
+                  "label": "キャンセル"
+                }
+              }
+            ]
+          }
         }
-      })
-      .catch(e=>console.log(e));
   });
- }
-
-//greeting_follow関数(友達登録時の処理)
-const greeting_follow = async (ev) => {
-    const profile = await client.getProfile(ev.source.userId);
-
-    const table_insert = {
-        text:'INSERT INTO users (line_uid,display_name,timestamp,cuttime,shampootime,colortime,spatime) VALUES($1,$2,$3,$4,$5,$6,$7);',
-        values:[ev.source.userId,profile.displayName,ev.timestamp,INITIAL_TREAT[0],INITIAL_TREAT[1],INITIAL_TREAT[2],INITIAL_TREAT[3]]   
-    };
-    connection.query(table_insert)
-    .then(()=>{
-        console.log('insert successfully!!')
-    })
-    .catch(e=>console.log(e));
-   
-    return client.replyMessage(ev.replyToken,{
-        "type":"text",
-        "text":`${profile.displayName}さん、フォローありがとうございます\uDBC0\uDC04`
-    });
-}
-
-//handlePostbackEvent()
-const handlePostbackEvent = async (ev) => {
-    console.log('postback ev:',ev);
-    const profile = await client.getProfile(ev.source.userId);
-    const data = ev.postback.data;
-    const splitData = data.split('&');
-
-    if(splitData[0] === 'menu'){
-        const orderedMenu = splitData[1];
-        askDate(ev,orderedMenu);
-    }else if(splitData[0] === 'date'){
-        const orderedMenu = splitData[1];
-        const selectedDate = ev.postback.params.date;
-        askTime(ev,orderedMenu,selectedDate);
-    }else if(splitData[0] === 'time'){
-        const orderedMenu = splitData[1];
-        const selectedDate = splitData[2];
-        const selectedTime = splitData[3];
-        confirmation(ev,orderedMenu,selectedDate,selectedTime);
-    }else if(splitData[0] === 'yes'){
-      const orderedMenu = splitData[1];
-      const selectedDate = splitData[2];
-      const selectedTime = splitData[3];
-      const startTimestamp = timeConversion(selectedDate,selectedTime);
-      const treatTime = await calcTreatTime(ev.source.userId,orderedMenu);
-      const endTimestamp = startTimestamp + treatTime*60*1000;
-      const insertQuery = {
-        text:'INSERT INTO reservations (line_uid, name, scheduledate, starttime, endtime, menu) VALUES($1,$2,$3,$4,$5,$6);',
-        values:[ev.source.userId,profile.displayName,selectedDate,startTimestamp,endTimestamp,orderedMenu]
-      };
-      connection.query(insertQuery)
-      .then(res=>{
-        console.log('データ格納成功！');
-        client.replyMessage(ev.replyToken,{
-          "type":"text",
-          "text":"予約が完了しました。"
-        });
-      })
-      .catch(e=>console.log(e));
-    }else if(splitData[0] === 'no'){
-      // あとで何か入れる
-    }else if(splitData[0] === 'delete'){
-      const id = parseInt(splitData[1]);
-      const deleteQuery = {
-        text:'DELETE FROM reservations WHERE id = $1;',
-        values:[`${id}`]
-      };
-      connection.query(deleteQuery)
-      .then(res=>{
-        console.log('予約キャンセル成功');
-        client.replyMessage(ev.replyToken,{
-          "type":"text",
-          "text":"予約をキャンセルしました。"
-        });
-      })
-      .catch(e=>console.log(e));
-    }
 }
 
 //askDate()
@@ -686,6 +834,33 @@ const askTime = (ev,orderedMenu,selectedDate) => {
             }
           }       
     });
+ }
+
+ //checkNextReservation関数(未来の予約があるかどうかを確認)
+const checkNextReservation = (ev) => {
+  return new Promise((resolve,reject)=>{
+    const id = ev.source.userId;
+    const nowTime = new Date().getTime();
+    
+    const selectQuery = {
+      text: 'SELECT * FROM reservations WHERE line_uid = $1 ORDER BY starttime ASC;',
+      values: [`${id}`]
+    };
+    
+    connection.query(selectQuery)
+      .then(res=>{
+        if(res.rows.length){
+          const nextReservation = res.rows.filter(object=>{
+            return parseInt(object.starttime) >= nowTime;
+          });
+          console.log('nextReservation:',nextReservation);
+          resolve(nextReservation);
+        }else{
+          resolve();
+        }
+      })
+      .catch(e=>console.log(e));
+  });
  }
 
 //confirmation()予約確認をリプライする
