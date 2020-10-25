@@ -205,7 +205,6 @@ const handlePostbackEvent = async (ev) => {
   if(splitData[0] === 'menu'){
       const orderedMenu = splitData[1];
       otherChoice(ev,orderedMenu);
-      //askDate(ev,orderedMenu);
   }else if(splitData[0] === 'end'){
     const orderedMenu = splitData[1];
     askDate(ev,orderedMenu);
@@ -255,8 +254,7 @@ const handlePostbackEvent = async (ev) => {
       });
     })
     .catch(e=>console.log(e));
-  }
-  else if(splitData[0] === 'cancel'){
+  }else if(splitData[0] === 'cancel'){
     return client.replyMessage(ev.replyToken,{
       "type":"text",
       "text":`終了します。`
