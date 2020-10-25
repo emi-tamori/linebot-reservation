@@ -206,6 +206,9 @@ const handlePostbackEvent = async (ev) => {
       const orderedMenu = splitData[1];
       otherChoice(ev,orderedMenu);
       //askDate(ev,orderedMenu);
+  }else if(splitData[0] === 'cancel'){
+    const orderedMenu = splitData[1];
+    askDate(ev,orderedMenu);
   }else if(splitData[0] === 'date'){
       const orderedMenu = splitData[1];
       const selectedDate = ev.postback.params.date;
@@ -281,7 +284,7 @@ const orderChoice = (ev) => {
             "contents": [
               {
                 "type": "text",
-                "text": "（１つのみ選択してください）",
+                "text": "（複数選択可能です）",
                 "size": "md",
                 "align": "center"
               },
