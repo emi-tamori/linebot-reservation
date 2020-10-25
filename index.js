@@ -455,7 +455,7 @@ const otherChoice = (ev,orderedMenu) => {
             "contents": [
               {
                 "type": "text",
-                "text": `選択中：${orderedMenu}`,
+                "text": `選択中：${Menu[orderedMenu]}`,
                 "size": "md",
                 "align": "center"
               },
@@ -604,7 +604,7 @@ const otherChoice = (ev,orderedMenu) => {
   });
 }
 
-//askDate()
+//askDate関数（「予約日を聞く」処理）
 const askDate = (ev,orderedMenu) => {
 
     return client.replyMessage(ev.replyToken,{
@@ -644,7 +644,7 @@ const askDate = (ev,orderedMenu) => {
     });
 }
 
-//askTime()
+//askTime関数（「時間を聞く」処理）
 const askTime = (ev,orderedMenu,selectedDate) => {
     return client.replyMessage(ev.replyToken,{
         "type":"flex",
