@@ -204,10 +204,10 @@ const handlePostbackEvent = async (ev) => {
 
   if(splitData[0] === 'menu'){
       const orderedMenu = splitData[1];
-      otherChoice(ev,orderedMenu);
+      orderChoice(ev,orderedMenu);
   }else if(splitData[0] === 'end'){
-    const orderedMenu = splitData[1];
-    askDate(ev,orderedMenu);
+      const orderedMenu = splitData[1];
+      askDate(ev,orderedMenu);
   }else if(splitData[0] === 'date'){
       const orderedMenu = splitData[1];
       const selectedDate = ev.postback.params.date;
@@ -263,7 +263,7 @@ const handlePostbackEvent = async (ev) => {
 }
 
 //orderChoice関数(「予約する」処理。Flex Message表示)
-const orderChoice = (ev) => {
+const orderChoice = (ev,orderedMenu) => {
   return client.replyMessage(ev.replyToken,{
       "type":"flex",
       "altText":"menuSelect",
@@ -310,7 +310,7 @@ const orderChoice = (ev) => {
                     "action": {
                       "type": "postback",
                       "label": "カット",
-                      "data": "menu&0"
+                      "data": `menu&${orderedMenu}%0`
                     },
                     "margin": "md",
                     "style": "primary",
@@ -321,7 +321,7 @@ const orderChoice = (ev) => {
                     "action": {
                       "type": "postback",
                       "label": "シャンプー",
-                      "data": "menu&1"
+                      "data": `menu&${orderedMenu}%1`
                     },
                     "margin": "md",
                     "style": "primary",
@@ -339,7 +339,7 @@ const orderChoice = (ev) => {
                     "action": {
                       "type": "postback",
                       "label": "カラーリング",
-                      "data": "menu&2"
+                      "data": `menu&${orderedMenu}%2`
                     },
                     "margin": "md",
                     "style": "primary",
@@ -350,7 +350,7 @@ const orderChoice = (ev) => {
                     "action": {
                       "type": "postback",
                       "label": "ヘッドスパ",
-                      "data": "menu&3"
+                      "data": `menu&${orderedMenu}%3`
                     },
                     "margin": "md",
                     "style": "primary",
@@ -368,7 +368,7 @@ const orderChoice = (ev) => {
                     "action": {
                       "type": "postback",
                       "label": "マッサージ＆スパ",
-                      "data": "menu&4"
+                      "data": `menu&${orderedMenu}%4`
                     },
                     "margin": "md",
                     "style": "primary",
@@ -379,7 +379,7 @@ const orderChoice = (ev) => {
                     "action": {
                       "type": "postback",
                       "label": "顔そり",
-                      "data": "menu&5"
+                      "data": `menu&${orderedMenu}%5`
                     },
                     "margin": "md",
                     "style": "primary",
@@ -397,7 +397,7 @@ const orderChoice = (ev) => {
                     "action": {
                       "type": "postback",
                       "label": "眉整え",
-                      "data": "menu&6"
+                      "data": `menu&${orderedMenu}%6`
                     },
                     "margin": "md",
                     "style": "primary",
@@ -408,181 +408,7 @@ const orderChoice = (ev) => {
                     "action": {
                       "type": "postback",
                       "label": "選択終了",
-                      "data": "end"
-                    },
-                    "margin": "md",
-                    "style": "primary",
-                    "color": "#0000ff"
-                  }
-                ],
-                "margin": "md"
-              }
-            ]
-          },
-          "footer": {
-            "type": "box",
-            "layout": "vertical",
-            "contents": [
-              {
-                "type": "button",
-                "action": {
-                  "type": "postback",
-                  "data": "cancel",
-                  "label": "キャンセル"
-                }
-              }
-            ]
-          }
-        }
-  });
-}
-//otherChoice関数(「他のメニューを聞く」処理。Flex Message表示)
-const otherChoice = (ev,orderedMenu) => {
-  return client.replyMessage(ev.replyToken,{
-      "type":"flex",
-      "altText":"menuSelect",
-      "contents":
-      {
-          "type": "bubble",
-          "header": {
-            "type": "box",
-            "layout": "vertical",
-            "contents": [
-              {
-                "type": "text",
-                "text": "他にご希望はありますか？",
-                "size": "lg",
-                "align": "center"
-              }
-            ]
-          },
-          "hero": {
-            "type": "box",
-            "layout": "vertical",
-            "contents": [
-              {
-                "type": "text",
-                "text": `選択中：${orderedMenu}`,
-                "size": "md",
-                "align": "center"
-              },
-              {
-                "type": "separator"
-              }
-            ]
-          },
-          "body": {
-            "type": "box",
-            "layout": "vertical",
-            "contents": [
-              {
-                "type": "box",
-                "layout": "horizontal",
-                "contents": [
-                  {
-                    "type": "button",
-                    "action": {
-                      "type": "postback",
-                      "label": "カット",
-                      "data": "menu&0"
-                    },
-                    "margin": "md",
-                    "style": "primary",
-                    "color": "#999999"
-                  },
-                  {
-                    "type": "button",
-                    "action": {
-                      "type": "postback",
-                      "label": "シャンプー",
-                      "data": "menu&1"
-                    },
-                    "margin": "md",
-                    "style": "primary",
-                    "color": "#999999"
-                  }
-                ],
-                "margin": "md"
-              },
-              {
-                "type": "box",
-                "layout": "horizontal",
-                "contents": [
-                  {
-                    "type": "button",
-                    "action": {
-                      "type": "postback",
-                      "label": "カラーリング",
-                      "data": "menu&2"
-                    },
-                    "margin": "md",
-                    "style": "primary",
-                    "color": "#999999"
-                  },
-                  {
-                    "type": "button",
-                    "action": {
-                      "type": "postback",
-                      "label": "ヘッドスパ",
-                      "data": "menu&3"
-                    },
-                    "margin": "md",
-                    "style": "primary",
-                    "color": "#999999"
-                  }
-                ],
-                "margin": "md"
-              },
-              {
-                "type": "box",
-                "layout": "horizontal",
-                "contents": [
-                  {
-                    "type": "button",
-                    "action": {
-                      "type": "postback",
-                      "label": "マッサージ＆スパ",
-                      "data": "menu&4"
-                    },
-                    "margin": "md",
-                    "style": "primary",
-                    "color": "#999999"
-                  },
-                  {
-                    "type": "button",
-                    "action": {
-                      "type": "postback",
-                      "label": "顔そり",
-                      "data": "menu&5"
-                    },
-                    "margin": "md",
-                    "style": "primary",
-                    "color": "#999999"
-                  }
-                ],
-                "margin": "md"
-              },
-              {
-                "type": "box",
-                "layout": "horizontal",
-                "contents": [
-                  {
-                    "type": "button",
-                    "action": {
-                      "type": "postback",
-                      "label": "眉整え",
-                      "data": "menu&6"
-                    },
-                    "margin": "md",
-                    "style": "primary",
-                    "color": "#999999"
-                  },
-                  {
-                    "type": "button",
-                    "action": {
-                      "type": "postback",
-                      "label": "選択終了",
-                      "data": "end"
+                      "data": `end&${orderedMenu}`
                     },
                     "margin": "md",
                     "style": "primary",
