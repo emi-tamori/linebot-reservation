@@ -263,7 +263,7 @@ const handlePostbackEvent = async (ev) => {
 }
 
 //orderChoice関数(「予約する」でメニューを聞く処理。Flex Message表示)
-const orderChoice = (ev,orderedMenu) => {
+const orderChoice = (ev) => {
   return client.replyMessage(ev.replyToken,{
       "type":"flex",
       "altText":"menuSelect",
