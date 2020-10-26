@@ -263,7 +263,7 @@ const handlePostbackEvent = async (ev) => {
 }
 
 //orderChoice関数(「予約する」処理。Flex Message表示)
-const orderChoice = (ev,orderedMenu) => {
+const orderChoice = (ev) => {
   return client.replyMessage(ev.replyToken,{
       "type":"flex",
       "altText":"menuSelect",
@@ -310,7 +310,7 @@ const orderChoice = (ev,orderedMenu) => {
                     "action": {
                       "type": "postback",
                       "label": "カット",
-                      "data": `menu&${orderedMenu}%0`
+                      "data": `menu&0`
                     },
                     "margin": "md",
                     "style": "primary",
@@ -321,7 +321,7 @@ const orderChoice = (ev,orderedMenu) => {
                     "action": {
                       "type": "postback",
                       "label": "シャンプー",
-                      "data": `menu&${orderedMenu}%1`
+                      "data": `menu&1`
                     },
                     "margin": "md",
                     "style": "primary",
