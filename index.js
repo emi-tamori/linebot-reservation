@@ -675,11 +675,14 @@ const checkNextReservation = (ev) => {
     const id = ev.source.userId;
     const nowTime = new Date().getTime();
     
+    //const selectQuery = {
+      //text: 'SELECT * FROM reservations WHERE line_uid = $1 ORDER BY starttime ASC;',
+      //values: [`${id}`]
+    //};
     const selectQuery = {
-      text: 'SELECT * FROM reservations WHERE line_uid = $1 ORDER BY starttime ASC;',
+      text: 'SELECT * FROM reservations WHERE line_uid = $1;',
       values: [`${id}`]
-    };
-    
+      };
     connection.query(selectQuery)
       .then(res=>{
         if(res.rows.length){
