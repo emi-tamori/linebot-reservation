@@ -670,35 +670,34 @@ const askTime = (ev,orderedMenu,selectedDate) => {
  }
 
  //checkNextReservation関数(未来の予約があるかどうかを確認)
-const checkNextReservation = (ev) => {
+ const checkNextReservation = (ev) => {
   return new Promise((resolve,reject)=>{
     const id = ev.source.userId;
     const nowTime = new Date().getTime();
-    
-    //const selectQuery = {
-      //text: 'SELECT * FROM reservations WHERE line_uid = $1 ORDER BY starttime ASC;',
-      //values: [`${id}`]
-    //};
+    console.log('nowTime:',nowTime);
+
     const selectQuery = {
-      text: 'SELECT * FROM reservations WHERE line_uid = $1;',
-      values: [`${id}`]
-      };
+      text:'SELECT * FROM reservations;'
+    };
     connection.query(selectQuery)
       .then(res=>{
-        console.log('res.rows:', res.rows);
+        console.log('res.rows:',res.rows);
         if(res.rows.length){
-          const nextReservation = res.rows.filter(object=>{
-            return parseInt(object.starttime) >= nowTime;
+          const nextReservation = res.rows.filter(object1=>{
+            return object1.line_uid === id;
+          })
+          .filter(object2=>{
+            return parseInt(object2.starttime) >= nowTime;
           });
           console.log('nextReservation:',nextReservation);
           resolve(nextReservation);
         }else{
-          resolve();
+          resolve([]);
         }
       })
       .catch(e=>console.log(e));
   });
- }
+}
 
 //confirmation()予約確認をリプライする
 const confirmation = (ev,menu,date,time) => {
