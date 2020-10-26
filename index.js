@@ -700,11 +700,11 @@ const confirmation = (ev,menu,date,time) => {
     //予約日を数値へ変換
     const reservationDayTime = new Date(`${date} ${selectedTime-9}:00`).getTime();
     //予約日の曜日を取得
-    const week = new Date(reservationDayTime).getDay();
-    console.log("week = " + week);
-    const dayName = WEEK[week];
-    console.log("dayName = " + dayName);
+    const week = new Date(splitDate);
+    const day = week.getDay();
+    const dayName = WEEK[day];
 
+    
     if(reservationDayTime < present){
       console.log("過去です");
       return client.replyMessage(ev.replyToken,{
@@ -717,11 +717,11 @@ const confirmation = (ev,menu,date,time) => {
         "type":"text",
         "text":`２ヶ月以上先の日にちは指定できません\uDBC0\uDC1B`
     });
-    }else if(dayName == HOLIDAY[0]){
-      console.log(HOLIDAY[0] + "は定休日です");
+    }else if(dayName == HOLIDAY){
+      console.log(HOLIDAY + "は定休日です");
       return client.replyMessage(ev.replyToken,{
         "type":"text",
-        "text":`申し訳ございません。${HOLIDAY[0]}曜日 は定休日です。\uDBC0\uDC1B`
+        "text":`申し訳ございません。${HOLIDAY}曜日 は定休日です。\uDBC0\uDC1B`
     });
     }else{
       console.log("予約OKです");
@@ -812,7 +812,3 @@ const calcTreatTime = (id,menu) => {
       .catch(e=>console.log(e));
   });
  }
-
-
-
-
