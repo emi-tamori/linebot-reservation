@@ -685,6 +685,7 @@ const checkNextReservation = (ev) => {
       };
     connection.query(selectQuery)
       .then(res=>{
+        console.log('res.rows:', res.rows);
         if(res.rows.length){
           const nextReservation = res.rows.filter(object=>{
             return parseInt(object.starttime) >= nowTime;
