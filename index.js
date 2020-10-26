@@ -204,7 +204,7 @@ const handlePostbackEvent = async (ev) => {
 
   if(splitData[0] === 'menu'){
       const orderedMenu = splitData[1];
-      orderChoice(ev,orderedMenu);
+      otherChoice(ev,orderedMenu);
   }else if(splitData[0] === 'end'){
       const orderedMenu = splitData[1];
       askDate(ev,orderedMenu);
@@ -263,7 +263,7 @@ const handlePostbackEvent = async (ev) => {
 }
 
 //orderChoice関数(「予約する」処理。Flex Message表示)
-const orderChoice = (ev,orderedMenu) => {
+const orderChoice = (ev) => {
   return client.replyMessage(ev.replyToken,{
       "type":"flex",
       "altText":"menuSelect",
@@ -289,6 +289,181 @@ const orderChoice = (ev,orderedMenu) => {
               {
                 "type": "text",
                 "text": "（複数選択可能です）",
+                "size": "md",
+                "align": "center"
+              },
+              {
+                "type": "separator"
+              }
+            ]
+          },
+          "body": {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+              {
+                "type": "box",
+                "layout": "horizontal",
+                "contents": [
+                  {
+                    "type": "button",
+                    "action": {
+                      "type": "postback",
+                      "label": "カット",
+                      "data": `menu&0`
+                    },
+                    "margin": "md",
+                    "style": "primary",
+                    "color": "#999999"
+                  },
+                  {
+                    "type": "button",
+                    "action": {
+                      "type": "postback",
+                      "label": "シャンプー",
+                      "data": `menu&1`
+                    },
+                    "margin": "md",
+                    "style": "primary",
+                    "color": "#999999"
+                  }
+                ],
+                "margin": "md"
+              },
+              {
+                "type": "box",
+                "layout": "horizontal",
+                "contents": [
+                  {
+                    "type": "button",
+                    "action": {
+                      "type": "postback",
+                      "label": "カラーリング",
+                      "data": `menu&2`
+                    },
+                    "margin": "md",
+                    "style": "primary",
+                    "color": "#999999"
+                  },
+                  {
+                    "type": "button",
+                    "action": {
+                      "type": "postback",
+                      "label": "ヘッドスパ",
+                      "data": `menu&3`
+                    },
+                    "margin": "md",
+                    "style": "primary",
+                    "color": "#999999"
+                  }
+                ],
+                "margin": "md"
+              },
+              {
+                "type": "box",
+                "layout": "horizontal",
+                "contents": [
+                  {
+                    "type": "button",
+                    "action": {
+                      "type": "postback",
+                      "label": "マッサージ＆スパ",
+                      "data": `menu&4`
+                    },
+                    "margin": "md",
+                    "style": "primary",
+                    "color": "#999999"
+                  },
+                  {
+                    "type": "button",
+                    "action": {
+                      "type": "postback",
+                      "label": "顔そり",
+                      "data": `menu&5`
+                    },
+                    "margin": "md",
+                    "style": "primary",
+                    "color": "#999999"
+                  }
+                ],
+                "margin": "md"
+              },
+              {
+                "type": "box",
+                "layout": "horizontal",
+                "contents": [
+                  {
+                    "type": "button",
+                    "action": {
+                      "type": "postback",
+                      "label": "眉整え",
+                      "data": `menu&6`
+                    },
+                    "margin": "md",
+                    "style": "primary",
+                    "color": "#999999"
+                  },
+                  {
+                    "type": "button",
+                    "action": {
+                      "type": "postback",
+                      "label": "選択終了",
+                      "data": `end`
+                    },
+                    "margin": "md",
+                    "style": "primary",
+                    "color": "#0000ff"
+                  }
+                ],
+                "margin": "md"
+              }
+            ]
+          },
+          "footer": {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+              {
+                "type": "button",
+                "action": {
+                  "type": "postback",
+                  "data": "cancel",
+                  "label": "キャンセル"
+                }
+              }
+            ]
+          }
+        }
+  });
+}
+
+//otherChoice関数(「他のメニューを予約する」処理。Flex Message表示)
+const otherChoice = (ev,orderedMenu) => {
+  return client.replyMessage(ev.replyToken,{
+      "type":"flex",
+      "altText":"menuSelect",
+      "contents":
+      {
+          "type": "bubble",
+          "header": {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+              {
+                "type": "text",
+                "text": "他に選択はありますか？",
+                "size": "lg",
+                "align": "center"
+              }
+            ]
+          },
+          "hero": {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+              {
+                "type": "text",
+                "text": `選択中：${orderedMenu}`,
                 "size": "md",
                 "align": "center"
               },
