@@ -339,7 +339,7 @@ const orderChoice = (ev) => {
                     "action": {
                       "type": "postback",
                       "label": "カラーリング",
-                      "data": `menu&${orderedMenu}%2`
+                      "data": `menu&2`
                     },
                     "margin": "md",
                     "style": "primary",
@@ -350,7 +350,7 @@ const orderChoice = (ev) => {
                     "action": {
                       "type": "postback",
                       "label": "ヘッドスパ",
-                      "data": `menu&${orderedMenu}%3`
+                      "data": `menu&3`
                     },
                     "margin": "md",
                     "style": "primary",
@@ -368,7 +368,7 @@ const orderChoice = (ev) => {
                     "action": {
                       "type": "postback",
                       "label": "マッサージ＆スパ",
-                      "data": `menu&${orderedMenu}%4`
+                      "data": `menu&4`
                     },
                     "margin": "md",
                     "style": "primary",
@@ -379,7 +379,7 @@ const orderChoice = (ev) => {
                     "action": {
                       "type": "postback",
                       "label": "顔そり",
-                      "data": `menu&${orderedMenu}%5`
+                      "data": `menu&5`
                     },
                     "margin": "md",
                     "style": "primary",
@@ -397,7 +397,7 @@ const orderChoice = (ev) => {
                     "action": {
                       "type": "postback",
                       "label": "眉整え",
-                      "data": `menu&${orderedMenu}%6`
+                      "data": `menu&6`
                     },
                     "margin": "md",
                     "style": "primary",
@@ -408,7 +408,7 @@ const orderChoice = (ev) => {
                     "action": {
                       "type": "postback",
                       "label": "選択終了",
-                      "data": `end&${orderedMenu}`
+                      "data": `end`
                     },
                     "margin": "md",
                     "style": "primary",
