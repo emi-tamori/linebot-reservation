@@ -463,7 +463,7 @@ const otherChoice = (ev,orderedMenu) => {
             "contents": [
               {
                 "type": "text",
-                "text": "選択中：${orderedMenu}）",
+                "text": `選択中：${orderedMenu}`,
                 "size": "md",
                 "align": "center"
               },
