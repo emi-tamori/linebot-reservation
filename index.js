@@ -440,7 +440,7 @@ const orderChoice = (ev) => {
 //otherChoice関数(「他のメニューを予約する」処理。Flex Message表示)
 const otherChoice = (ev,orderedMenu) => {
   const splitData = orderedMenu.split('%');
-  console.log("splitData = "+splitData);
+  console.log(splitData);
   return client.replyMessage(ev.replyToken,{
       "type":"flex",
       "altText":"menuSelect",
