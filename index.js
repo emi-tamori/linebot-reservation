@@ -204,6 +204,7 @@ const handlePostbackEvent = async (ev) => {
 
   if(splitData[0] === 'menu'){
       const orderedMenu = splitData[1];
+      const splitMenu = splitData.split('%');//new
       otherChoice(ev,orderedMenu);
   }else if(splitData[0] === 'end'){
       const orderedMenu = splitData[1];
@@ -463,7 +464,7 @@ const otherChoice = (ev,orderedMenu) => {
             "contents": [
               {
                 "type": "text",
-                "text": `選択中：${MENU[orderedMenu]}`,
+                "text": `選択中：${MENU[orderedMenu],MENU[splitMenu]}`,
                 "size": "md",
                 "align": "center"
               },
