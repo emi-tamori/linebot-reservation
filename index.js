@@ -439,6 +439,8 @@ const orderChoice = (ev) => {
 
 //otherChoice関数(「他のメニューを予約する」処理。Flex Message表示)
 const otherChoice = (ev,orderedMenu) => {
+  const menu = MENU[parseInt(nextReservation[0].menu)];
+  console.log("menu = " + menu);
   return client.replyMessage(ev.replyToken,{
       "type":"flex",
       "altText":"menuSelect",
