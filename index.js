@@ -463,7 +463,7 @@ const otherChoice = (ev,orderedMenu) => {
             "contents": [
               {
                 "type": "text",
-                "text": `選択中：${orderedMenu}`,
+                "text": `選択中：${MENU[orderedMenu]}`,
                 "size": "md",
                 "align": "center"
               },
@@ -611,7 +611,6 @@ const otherChoice = (ev,orderedMenu) => {
         }
   });
 }
-
 
 //askDate関数（「予約日を聞く」処理）
 const askDate = (ev,orderedMenu) => {
