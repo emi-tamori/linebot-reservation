@@ -442,14 +442,15 @@ const otherChoice = (ev,orderedMenu) => {
 
   
   const splitData = orderedMenu.split('%');
-  console.log(splitData);
+  //console.log(splitData);
 
   var arr = [splitData];
-
+  
   arr.forEach(function(value, index, array) {
     console.log(value);
-    //arr.push(splitData);
-    //console.log(arr);
+    const menuValue = MENU[value];
+    arr.push(menuValue);
+    console.log(arr);
   });
 
   return client.replyMessage(ev.replyToken,{
