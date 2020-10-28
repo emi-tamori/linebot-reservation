@@ -446,30 +446,8 @@ const otherChoice = (ev,orderedMenu) => {
 
   var arr = [splitData];
   arr.forEach(function(value, index, array) {
-    console.log(value);
+    console.log(MENU[value]);
   });
-
-  //splitData.forEach(function(value) {
-    //console.log(value);
-    //console.log(MENU[value]);
-    //const menuArray = [];
-    //menuArray.push(MENU[value]);
-    //console.log(menuArray);
-  //});
-
-
-  //splitData.forEach(function (value) {
-    //console.log(value);
-    //const valueMenu = MENU[value];
-    //console.log(MENU[value]) ;
-    //console.log(valueMenu);
-    //return valueMenu;
-  //});
-
- 
-
-  
- 
 
   return client.replyMessage(ev.replyToken,{
       "type":"flex",
