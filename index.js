@@ -447,11 +447,15 @@ const otherChoice = (ev,orderedMenu) => {
       //console.log(value);
     //}
 
-  splitData.forEach(function(value) {
-    console.log(value);
-    var d = MENU[value];
-    console.log(d);
+  splitData.forEach(function( value, index, array ) {
+
+    array[index] = MENU[value];
+    //console.log(value);
+    //var d = MENU[value];
+    //console.log(d);
   });
+
+  console.log(splitData);
 
   return client.replyMessage(ev.replyToken,{
       "type":"flex",
