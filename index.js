@@ -439,22 +439,12 @@ const orderChoice = (ev) => {
 
 //otherChoice関数(「他のメニューを予約する」処理。Flex Message表示)
 const otherChoice = (ev,orderedMenu) => {
-
-  
   const splitData = orderedMenu.split('%');
     console.log(splitData);
-    //for(var i=0; i<splitData.length; i++){
-      //console.log(value);
-    //}
 
   splitData.forEach(function( value, index, array ) {
-
     array[index] = MENU[value];
-    //console.log(value);
-    //var d = MENU[value];
-    //console.log(d);
   });
-
   console.log(splitData);
 
   return client.replyMessage(ev.replyToken,{
