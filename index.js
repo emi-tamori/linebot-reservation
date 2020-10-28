@@ -449,7 +449,6 @@ const otherChoice = (ev,orderedMenu) => {
     const valueMenu = MENU[value];
     console.log(MENU[value]) ;
     console.log(valueMenu);
-    if()
   });
   
  
