@@ -446,7 +446,7 @@ const otherChoice = (ev,orderedMenu) => {
 
   var arr = [splitData];
   var len = arr.length;
-  console.log*(len);
+  console.log(len);
   arr.forEach(function(value, index, array) {
     console.log(value);
     
