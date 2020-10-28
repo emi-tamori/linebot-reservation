@@ -449,7 +449,8 @@ const otherChoice = (ev,orderedMenu) => {
   console.log(len);
   arr.forEach(function(value, index, array) {
     console.log(value);
-    console.log(len);
+    var len2 = arr.length;
+    console.log(len2);
     
   });
 
