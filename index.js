@@ -442,7 +442,7 @@ const otherChoice = (ev,orderedMenu) => {
 
   
   const splitData = orderedMenu.split('%');
-  //console.log(splitData);
+    console.log(splitData);
 
   splitData.forEach(function(value) {
     console.log(value);
