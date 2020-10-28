@@ -446,7 +446,9 @@ const otherChoice = (ev,orderedMenu) => {
 
   var arr = [splitData];
   arr.forEach(function(value, index, array) {
-    console.log(MENU[value]);
+    console.log(value);
+    arr.push(splitData);
+    console.log(arr);
   });
 
   return client.replyMessage(ev.replyToken,{
