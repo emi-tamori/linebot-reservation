@@ -443,6 +443,11 @@ const otherChoice = (ev,orderedMenu) => {
   
   const splitData = orderedMenu.split('%');
   console.log(splitData);
+
+  splitData.forEach(function(value){
+    console.log(value);
+  });
+
   return client.replyMessage(ev.replyToken,{
       "type":"flex",
       "altText":"menuSelect",
