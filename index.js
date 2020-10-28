@@ -445,12 +445,11 @@ const otherChoice = (ev,orderedMenu) => {
   //console.log(splitData);
 
   var arr = [splitData];
-  
+  var len = arr.length;
+  console.log*(len);
   arr.forEach(function(value, index, array) {
     console.log(value);
-    const menuValue = MENU[value];
-    arr.push(menuValue);
-    console.log(arr);
+    
   });
 
   return client.replyMessage(ev.replyToken,{
