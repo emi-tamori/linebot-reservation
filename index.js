@@ -444,9 +444,7 @@ const otherChoice = (ev,orderedMenu) => {
   const splitData = orderedMenu.split('%');
   console.log(splitData);
 
-  splitData.forEach(function(value){
-    console.log(index + '番目：' + value);
-  });
+ 
 
   return client.replyMessage(ev.replyToken,{
       "type":"flex",
