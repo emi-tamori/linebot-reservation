@@ -445,8 +445,7 @@ const otherChoice = (ev,orderedMenu) => {
   console.log(splitData);
 
   splitData.forEach(function(value){
-    console.log(value);
-    return value;
+    console.log(index + '番目：' + value);
   });
 
   return client.replyMessage(ev.replyToken,{
@@ -473,7 +472,7 @@ const otherChoice = (ev,orderedMenu) => {
             "contents": [
               {
                 "type": "text",
-                "text": `選択中：${value}`,
+                "text": `選択中：${MENU[splitData]}`,
                 "size": "md",
                 "align": "center"
               },
