@@ -444,13 +444,13 @@ const otherChoice = (ev,orderedMenu) => {
   const splitData = orderedMenu.split('%');
   //console.log(splitData);
 
-  for(var i=0; i<splitData.length; i++){
+  splitData.forEach(function(value) {
     console.log(value);
-  }
 
-  //splitData.forEach(function(value) {
-    //console.log(value);
-  //});
+    //for(var i=0; i<splitData.length; i++){
+      //console.log(value);
+    //}
+  });
 
   return client.replyMessage(ev.replyToken,{
       "type":"flex",
