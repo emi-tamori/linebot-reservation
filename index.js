@@ -444,13 +444,18 @@ const otherChoice = (ev,orderedMenu) => {
   const splitData = orderedMenu.split('%');
   //console.log(splitData);
 
-  splitData.forEach(function(value) {
+  var arr = [splitData];
+  arr.forEach(function(value, index, array) {
     console.log(value);
-    console.log(MENU[value]);
-    const menuArray = [];
-    menuArray.push(MENU[value]);
-    console.log(menuArray);
   });
+
+  //splitData.forEach(function(value) {
+    //console.log(value);
+    //console.log(MENU[value]);
+    //const menuArray = [];
+    //menuArray.push(MENU[value]);
+    //console.log(menuArray);
+  //});
 
 
   //splitData.forEach(function (value) {
