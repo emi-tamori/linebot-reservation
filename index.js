@@ -443,13 +443,14 @@ const otherChoice = (ev,orderedMenu) => {
   
   const splitData = orderedMenu.split('%');
     console.log(splitData);
-
-  splitData.forEach(function(value) {
-    console.log(value);
-
     //for(var i=0; i<splitData.length; i++){
       //console.log(value);
     //}
+
+  splitData.forEach(function(value) {
+    console.log(value);
+    var d = MENU[value];
+    console.log(d);
   });
 
   return client.replyMessage(ev.replyToken,{
