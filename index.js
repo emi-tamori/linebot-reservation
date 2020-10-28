@@ -442,9 +442,6 @@ const otherChoice = (ev,orderedMenu) => {
 
   
   const splitData = orderedMenu.split('%');
-  splitData.forEach(function(value)){
-    console.log(value);
-  }
   console.log(splitData);
   return client.replyMessage(ev.replyToken,{
       "type":"flex",
