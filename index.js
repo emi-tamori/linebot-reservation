@@ -481,7 +481,7 @@ const otherChoice = (ev,orderedMenu) => {
             "contents": [
               {
                 "type": "text",
-                "text": `選択中：${MENU[splitData]}`,
+                "text": `選択中：${splitData}`,
                 "size": "md",
                 "align": "center"
               },
