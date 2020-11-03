@@ -121,7 +121,7 @@ const handleMessageEvent = async (ev) => {
 
         return client.replyMessage(ev.replyToken,{
           "type":"text",
-          "text":`次回予約は${date}、${menu}でお取りしてます。変更の場合は予約キャンセル後改めて予約をお願いします。`
+          "text":`次回予約は${date}、${menuArray}でお取りしてます。変更の場合は予約キャンセル後改めて予約をお願いします。`
         });
       }else{
         orderChoice(ev);
