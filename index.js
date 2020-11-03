@@ -105,11 +105,11 @@ const handleMessageEvent = async (ev) => {
       if(nextReservation.length){
         const startTimestamp = nextReservation[0].starttime;
         const date = dateConversion(startTimestamp);
-        //const menu = MENU[parseInt(nextReservation[0].menu)];
+        const menu = MENU[parseInt(nextReservation[0].menu)];
         console.log("menu ="+ menu);
         console.log("nextReservation[0].menu = " + nextReservation[0].menu );
         const menuNumber = nextReservation[0].menu;
-        console.log("menuNumber" + menuNumber); 
+        console.log("menuNumber = " + menuNumber); 
 
         
 
