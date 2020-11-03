@@ -112,12 +112,11 @@ const handleMessageEvent = async (ev) => {
         console.log("menuNumbers = " + menuNumbers); 
         const menuArray = menuNumbers.split('%');
         console.log("menuArray = " + menuArray);
-        for(var i = 0; i < menuArray.length; i++){
-          console.log(arseInt(nextReservation[i].menu));
-        }
 
-       
-
+        menuArray.forEach(function( value, index, array ) {
+          array[index] = MENU[value];
+        });
+        console.log(splitData);
         
 
         return client.replyMessage(ev.replyToken,{
