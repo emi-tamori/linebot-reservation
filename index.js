@@ -112,6 +112,11 @@ const handleMessageEvent = async (ev) => {
         console.log("menuNumbers = " + menuNumbers); 
         const menuArray = menuNumbers.split('%');
         console.log("menuArray = " + menuArray);
+        for(var i = 0; i < menuArray.length; i++){
+          console.log(MENU[parseInt(nextReservation[i].menu)]);
+        }
+
+       
 
         
 
