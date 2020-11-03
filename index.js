@@ -130,7 +130,13 @@ const handleMessageEvent = async (ev) => {
       }else if(nextReservation.length){
           const startTimestamp = nextReservation[0].starttime;
         const date = dateConversion(startTimestamp);
-        const menu = MENU[parseInt(nextReservation[0].menu)];
+        //const menu = MENU[parseInt(nextReservation[0].menu)];
+        const orderedMenu = nextReservation[0].menu;
+        const menu = orderedMenu.split('%');
+        menu.forEach(function(value,index,array){
+          array[index] = MENU[value];
+        });
+        console.log("menu名 = " + menu);
         return client.replyMessage(ev.replyToken,{
         "type":"text",
         "text":`次回予約は${date}、${menu}でお取りしてます\uDBC0\uDC22`
