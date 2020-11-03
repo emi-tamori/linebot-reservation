@@ -110,10 +110,7 @@ const handleMessageEvent = async (ev) => {
         console.log("orderedMenu = " + orderedMenu);
         const splitMenuData = orderedMenu.split('%');
         console.log("splitMenuData = " + splitMenuData);
-        splitMenuData.forEach(function(value,index,array){
-          array[index] = MENU[value];
-        });
-        console.log(splitMenuData);
+        
         
 
 
