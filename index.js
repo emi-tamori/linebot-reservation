@@ -108,7 +108,7 @@ const handleMessageEvent = async (ev) => {
         const menu = MENU[parseInt(nextReservation[0].menu)];
         console.log("menu ="+ menu);
         console.log("nextReservation[0].menu = " + nextReservation[0].menu );
-        const menuItems[] = nextReservation[0].menu;
+        const menuItems = nextReservation[0].menu;
         console.log(menuItems); 
         
 
