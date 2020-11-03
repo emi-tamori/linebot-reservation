@@ -111,7 +111,7 @@ const handleMessageEvent = async (ev) => {
         console.log("nextReservation =" + nextReservation);
 
         for($i = 0; $i < nextReservation.length; i++){
-          console.log(nextReservation[i]);
+          console.log(nextReservation[i].menu);
         }
         return client.replyMessage(ev.replyToken,{
           "type":"text",
