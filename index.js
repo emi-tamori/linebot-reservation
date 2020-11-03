@@ -108,6 +108,8 @@ const handleMessageEvent = async (ev) => {
         //const menu = MENU[parseInt(nextReservation[0].menu)];
         const orderedMenu = nextReservation[0].menu;
         console.log("orderedMenu = " + orderedMenu);
+        const splitMenuData = orderedMenu.split('%');
+        console.log("splitMenuData = " + splitMenuData);
 
 
         return client.replyMessage(ev.replyToken,{
