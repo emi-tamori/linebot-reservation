@@ -108,18 +108,18 @@ const handleMessageEvent = async (ev) => {
         //const menu = MENU[parseInt(nextReservation[0].menu)];
         const orderedMenu = nextReservation[0].menu;
         console.log("orderedMenu = " + orderedMenu);
-        const splitMenuData = orderedMenu.split('%');
-        console.log("splitMenuData = " + splitMenuData);
-        splitMenuData.forEach(function(value,index,array){
+        const menu = orderedMenu.split('%');
+        console.log("menu = " + menu);
+        menu.forEach(function(value,index,array){
           array[index] = MENU[value];
         });
-        console.log(splitMenuData);
+        console.log(menu);
         
 
 
         return client.replyMessage(ev.replyToken,{
           "type":"text",
-          "text":`次回予約は${date}、${splitMenuData}でお取りしてます。変更の場合は予約キャンセル後改めて予約をお願いします。`
+          "text":`次回予約は${date}、${menu}でお取りしてます。変更の場合は予約キャンセル後改めて予約をお願いします。`
         });
       }else{
         orderChoice(ev);
