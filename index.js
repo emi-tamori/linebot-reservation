@@ -107,6 +107,7 @@ const handleMessageEvent = async (ev) => {
         const date = dateConversion(startTimestamp);
         const menu = MENU[parseInt(nextReservation[0].menu)];
         console.log("nextReservation[0]:"+ nextReservation[0]);
+        console.log("startTimestamp" + startTimestamp);
         console.log("menu:"+ menu);
         return client.replyMessage(ev.replyToken,{
           "type":"text",
