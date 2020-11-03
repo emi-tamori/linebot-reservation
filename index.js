@@ -113,7 +113,7 @@ const handleMessageEvent = async (ev) => {
         const menuArray = menuNumbers.split('%');
         console.log("menuArray = " + menuArray);
         for(var i = 0; i < menuArray.length; i++){
-          console.log(MENU[parseInt(nextReservation[i].menu)]);
+          console.log(arseInt(nextReservation[i].menu));
         }
 
        
