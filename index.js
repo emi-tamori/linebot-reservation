@@ -99,27 +99,20 @@ const handleMessageEvent = async (ev) => {
     console.log('ev:',ev);
     const profile = await client.getProfile(ev.source.userId);
     const text = (ev.message.type === 'text') ? ev.message.text : '';
-    //メニューを取得する
-    function menu (){
-      const startTimestamp = nextReservation[0].starttime;
-        const date = dateConversion(startTimestamp);
-        const orderedMenu = nextReservation[0].menu;
-        console.log("orderedMenu = " + orderedMenu);
-        const menuStrings = orderedMenu.split('%');
-        console.log("menuStrings = " + menuStrings);
-        menuStrings.forEach(function(value,index,array){
-          array[index] = MENU[value];
-        });
-        return menuStrings;
-    }
-    const menu = menu();
-
 
     if(text === '予約する'){
       const nextReservation = await checkNextReservation(ev);
       if(nextReservation.length){
-        
-        console.log(menuStrings);
+        const startTimestamp = nextReservation[0].starttime;
+        const date = dateConversion(startTimestamp);
+        const orderedMenu = nextReservation[0].menu;
+        //console.log("orderedMenu = " + orderedMenu);
+        const menu = orderedMenu.split('%');
+        console.log("menu = " + menu);
+        menu.forEach(function(value,index,array){
+          array[index] = MENU[value];
+        });
+        console.log(menu);
         return client.replyMessage(ev.replyToken,{
           "type":"text",
           "text":`次回予約は${date}、${menu}でお取りしてます。変更の場合は予約キャンセル後改めて予約をお願いします。`
