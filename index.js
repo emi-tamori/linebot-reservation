@@ -257,6 +257,10 @@ const handlePostbackEvent = async (ev) => {
     .catch(e=>console.log(e));
   }else if(splitData[0] === 'no'){
     // あとで何か入れる
+    return client.replyMessage(ev.replyToken,{
+      "type":"text",
+      "text":`終了します。`
+  });
   }else if(splitData[0] === 'delete'){
     const id = parseInt(splitData[1]);
     const deleteQuery = {
