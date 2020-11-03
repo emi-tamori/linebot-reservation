@@ -657,7 +657,7 @@ const askDate = (ev,orderedMenu) => {
               "contents": [
                 {
                   "type": "text",
-                  "text": `来店希望日を選んでください。<br>${HOLIDAY}曜日は定休日です`,
+                  "text": `来店希望日を選んでください。${HOLIDAY}曜日は定休日です`,
                   "size": "md",
                   "align": "center"
                 }
