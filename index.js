@@ -116,7 +116,7 @@ const handleMessageEvent = async (ev) => {
         menuArray.forEach(function( value, index, array ) {
           array[index] = MENU[value];
         });
-        console.log(splitData);
+        console.log(menuArray);
         
 
         return client.replyMessage(ev.replyToken,{
