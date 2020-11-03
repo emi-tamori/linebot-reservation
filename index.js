@@ -110,6 +110,14 @@ const handleMessageEvent = async (ev) => {
         console.log("orderedMenu = " + orderedMenu);
         const splitMenuData = orderedMenu.split('%');
         console.log("splitMenuData = " + splitMenuData);
+        let menuStrings = '';
+        splitMenuData.forEach((value,index)=>{
+          if(index === splitMenuData.length -1){
+            menuStrings += value;
+          }else{
+            menuStrings += value + ',';
+          }
+        });
 
 
         return client.replyMessage(ev.replyToken,{
