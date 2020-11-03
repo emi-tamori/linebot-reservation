@@ -108,10 +108,10 @@ const handleMessageEvent = async (ev) => {
         const menu = MENU[parseInt(nextReservation[0].menu)];
         console.log("menu ="+ menu);
         console.log("nextReservation[0].menu = " + nextReservation[0].menu );
-        const menuNumber = nextReservation[0].menu;
-        console.log("menuNumber = " + menuNumber); 
-        const result = menuNumber.split('%');
-        console.log("result = " + result);
+        const menuNumbers = nextReservation[0].menu;
+        console.log("menuNumbers = " + menuNumbers); 
+        const menuNumber = menuNumbers.split('%');
+        console.log("menuNumber = " + menuNumber);
 
         
 
