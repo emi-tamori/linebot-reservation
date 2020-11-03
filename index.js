@@ -108,11 +108,9 @@ const handleMessageEvent = async (ev) => {
         const menu = MENU[parseInt(nextReservation[0].menu)];
 
         console.log("menu ="+ menu);
-        console.log("nextReservation =" + nextReservation);
+        console.log("nextReservation =" + nextReservation[0]);
+        console.log("nextReservation =" + nextReservation[1]);
 
-        for($i = 0; $i < nextReservation.length; i++){
-          console.log(nextReservation[i].menu);
-        }
         return client.replyMessage(ev.replyToken,{
           "type":"text",
           "text":`次回予約は${date}、${menu}でお取りしてます。変更の場合は予約キャンセル後改めて予約をお願いします。`
