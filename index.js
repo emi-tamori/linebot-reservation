@@ -110,13 +110,16 @@ const handleMessageEvent = async (ev) => {
         console.log("orderedMenu = " + orderedMenu);
         const splitMenuData = orderedMenu.split('%');
         console.log("splitMenuData = " + splitMenuData);
-        
+        splitMenuData.forEach(function(value,index,array){
+          array[index] = MENU[value];
+        });
+        console.log(splitMenuData);
         
 
 
         return client.replyMessage(ev.replyToken,{
           "type":"text",
-          "text":`次回予約は${date}、${menuStrings}でお取りしてます。変更の場合は予約キャンセル後改めて予約をお願いします。`
+          "text":`次回予約は${date}、${splitMenuData}でお取りしてます。変更の場合は予約キャンセル後改めて予約をお願いします。`
         });
       }else{
         orderChoice(ev);
