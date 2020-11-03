@@ -110,7 +110,7 @@ const handleMessageEvent = async (ev) => {
         console.log("menu ="+ menu);
         console.log("nextReservation =" + nextReservation);
 
-        for($i = 0; $i , $i < nextReservation.length; i++){
+        for($i = 0; $i < nextReservation.length; i++){
           console.log(nextReservation[i]);
         }
         return client.replyMessage(ev.replyToken,{
