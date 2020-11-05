@@ -1035,7 +1035,8 @@ const calcTreatTime = (id,menu) => {
 //予約データを取り出す
 const checkAllReservation = (ev) => {
   return new Promise((resolve,reject)=>{
-    const nowTime = new Date().getTime();
+    //const nowTime = new Date().getTime();
+    const day = ev.postback.params.date;
 
     const selectQuery = {
       text:'SELECT * FROM reservations;'
@@ -1044,8 +1045,10 @@ const checkAllReservation = (ev) => {
     .then(res=>{
       if(res.rows.length){
         const alltReservation = res.rows.filter(object=>{
-          return parseInt(object.starttime) >= nowTime;
+          //return parseInt(object.starttime) >= nowTime;
+          return object.scheduledate === date;
         });
+        console.log('day = ' + day);
         console.log('allReservation:', alltReservation);
         resolve(alltReservation);
       }else{
