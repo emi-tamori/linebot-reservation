@@ -1030,6 +1030,21 @@ const calcTreatTime = (id,menu) => {
   });
  }
 
+//予約データを取り出す
+const checkAllReservation = (ev) => {
+  return new Promise((resolve,reject)=>{
+    const nowTime = new Date().getTime();
 
+    const selectQuery = {
+      text:'SELECT * FROM reservations;'
+    };
+    connection.query(selectQuery)
+    .then(res=>{
+      console.log(res.rows[0]);
 
+    }
+
+    .catch(e=>console.log(e));
+  });
+}
 
