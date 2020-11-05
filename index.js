@@ -1048,7 +1048,6 @@ const checkAllReservation = (ev) => {
           return parseInt(object.starttime) >= nowTime;
         });
         console.log('allReservation:', alltReservation);
-        console.log('selectedDate :', selectedDate);
 
         resolve(alltReservation);
       }else{
