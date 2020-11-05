@@ -1046,7 +1046,7 @@ const checkAllReservation = (ev) => {
       if(res.rows.length){
         const alltReservation = res.rows.filter(object=>{
           //return parseInt(object.starttime) >= nowTime;
-          return object.scheduledate === date;
+          return object.scheduledate === day;
         });
         console.log('day = ' + day);
         console.log('allReservation:', alltReservation);
