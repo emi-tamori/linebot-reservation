@@ -229,7 +229,6 @@ const handlePostbackEvent = async (ev) => {
   }else if(splitData[0] === 'date'){
       const orderedMenu = splitData[1];
       const selectedDate = ev.postback.params.date;
-      console.log('day = ' + day);
       checkAllReservation();
 
       askTime(ev,orderedMenu,selectedDate);
@@ -1037,7 +1036,7 @@ const calcTreatTime = (id,menu) => {
 const checkAllReservation = (ev) => {
   return new Promise((resolve,reject)=>{
     //const nowTime = new Date().getTime();
-    const day = ev.postback.params.date;
+    const day = ev.postback.postback.data;
 
     const selectQuery = {
       text:'SELECT * FROM reservations;'
@@ -1049,8 +1048,8 @@ const checkAllReservation = (ev) => {
           //return parseInt(object.starttime) >= nowTime;
           return object.scheduledate === day;
         });
-        console.log('day = ' + day);
         console.log('allReservation:', alltReservation);
+        console.log(day);
         resolve(alltReservation);
       }else{
         resolve([]);
