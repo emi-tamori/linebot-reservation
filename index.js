@@ -229,6 +229,8 @@ const handlePostbackEvent = async (ev) => {
   }else if(splitData[0] === 'date'){
       const orderedMenu = splitData[1];
       const selectedDate = ev.postback.params.date;
+      checkAllReservation();
+
       askTime(ev,orderedMenu,selectedDate);
   }else if(splitData[0] === 'time'){
       const orderedMenu = splitData[1];
@@ -1040,10 +1042,17 @@ const checkAllReservation = (ev) => {
     };
     connection.query(selectQuery)
     .then(res=>{
-      console.log(res.rows[0]);
+      if(res.rows.length){
+        const alltReservation = res.rows.filter(object=>{
+          return parseInt(object.starttime) >= nowTime;
+        });
+        console.log('allReservation:', alltReservation);
+        resolve(alltReservation);
+      }else{
+        resolve([]);
+      }
 
-    }
-
+    })
     .catch(e=>console.log(e));
   });
 }
