@@ -1037,6 +1037,7 @@ const checkAllReservation = (ev) => {
   return new Promise((resolve,reject)=>{
     //const nowTime = new Date().getTime();
     const day = ev.postback.params.date;
+    const ev = ev;
     
     const selectQuery = {
       text:'SELECT * FROM reservations;'
