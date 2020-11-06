@@ -1051,7 +1051,7 @@ const checkAllReservation = (ev) => {
         console.log('allReservation:', alltReservation);
         console.log('starttime :' + alltReservation[0].starttime);
         const start_end=allReservation.map(x=>[x.starttime,x.endtime]);
-        console.log(start_end);
+        console.log('start_end' ,start_end);
         //resolve(alltReservation);
       }else{
         resolve([]);
