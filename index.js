@@ -1035,26 +1035,21 @@ const calcTreatTime = (id,menu) => {
 //予約データを取り出す
 const checkAllReservation = (ev) => {
   return new Promise((resolve,reject)=>{
-    //const nowTime = new Date().getTime();
     const day = ev.postback.params.date;
     console.log('day = '+ day);
-    //const day = ev.postback.data.params;
     console.log('ev:',ev);
     
     const selectQuery = {
-      text:'SELECT * FROM reservations;'
+      text:'SELECT * FROM reservations WHERE scheduledate = $1 ORDER BY starttime ASC;',
+      values:[`${day}`]
     };
     connection.query(selectQuery)
     .then(res=>{
       if(res.rows.length){
-        const alltReservation = res.rows.filter(object=>{
-          //return parseInt(object.starttime) >= nowTime;
-          console.log('object.scheduledate'  + object.scheduledate);
-          return object.scheduledate === day;
-        });
+        const alltReservation = res.rows;
         console.log('allReservation:', alltReservation);
         
-        resolve(alltReservation);
+        //resolve(alltReservation);
       }else{
         resolve([]);
       }
