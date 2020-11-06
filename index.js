@@ -1049,11 +1049,12 @@ const checkAllReservation = (ev) => {
         const alltReservation = res.rows;
         console.log('allReservation:', alltReservation);
         console.log('starttime :' + alltReservation[0].starttime);
-        let array1d = [];
-        for(var i=0; i<alltReservation; i++){
-          array1d += alltReservation[i].starttime;
-        }
-        console.log('array1d = ' , array1d);
+        alltReservation.forEach(function(alltReservation, index) {
+          console.log(index)
+          console.log(alltReservation.starttime)
+          console.log(alltReservation.endtime)
+         })
+         
 
         
         //resolve(alltReservation);
