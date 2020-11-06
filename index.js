@@ -1036,7 +1036,7 @@ const calcTreatTime = (id,menu) => {
 const checkAllReservation = (ev) => {
   return new Promise((resolve,reject)=>{
     //const nowTime = new Date().getTime();
-    const day = ev.postback.params.data;
+    const day = ev.params.data;
     
 
     const selectQuery = {
@@ -1051,7 +1051,6 @@ const checkAllReservation = (ev) => {
 
         });
         console.log('allReservation:', alltReservation);
-        console.log('day = ' + day);
         resolve(alltReservation);
       }else{
         resolve([]);
