@@ -102,7 +102,7 @@ const handleMessageEvent = async (ev) => {
 
     if(text === '予約する'){
       const nextReservation = await checkNextReservation(ev);
-      if(nextReservation.length){
+      /*if(nextReservation.length){
         const startTimestamp = nextReservation[0].starttime;
         const date = dateConversion(startTimestamp);
         const orderedMenu = nextReservation[0].menu;
@@ -119,7 +119,8 @@ const handleMessageEvent = async (ev) => {
         });
       }else{
         orderChoice(ev);
-      }
+      }*/
+      orderChoice(ev);
     }else if(text === '予約確認'){
       const nextReservation = await checkNextReservation(ev);
       if(typeof nextReservation === 'undefined'){
