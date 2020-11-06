@@ -229,7 +229,7 @@ const handlePostbackEvent = async (ev) => {
   }else if(splitData[0] === 'date'){
       const orderedMenu = splitData[1];
       const selectedDate = ev.postback.params.date;
-      checkAllReservation();
+      checkAllReservation(ev);
 
       askTime(ev,orderedMenu,selectedDate);
   }else if(splitData[0] === 'time'){
