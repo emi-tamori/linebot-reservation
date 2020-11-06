@@ -1048,8 +1048,7 @@ const checkAllReservation = (ev) => {
       if(res.rows.length){
         const alltReservation = res.rows;
         console.log('allReservation:', alltReservation);
-        const starttime = alltReservation[4];
-        console.log('starttime' + starttime);
+        console.log('starttime :', alltReservation[4]);
 
         
         //resolve(alltReservation);
