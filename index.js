@@ -1036,10 +1036,10 @@ const calcTreatTime = (id,menu) => {
 const checkAllReservation = (ev) => {
   return new Promise((resolve,reject)=>{
     //const nowTime = new Date().getTime();
-    //const day = ev.postback.params.date;
-    const day = ev.postback.data.params;
+    const day = ev.postback.params.date;
+    console.log('day = '+ day);
+    //const day = ev.postback.data.params;
     console.log('ev:',ev);
-    console.log('day:' + day);
     
     const selectQuery = {
       text:'SELECT * FROM reservations;'
@@ -1049,12 +1049,11 @@ const checkAllReservation = (ev) => {
       if(res.rows.length){
         const alltReservation = res.rows.filter(object=>{
           //return parseInt(object.starttime) >= nowTime;
+          console.log('object.scheduledate'  + object.scheduledate);
           return object.scheduledate === day;
-
         });
         console.log('allReservation:', alltReservation);
-        console.log('day = '+ day);
-        console.log('object.scheduledate'  + object.scheduledate);
+        
         resolve(alltReservation);
       }else{
         resolve([]);
