@@ -1049,10 +1049,16 @@ const checkAllReservation = (ev) => {
       if(res.rows.length){
         const allReservation = res.rows;
         console.log('allReservation:', allReservation);
-        console.log('starttime :' + alltReservation[0].starttime);
-        const start_end=allReservation.map(x=>[x.starttime,x.endtime]);
-        console.log('start_end' ,start_end);
-        //resolve(alltReservation);
+        console.log('starttime :' + allReservation[0].starttime);
+        let arr = [];
+        const l = allReservation.length;
+        for(let i=0; i<l; ++i){
+          let item = allReservation[i];
+          console.log(item);
+          arr.push([item.starttime, item.endtime]);
+        }
+        console.log(arr);
+        //resolve(allReservation);
       }else{
         resolve([]);
       }
