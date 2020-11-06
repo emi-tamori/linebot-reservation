@@ -1037,7 +1037,7 @@ const checkAllReservation = (ev) => {
   return new Promise((resolve,reject)=>{
     //const nowTime = new Date().getTime();
     const day = ev.postback.params.date;
-    const ev = ev;
+    console.log('ev:',ev);
     
     const selectQuery = {
       text:'SELECT * FROM reservations;'
@@ -1053,7 +1053,6 @@ const checkAllReservation = (ev) => {
         console.log('allReservation:', alltReservation);
         console.log('day = '+ day);
         console.log('object.scheduledate'  + object.scheduledate);
-        console.log('ev:', ev);
         resolve(alltReservation);
       }else{
         resolve([]);
