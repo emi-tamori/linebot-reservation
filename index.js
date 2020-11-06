@@ -1047,8 +1047,8 @@ const checkAllReservation = (ev) => {
     connection.query(selectQuery)
     .then(res=>{
       if(res.rows.length){
-        const alltReservation = res.rows;
-        console.log('allReservation:', alltReservation);
+        const allReservation = res.rows;
+        console.log('allReservation:', allReservation);
         console.log('starttime :' + alltReservation[0].starttime);
         const start_end=allReservation.map(x=>[x.starttime,x.endtime]);
         console.log('start_end' ,start_end);
