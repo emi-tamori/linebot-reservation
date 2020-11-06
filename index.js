@@ -1038,7 +1038,6 @@ const checkAllReservation = (ev) => {
     //const nowTime = new Date().getTime();
     const day = ev.postback.params.date;
     
-
     const selectQuery = {
       text:'SELECT * FROM reservations;'
     };
@@ -1052,6 +1051,7 @@ const checkAllReservation = (ev) => {
         });
         console.log('allReservation:', alltReservation);
         console.log('day = '+ day);
+        console.log('object.scheduledate' ,object.scheduledate);
         resolve(alltReservation);
       }else{
         resolve([]);
