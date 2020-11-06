@@ -1049,14 +1049,6 @@ const checkAllReservation = (ev) => {
         const alltReservation = res.rows;
         console.log('allReservation:', alltReservation);
         console.log('starttime :' + alltReservation[0].starttime);
-        alltReservation.forEach(function(alltReservation, index) {
-          console.log(index)
-          console.log(alltReservation.starttime)
-          console.log(alltReservation.endtime)
-         })
-         
-
-        
         //resolve(alltReservation);
       }else{
         resolve([]);
