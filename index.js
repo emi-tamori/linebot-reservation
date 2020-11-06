@@ -1051,7 +1051,7 @@ const checkAllReservation = (ev) => {
         });
         console.log('allReservation:', alltReservation);
         console.log('day = '+ day);
-        console.log('object.scheduledate' ,object.scheduledate);
+        console.log('object.scheduledate'  + object.scheduledate);
         resolve(alltReservation);
       }else{
         resolve([]);
