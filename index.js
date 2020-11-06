@@ -1050,6 +1050,8 @@ const checkAllReservation = (ev) => {
         const alltReservation = res.rows;
         console.log('allReservation:', alltReservation);
         console.log('starttime :' + alltReservation[0].starttime);
+        const start_end=allReservation.map(x=>[x.starttime,x.endtime]);
+        console.log(start_end);
         //resolve(alltReservation);
       }else{
         resolve([]);
