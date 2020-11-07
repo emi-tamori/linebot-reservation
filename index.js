@@ -1050,14 +1050,11 @@ const checkAllReservation = (ev) => {
         const allReservation = res.rows;
         console.log('allReservation:', allReservation);
         //console.log('starttime :' + allReservation[0].starttime);
-        let arr = [];
-        const l = allReservation.length;
-        for(let i=0; i<l; ++i){
-          let item = allReservation[i];
-          //console.log('item ='+item);
-          arr.push([item.starttime, item.endtime]);
-        }
-        console.log('arr =',arr);
+        const arr = [];
+        allReservation.forEach(item=>{
+          arr.push([parseInt(item.starttime),parseInt(item.endtime)]);
+        });
+        console.log('arr ='+arr);
         //resolve(allReservation);
       }else{
         resolve([]);
