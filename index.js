@@ -1069,7 +1069,6 @@ const checkAllReservation = (ev) => {
 const calcTreatTime = (ev) => {
   return new Promise((resolve,reject)=>{
     const id = ev.source.userId;
-    console.log('id = '+ id);
     console.log('ev = ', ev );
     const selectQuery = {
       text:'SELECT * FROM users WHERE id = $1;',
