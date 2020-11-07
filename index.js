@@ -1074,9 +1074,9 @@ const calcTreatTime = (ev,orderedMenu) => {
       values:[`${id}`]
     };
     connection.query(selectQuery)
-    .then(res=>{
+    //.then(res=>{
       
-    })
-    .catch(e=>console.log(e));
+    //})
+    //.catch(e=>console.log(e));
   });
 }
