@@ -1066,16 +1066,21 @@ const checkAllReservation = (ev) => {
 }
 
 //calcTreatTime（施術時間を計算する関数）
-const calcTreatTime = (ev) => {
+const calcTreatTime = (ev,orderedMenu) => {
   return new Promise((resolve,reject)=>{
     const id = ev.source.userId;
-    console.log('ev = ', ev );
     const selectQuery = {
-      text:'SELECT * FROM users WHERE id = $1;',
+      text:'SELECT * FROM users WHERE line_uid = $1;',
       values:[`${id}`]
     };
+    connection.query(selectQuery)
+    .then(res=>{
+      const usersData = res.rows;
+      console.log('usersData = ',usersData  );
 
 
-
+      
+    })
+    .catch(e=>console.log(e));
   });
 }
