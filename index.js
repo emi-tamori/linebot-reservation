@@ -1075,8 +1075,8 @@ const calcTreatTime = (ev,orderedMenu) => {
     };
     connection.query(selectQuery)
     .then(res=>{
-      const usersData = res.rows;
-      console.log('usersData = ',usersData  );
+      const usersData = res.rows[0];
+      console.log('usersData = ',usersData );
 
 
       
