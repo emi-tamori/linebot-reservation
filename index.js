@@ -1055,6 +1055,7 @@ const checkAllReservation = (ev) => {
           arr.push([parseInt(item.starttime),parseInt(item.endtime)]);
         });
         console.log('arr ='+arr);
+        console.log('arr =',arr);
         //resolve(allReservation);
       }else{
         resolve([]);
