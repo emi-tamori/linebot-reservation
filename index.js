@@ -229,8 +229,9 @@ const handlePostbackEvent = async (ev) => {
       askDate(ev,orderedMenu);
   }else if(splitData[0] === 'date'){
       const orderedMenu = splitData[1];
-      console.log('orderedMenu =' + orderedMenu);
+      //console.log('orderedMenu =' + orderedMenu);
       const selectedDate = ev.postback.params.date;
+      const treatTime = calcTreatTime(ev, orderedMenu);
       checkAllReservation(ev);
       askTime(ev,orderedMenu,selectedDate);
   }else if(splitData[0] === 'time'){
@@ -1065,3 +1066,17 @@ const checkAllReservation = (ev) => {
 }
 
 //calcTreatTime（施術時間を計算する関数）
+const calcTreatTime = (ev) => {
+  return new Promise((resolve,reject)=>{
+    const id = ev.source.userId;
+    console.log('id = '+ id);
+    console.log('ev = ', ev );
+    const selectQuery = {
+      text:'SELECT * FROM users WHERE id = $1;',
+      values:[`${id}`]
+    };
+
+
+
+  });
+}
