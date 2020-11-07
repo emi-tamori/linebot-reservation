@@ -231,7 +231,6 @@ const handlePostbackEvent = async (ev) => {
       const orderedMenu = splitData[1];
       const selectedDate = ev.postback.params.date;
       const treatTime = calcTreatTime(ev, orderedMenu);
-      console.log(treatTime);
       checkAllReservation(ev);
 
       askTime(ev,orderedMenu,selectedDate);
@@ -1070,5 +1069,5 @@ const checkAllReservation = (ev) => {
 //calcTreatTime（施術時間を計算する関数）
 const calcTreatTime = (ev) =>{
   const id = ev.source.userId;
-  console.log(id);
+  console.log('id = '+id);
 }
