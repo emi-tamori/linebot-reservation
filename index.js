@@ -1066,7 +1066,7 @@ const checkAllReservation = (ev) => {
 }
 
 //calcTreatTime（施術時間を計算する関数）
-/*const calcTreatTime = (ev,orderedMenu) => {
+const calcTreatTime = (ev,orderedMenu) => {
   return new Promise((resolve,reject)=>{
     const id = ev.source.userId;
     const selectQuery = {
@@ -1079,4 +1079,4 @@ const checkAllReservation = (ev) => {
     })
     .catch(e=>console.log(e));
   });
-}*/
+}
