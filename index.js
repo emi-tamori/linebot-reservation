@@ -230,6 +230,8 @@ const handlePostbackEvent = async (ev) => {
   }else if(splitData[0] === 'date'){
       const orderedMenu = splitData[1];
       const selectedDate = ev.postback.params.date;
+      const treatTime = calcTreatTime(ev, orderedMenu);
+      console.log(treatTime);
       checkAllReservation(ev);
 
       askTime(ev,orderedMenu,selectedDate);
@@ -1033,7 +1035,7 @@ const calcTreatTime = (id,menu) => {
   });
  }
 
-//予約データを取り出す
+//checkAllReservation（予約データを取り出す）
 const checkAllReservation = (ev) => {
   return new Promise((resolve,reject)=>{
     const day = ev.postback.params.date;
@@ -1063,4 +1065,10 @@ const checkAllReservation = (ev) => {
     })
     .catch(e=>console.log(e));
   });
+}
+
+//calcTreatTime（施術時間を計算する関数）
+const calcTreatTime = (ev) =>{
+  const id = ev.source.userId;
+  console.log(id);
 }
