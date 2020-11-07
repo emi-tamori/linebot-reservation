@@ -1076,14 +1076,11 @@ const calcTreatTime = (ev,orderedMenu) => {
     connection.query(selectQuery)
     .then(res=>{
       if(res.rows.length){
-
+        const usersData = res.rows;
+        console.log('usersData = ',usersData);
       }else{
-        console.log('LINE　IDに一致するユーザーが見つかりません。');
-        return;
+        resolve([]);
       }
-
-
-      
     })
     .catch(e=>console.log(e));
   });
