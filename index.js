@@ -1030,7 +1030,7 @@ const calcTreatTime = (id,menu) => {
           array[index] = treatArray[value];
           });
           console.log("splitMenu = " + splitMenu);
-          const sum = 0;
+          let sum = 0;
           for(i=0; i<splitMenu.length; i++){
             sum += splitMenu[i];
           }
