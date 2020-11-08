@@ -1028,10 +1028,14 @@ const calcTreatTime = (id,menu) => {
           const menuNumber = parseInt(menu);
           //console.log('時間 ='+ treatArray[0]);
           splitMenu.forEach(function(value,index,array){
-          array[index] += treatArray[value];
+          array[index] = treatArray[value];
           
           });
-          console.log("かかる時間 = " + splitMenu);
+          console.log("splitMenu = " + splitMenu);
+          for(i=0; i<splitMenu.length; i++){
+            sum += splitMenu[i];
+          }
+          console.log("合計時間 = " + sum);
 
 
 
