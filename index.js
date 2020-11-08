@@ -1027,8 +1027,9 @@ const calcTreatTime = (id,menu) => {
           console.log('treatArray = ',treatArray);
           const menuNumber = parseInt(menu);
           //console.log('時間 ='+ treatArray[0]);
-          splitMenu.forEach(function(value,index,array){
-          array[index] = treatArray[value];
+          splitMenu.forEach(function(value,array){
+          array = treatArray[value];
+
           });
           console.log("かかる時間 = " + splitMenu);
 
