@@ -1012,6 +1012,8 @@ const timeConversion = (date,time) => {
 const calcTreatTime = (id,menu) => {
   return new Promise((resolve,reject)=>{
     console.log('menu:',menu);
+    const splitMenu = menu.split('%');
+    console.log('splitMenu = '+splitMenu);
     const selectQuery = {
       text: 'SELECT * FROM users WHERE line_uid = $1;',
       values: [`${id}`]
@@ -1024,7 +1026,9 @@ const calcTreatTime = (id,menu) => {
           const treatArray = [info.cuttime,info.shampootime,info.colortime,info.spatime,INITIAL_TREAT[4],INITIAL_TREAT[5],INITIAL_TREAT[6]];
           console.log('treatArray = ',treatArray);
           const menuNumber = parseInt(menu);
+
           const treatTime = treatArray[menuNumber];
+
           resolve(treatTime);
         }else{
           console.log('LINE　IDに一致するユーザーが見つかりません。');
