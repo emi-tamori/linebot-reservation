@@ -231,7 +231,7 @@ const handlePostbackEvent = async (ev) => {
       const orderedMenu = splitData[1];
       //console.log('orderedMenu =' + orderedMenu);
       const selectedDate = ev.postback.params.date;
-      const treatTime = calcTreatTime(ev, orderedMenu);
+      const treatTime = await calcTreatTime(ev.source.userId,orderedMenu);
       checkAllReservation(ev);
       askTime(ev,orderedMenu,selectedDate);
   }else if(splitData[0] === 'time'){
@@ -1011,6 +1011,7 @@ const timeConversion = (date,time) => {
 //calcTreatTime(データベースから施術時間をとってくる)
 const calcTreatTime = (id,menu) => {
   return new Promise((resolve,reject)=>{
+    const id = ev.source.userId;
     console.log('その2');
     const selectQuery = {
       text: 'SELECT * FROM users WHERE line_uid = $1;',
@@ -1065,20 +1066,3 @@ const checkAllReservation = (ev) => {
   });
 }
 
-//calcTreatTime（施術時間を計算する関数）
-const calcTreatTime = (ev,orderedMenu) => {
-  return new Promise((resolve,reject)=>{
-    const id = ev.source.userId;
-    const selectQuery = {
-      text:'SELECT * FROM users WHERE line_uid = $1;',
-      values:[`${id}`]
-    };
-    connection.query(selectQuery)
-    .then(res=>{
-      const usersData = res.rows;
-      console.log('usersData:', usersData);
-      
-    })
-    .catch(e=>console.log(e));
-  });
-}
