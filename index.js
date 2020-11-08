@@ -1014,7 +1014,6 @@ const calcTreatTime = (id,menu) => {
     console.log('menu:',menu);
     const splitMenu = menu.split('%');
     console.log('splitMenu = '+splitMenu);
-    console.log('splitMenu = ',splitMenu);
     const selectQuery = {
       text: 'SELECT * FROM users WHERE line_uid = $1;',
       values: [`${id}`]
@@ -1027,6 +1026,7 @@ const calcTreatTime = (id,menu) => {
           const treatArray = [info.cuttime,info.shampootime,info.colortime,info.spatime,INITIAL_TREAT[4],INITIAL_TREAT[5],INITIAL_TREAT[6]];
           console.log('treatArray = ',treatArray);
           const menuNumber = parseInt(menu);
+          console.log('menuNumber = ' +menuNumber);
 
           const treatTime = treatArray[menuNumber];
 
