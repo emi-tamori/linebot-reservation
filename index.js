@@ -1012,7 +1012,7 @@ const timeConversion = (date,time) => {
 const calcTreatTime = (id,menu) => {
   return new Promise((resolve,reject)=>{
     console.log('menu:',menu);
-    const splitMenu[] = menu.split('%');
+    const splitMenu = menu.split('%');
     console.log('splitMenu = '+splitMenu);
     const selectQuery = {
       text: 'SELECT * FROM users WHERE line_uid = $1;',
