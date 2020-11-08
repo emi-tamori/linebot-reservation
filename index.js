@@ -1021,7 +1021,6 @@ const calcTreatTime = (id,menu) => {
         console.log('その3');
         if(res.rows.length){
           const info = res.rows[0];
-          console.log('info = ', info);
           const treatArray = [info.cuttime,info.shampootime,info.colortime,info.spatime,INITIAL_TREAT[4],INITIAL_TREAT[5],INITIAL_TREAT[6]];
           console.log('treatArray = ',treatArray);
           const menuNumber = parseInt(menu);
