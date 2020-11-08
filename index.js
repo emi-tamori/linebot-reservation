@@ -1011,8 +1011,7 @@ const timeConversion = (date,time) => {
 //calcTreatTime(データベースから施術時間をとってくる)
 const calcTreatTime = (id,menu) => {
   return new Promise((resolve,reject)=>{
-    const id = ev.source.userId;
-    console.log('その2');
+    console.log('menu:',menu);
     const selectQuery = {
       text: 'SELECT * FROM users WHERE line_uid = $1;',
       values: [`${id}`]
@@ -1023,11 +1022,10 @@ const calcTreatTime = (id,menu) => {
         if(res.rows.length){
           const info = res.rows[0];
           const treatArray = [info.cuttime,info.shampootime,info.colortime,info.spatime,INITIAL_TREAT[4],INITIAL_TREAT[5],INITIAL_TREAT[6]];
+          console.log('treatArray = ',treatArray);
           const menuNumber = parseInt(menu);
           const treatTime = treatArray[menuNumber];
           resolve(treatTime);
-          const usersData = res.rows;
-          console.log('usersData:', usersData);
         }else{
           console.log('LINE　IDに一致するユーザーが見つかりません。');
           return;
