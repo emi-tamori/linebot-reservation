@@ -1012,7 +1012,7 @@ const timeConversion = (date,time) => {
 const calcTreatTime = (id,menu) => {
   return new Promise((resolve,reject)=>{
     console.log('menu:',menu);
-    const splitMenu = menu.split('%');
+    //const splitMenu = menu.split('%');
     console.log('splitMenu = '+splitMenu);
     const selectQuery = {
       text: 'SELECT * FROM users WHERE line_uid = $1;',
@@ -1026,7 +1026,7 @@ const calcTreatTime = (id,menu) => {
           const treatArray = [info.cuttime,info.shampootime,info.colortime,info.spatime,INITIAL_TREAT[4],INITIAL_TREAT[5],INITIAL_TREAT[6]];
           console.log('treatArray = ',treatArray);
           const menuNumber = parseInt(menu);
-          splitMenu.forEach(function(value,index,array){
+          /*splitMenu.forEach(function(value,index,array){
           array[index] = treatArray[value];
           });
           console.log("splitMenu = " + splitMenu);
@@ -1034,7 +1034,20 @@ const calcTreatTime = (id,menu) => {
           for(i=0; i<splitMenu.length; i++){
             sum += splitMenu[i];
           }
-          console.log('合計時間：' + sum);
+          console.log('合計時間：' + sum);*/
+          if(menu.indexOf('%') === -1){
+            treatTime = treatArray[parseInt(menu)];
+            console.log('合計時間:',treatTime);
+            return treatTime;
+           }else{
+            const splitMenu = menu.split('%')
+            let treatTime = 0;
+            splitMenu.forEach(value=>{
+             treatTime += treatArray[parseInt(value)];
+             });
+            console.log('合計時間：',treatTime);
+            return treatTime;
+           }
           
           const treatTime = treatArray[menuNumber];
 
