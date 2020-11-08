@@ -1036,7 +1036,7 @@ const calcTreatTime = (id,menu) => {
           for(i=0; i<splitMenu.length; i++){
             sum += splitMenu[i];
           }
-          console.log("合計時間 = " + sum);
+          
 
 
 
