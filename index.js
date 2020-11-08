@@ -1032,6 +1032,7 @@ const calcTreatTime = (id,menu) => {
           
           });
           console.log("splitMenu = " + splitMenu);
+          const sum = 0;
           for(i=0; i<splitMenu.length; i++){
             sum += splitMenu[i];
           }
