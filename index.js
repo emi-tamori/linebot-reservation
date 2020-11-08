@@ -1036,7 +1036,7 @@ const calcTreatTime = (id,menu) => {
           }
           console.log('合計時間：' + sum);*/
           if(menu.indexOf('%') === -1){
-            treatTime = treatArray[parseInt(menu)];
+            const　treatTime = treatArray[parseInt(menu)];
             console.log('合計時間:',treatTime);
             return treatTime;
            }else{
