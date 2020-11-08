@@ -1026,6 +1026,8 @@ const calcTreatTime = (id,menu) => {
           const menuNumber = parseInt(menu);
           const treatTime = treatArray[menuNumber];
           resolve(treatTime);
+          const usersData = res.rows;
+          console.log('usersData:', usersData);
         }else{
           console.log('LINE　IDに一致するユーザーが見つかりません。');
           return;
