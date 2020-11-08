@@ -1026,7 +1026,12 @@ const calcTreatTime = (id,menu) => {
           const treatArray = [info.cuttime,info.shampootime,info.colortime,info.spatime,INITIAL_TREAT[4],INITIAL_TREAT[5],INITIAL_TREAT[6]];
           console.log('treatArray = ',treatArray);
           const menuNumber = parseInt(menu);
-          console.log('時間 ='+ treatArray[0]);
+          //console.log('時間 ='+ treatArray[0]);
+          splitMenu.forEach(function(value,index,array){
+          array[index] = treatArray[value];
+          });
+          console.log("かかる時間 = " + splitMenu);
+
 
 
           const treatTime = treatArray[menuNumber];
