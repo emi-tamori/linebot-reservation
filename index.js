@@ -232,6 +232,7 @@ const handlePostbackEvent = async (ev) => {
       //console.log('orderedMenu =' + orderedMenu);
       const selectedDate = ev.postback.params.date;
       const treatTime = await calcTreatTime(ev.source.userId,orderedMenu);
+      console.log('treatTime in date:',treatTime);
       checkAllReservation(ev);
       askTime(ev,orderedMenu,selectedDate);
   }else if(splitData[0] === 'time'){
@@ -1027,7 +1028,7 @@ const calcTreatTime = (id,menu) => {
           if(menu.indexOf('%') === -1){
             const　treatTime = treatArray[parseInt(menu)];
             console.log('合計時間:',treatTime);
-            return treatTime;
+            resolve(treatTime);
            }else{
             const splitMenu = menu.split('%')
             let treatTime = 0;
@@ -1035,12 +1036,11 @@ const calcTreatTime = (id,menu) => {
              treatTime += treatArray[parseInt(value)];
              });
             console.log('合計時間：',treatTime);
-            return treatTime;
+            resolve(treatTime);
            }
-          
           const treatTime = treatArray[menuNumber];
 
-          resolve(treatTime);
+          //resolve(treatTime);
         }else{
           console.log('LINE　IDに一致するユーザーが見つかりません。');
           return;
