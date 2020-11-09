@@ -233,7 +233,7 @@ const handlePostbackEvent = async (ev) => {
       const selectedDate = ev.postback.params.date;
       const treatTime = await calcTreatTime(ev.source.userId,orderedMenu);
       console.log('treatTime in date:',treatTime);
-      checkAllReservation(ev);
+      checkAllReservation(ev,treatTime);
       askTime(ev,orderedMenu,selectedDate);
   }else if(splitData[0] === 'time'){
       const orderedMenu = splitData[1];
@@ -1051,7 +1051,7 @@ const calcTreatTime = (id,menu) => {
  }
 
 //checkAllReservation（予約データを取り出す）
-const checkAllReservation = (ev) => {
+const checkAllReservation = (ev,treatTime) => {
   return new Promise((resolve,reject)=>{
     const day = ev.postback.params.date;
     console.log('day = '+ day);
@@ -1066,13 +1066,12 @@ const checkAllReservation = (ev) => {
       if(res.rows.length){
         const allReservation = res.rows;
         console.log('allReservation:', allReservation);
-        //console.log('starttime :' + allReservation[0].starttime);
         const arr = [];
         allReservation.forEach(item=>{
           arr.push([parseInt(item.starttime),parseInt(item.endtime)]);
         });
         console.log('arr =',arr);
-        //resolve(allReservation);
+        //const ts9 = 
       }else{
         resolve([]);
       }
