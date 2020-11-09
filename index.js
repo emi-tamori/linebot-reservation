@@ -1073,6 +1073,8 @@ const checkAllReservation = (ev,treatTime) => {
         console.log('arr =',arr);
         const ts9 = new Date(day +' 09:00').getTime();
         console.log('ts9 = '+ ts9);
+        const ts10 = new Date(day +' 10:00').getTime();
+        console.log('ts10 = '+ ts10);
 
       }else{
         resolve([]);
