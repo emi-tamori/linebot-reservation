@@ -1072,7 +1072,8 @@ const checkAllReservation = (ev,treatTime) => {
         });
         console.log('arr =',arr);
         const ts9 = new Date('2020/11/09 09:00').getTime();
-        const ts10 = new Date('2020/11/09 10:00').getTime();
+        console.log('ts9 = '+ts9)
+
       }else{
         resolve([]);
       }
