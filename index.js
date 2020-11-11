@@ -1071,8 +1071,11 @@ const checkAllReservation = (ev,treatTime) => {
           arr.push([parseInt(item.starttime),parseInt(item.endtime)]);
         });
         console.log('arr =',arr);
+
         const ts9 = new Date(day +' 09:00').getTime() - 9*60*60*1000;
         console.log('ts9 = '+ ts9);
+        const ts10 = new Date(day +' 10:00').getTime() - 9*60*60*1000;
+        console.log('ts10 = '+ ts10);
       }else{
         resolve([]);
       }
