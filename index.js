@@ -239,7 +239,7 @@ const handlePostbackEvent = async (ev) => {
       const treatTime = await calcTreatTime(ev.source.userId,orderedMenu);
       console.log('treatTime in date:',treatTime);
       //checkAllReservation(ev,treatTime);
-      checkReservable(ev,orderedMenu,selectedDate);
+      checkReservable(ev,orderedMenu,selectedDate,treatTime);
       askTime(ev,orderedMenu,selectedDate);
   }else if(splitData[0] === 'time'){
       const orderedMenu = splitData[1];
@@ -1057,7 +1057,7 @@ const calcTreatTime = (id,menu) => {
  }
 
 //checkAllReservation（予約可能な時間をチェックする）
-const checkReservable = (ev,menu,date) => {
+const checkReservable = (ev,menu,date,treatTime) => {
   return new Promise( async (resolve,reject)=>{
     const id = ev.source.userId;
     //const treatTime = await calcTreatTime(id,menu);
