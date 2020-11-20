@@ -7,6 +7,8 @@ const INITIAL_TREAT = [20,10,40,15,30,15,10];  //施術時間初期値
 const WEEK = [ "日", "月", "火", "水", "木", "金", "土" ];//曜日の表示を標準化
 const MENU = ['カット','シャンプー','カラーリング','ヘッドスパ','マッサージ＆スパ','顔そり','眉整え'];//メニュー名
 const HOLIDAY = ["月"];//定休日を設定
+const OPENTIME = 9;
+const CLOSETIME = 19;
 const config = {
     channelAccessToken:process.env.ACCESS_TOKEN,
     channelSecret:process.env.CHANNEL_SECRET
@@ -1040,7 +1042,7 @@ const calcTreatTime = (id,menu) => {
       const reservedArray = res.rows.map(object=>{
         return [parseInt(object.starttime),parseInt(object.endtime)];
       });
-      console.log('reservedArray:',reservedArray);
+      console.log('reservedArray:',reservedArray);//すでに入っている予約の開始時間と終了時間、タイムスタンプで配列の形で出力
       //各時間のタイムスタンプ
       // herokuサーバー基準なので、日本の時刻は９時間分進んでしまうため、引く
       const timeStamps = [];
