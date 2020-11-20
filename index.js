@@ -872,7 +872,7 @@ const askTime = (ev,orderedMenu,selectedDate) => {
     };
     connection.query(selectQuery)
       .then(res=>{
-        console.log('res.rows:',res.rows);
+        //console.log('res.rows:',res.rows);
         if(res.rows.length){
           const nextReservation = res.rows.filter(object1=>{
             return object1.line_uid === id;
@@ -1003,10 +1003,10 @@ const calcTreatTime = (id,menu) => {
           const treatArray = [info.cuttime,info.shampootime,info.colortime,info.spatime,INITIAL_TREAT[4],INITIAL_TREAT[5],INITIAL_TREAT[6]];
           const menuNumber = parseInt(menu);
           const treatTime = treatArray[menuNumber];
-          console.log('info = '+info);
-          console.log('treatArray = '+treatArray);
-          console.log('menuNumber = '+menuNumber);
-          console.log('treatTime = '+treatTime);
+          console.log('info = ',info);//info = [object Object]の形で出力
+          console.log('treatArray = '+treatArray);//treatArray = 20,10,40,15,30,15,10の形で出力
+          console.log('menuNumber = '+menuNumber);//menuNumber = 0
+          console.log('treatTime = '+treatTime);//treatTime = 20
 
           resolve(treatTime);
         }else{
