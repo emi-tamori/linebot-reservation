@@ -102,7 +102,7 @@ const handleMessageEvent = async (ev) => {
 
     if(text === '予約する'){
       const nextReservation = await checkNextReservation(ev);
-      if(nextReservation.length){
+      /*if(nextReservation.length){
         const startTimestamp = nextReservation[0].starttime;
         const date = dateConversion(startTimestamp);
         const orderedMenu = nextReservation[0].menu;
@@ -119,7 +119,8 @@ const handleMessageEvent = async (ev) => {
         });
       }else{
         orderChoice(ev);
-      }
+      }*/
+    orderChoice(ev);
     }else if(text === '予約確認'){
       const nextReservation = await checkNextReservation(ev);
       if(typeof nextReservation === 'undefined'){
@@ -991,19 +992,22 @@ const timeConversion = (date,time) => {
 //calcTreatTime(データベースから施術時間をとってくる)
 const calcTreatTime = (id,menu) => {
   return new Promise((resolve,reject)=>{
-    console.log('その2');
     const selectQuery = {
       text: 'SELECT * FROM users WHERE line_uid = $1;',
       values: [`${id}`]
     };
     connection.query(selectQuery)
       .then(res=>{
-        console.log('その3');
         if(res.rows.length){
           const info = res.rows[0];
           const treatArray = [info.cuttime,info.shampootime,info.colortime,info.spatime,INITIAL_TREAT[4],INITIAL_TREAT[5],INITIAL_TREAT[6]];
           const menuNumber = parseInt(menu);
           const treatTime = treatArray[menuNumber];
+          console.log('info = '+info);
+          console.log('treatArray = '+treatArray);
+          console.log('menuNumber = '+menuNumber);
+          console.log('treatTime = '+treatTime);
+
           resolve(treatTime);
         }else{
           console.log('LINE　IDに一致するユーザーが見つかりません。');
