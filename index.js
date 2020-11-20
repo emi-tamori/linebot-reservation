@@ -236,7 +236,7 @@ const handlePostbackEvent = async (ev) => {
       const orderedMenu = splitData[1];
       //console.log('orderedMenu =' + orderedMenu);
       const selectedDate = ev.postback.params.date;
-      //const treatTime = await calcTreatTime(ev.source.userId,orderedMenu);
+      const treatTime = await calcTreatTime(ev.source.userId,orderedMenu);
       console.log('treatTime in date:',treatTime);
       //checkAllReservation(ev,treatTime);
       checkReservable(ev,orderedMenu,selectedDate);
@@ -1060,7 +1060,7 @@ const calcTreatTime = (id,menu) => {
 const checkReservable = (ev,menu,date) => {
   return new Promise( async (resolve,reject)=>{
     const id = ev.source.userId;
-    const treatTime = await calcTreatTime(id,menu);
+    //const treatTime = await calcTreatTime(id,menu);
     console.log('treatTime:',treatTime);
     const treatTimeToMs = treatTime*60*1000;
 
