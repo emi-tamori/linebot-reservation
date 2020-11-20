@@ -1000,14 +1000,16 @@ const calcTreatTime = (id,menu) => {
       .then(res=>{
         if(res.rows.length){
           const info = res.rows[0];
+          const menuArray = menu.split('%');
           const treatArray = [info.cuttime,info.shampootime,info.colortime,info.spatime,INITIAL_TREAT[4],INITIAL_TREAT[5],INITIAL_TREAT[6]];
-          const menuNumber = parseInt(menu);
-          const treatTime = treatArray[menuNumber];
-          console.log('info = ',info);//info = [object Object]の形で出力
-          console.log('treatArray = '+treatArray);//treatArray = 20,10,40,15,30,15,10の形で出力
-          console.log('menuNumber = '+menuNumber);//menuNumber = 0
-          console.log('treatTime = '+treatTime);//treatTime = 20
-
+          let treatTime = 0;
+          menuArray.forEach(value=>{
+            treatTime += treatArray[parseInt(value)];
+          });
+          console.log('info = ',info);//予約者のid からspatimeまでの情報が連想配列の形で出力info =  {id: 1,.......spatime: 15}
+          console.log('menuArray = '+menuArray);//
+          console.log('treatArray = ',treatArray);//
+          console.log('treatTime = '+treatTime);//
           resolve(treatTime);
         }else{
           console.log('LINE　IDに一致するユーザーが見つかりません。');
