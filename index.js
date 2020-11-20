@@ -219,7 +219,8 @@ const handlePostbackEvent = async (ev) => {
   }else if(splitData[0] === 'date'){
       const orderedMenu = splitData[1];
       const selectedDate = ev.postback.params.date;
-      askTime(ev,orderedMenu,selectedDate);
+      checkReservable(ev,orderedMenu,selectedDate);
+      //askTime(ev,orderedMenu,selectedDate);
   }else if(splitData[0] === 'time'){
       const orderedMenu = splitData[1];
       const selectedDate = splitData[2];
@@ -989,7 +990,7 @@ const timeConversion = (date,time) => {
   return `${month}月${date}日(${WEEK[day]}) ${hour}:${min}`;
  }
 
-//calcTreatTime(データベースから施術時間をとってくる)
+//calcTreatTime(施術時間を計算する)
 const calcTreatTime = (id,menu) => {
   return new Promise((resolve,reject)=>{
     const selectQuery = {
@@ -1007,9 +1008,9 @@ const calcTreatTime = (id,menu) => {
             treatTime += treatArray[parseInt(value)];
           });
           console.log('info = ',info);//予約者のid からspatimeまでの情報が連想配列の形で出力info =  {id: 1,.......spatime: 15}
-          console.log('menuArray = '+menuArray);//
-          console.log('treatArray = ',treatArray);//
-          console.log('treatTime = '+treatTime);//
+          console.log('menuArray = '+menuArray);//menuArray = 0,3の形で出力される
+          console.log('treatArray = ',treatArray);//users登録しているメニュー時間を配列の形で出力treatArray =  [20, 10,.......]
+          console.log('treatTime = '+treatTime);//treatTime = 35の形で出力（選択メニューの合計施術時間）
           resolve(treatTime);
         }else{
           console.log('LINE　IDに一致するユーザーが見つかりません。');
@@ -1019,6 +1020,40 @@ const calcTreatTime = (id,menu) => {
       .catch(e=>console.log(e));
   });
  }
+
+ //checkReservable関数（予約可能な時間をチェックする）
+ const checkReservable = (ev,menu,date) => {
+  return new Promise( async (resolve,reject)=>{
+    const id = ev.source.userId;
+    const treatTime = await calcTreatTime(id,menu);
+    console.log('treatTime:',treatTime);
+    const treatTimeToMs = treatTime*60*1000;//分をミリ秒に変換
+
+    //お客様が選んだ日の予約データ
+    const select_query = {
+      text:'SELECT * FROM reservations WHERE scheduledate = $1 ORDER BY starttime ASC;',
+      values:[`${date}`]
+    };
+    connection.query(select_query)
+    .then(res=>{
+      console.log('res.rows:',res.rows);
+      const reservedArray = res.rows.map(object=>{
+        return [parseInt(object.starttime),parseInt(object.endtime)];
+      });
+      console.log('reservedArray:',reservedArray);
+      //各時間のタイムスタンプ
+      // herokuサーバー基準なので、日本の時刻は９時間分進んでしまうため、引く
+      const timeStamps = [];
+      for(let i=OPENTIME; i<CLOSETIME; i++){
+        timeStamps.push(new Date(`${date} ${i}:00`).getTime()-9*60*60*1000);
+      }
+      console.log('timestamps',timeStamps);
+
+    });
+
+
+  });
+}
 
 
 
