@@ -983,8 +983,8 @@ const confirmation = async (ev,menu,date,time,n) => {
         "contents": [
           {
             "type": "text",
-            "text":  `次回予約は${proposalTime}でよろしいですか？`,
-            // "text": `次回予約は${splitDate[1]}月${splitDate[2]}日 ${selectedTime}時〜でよろしいですか？`,
+            //"text":  `次回予約は${proposalTime}でよろしいですか？`,
+             "text": `次回予約は${splitDate[1]}月${splitDate[2]}日 ${selectedTime}時〜でよろしいですか？`,
             "size": "lg",
             "wrap": true
           }
