@@ -692,6 +692,18 @@ const askDate = (ev,orderedMenu) => {
 
 //askTime関数（「時間を聞く」処理）
 const askTime = (ev,orderedMenu,selectedDate) => {
+  const time = [];
+  const color = [];
+  //予約時間帯とボタン色配列を生成
+  for(let i=0;i<reservableArray.length;i++){
+    if(reservableArray[i].length){
+      time.push(i);
+      color.push('#00AA00');
+    }else{
+      time.push(-1);
+      color.push('#FF0000');
+    }
+  }
     return client.replyMessage(ev.replyToken,{
         "type":"flex",
         "altText":"予約日選択",
@@ -1071,7 +1083,7 @@ const checkReservable = (ev,menu,date) => {
         const reservedArray = res.rows.map(object=>{
           return [parseInt(object.starttime),parseInt(object.endtime)];
         });
-        console.log('reservedArray:',reservedArray);
+        console.log('reservedArray:',reservedArray);//すでに入っている予約の開始時間と終了時間、タイムスタンプで配列の形で出力
 
         //各時間のタイムスタンプ
         // herokuサーバー基準なので、日本の時刻は９時間分進んでしまうため、引く
