@@ -222,7 +222,7 @@ const handlePostbackEvent = async (ev) => {
       const orderedMenu = splitData[1];
       const selectedDate = ev.postback.params.date;
       checkReservable(ev,orderedMenu,selectedDate);
-      //askTime(ev,orderedMenu,selectedDate);
+  //askTime(ev,orderedMenu,selectedDate);
   }else if(splitData[0] === 'time'){
       const orderedMenu = splitData[1];
       const selectedDate = splitData[2];
@@ -1098,9 +1098,10 @@ const calcTreatTime = (id,menu) => {
         //予約と予約の間隔を格納する3次元配列を生成する
         const intervalArray = [];
         for(let i=0; i<separatedByTime.length; i++){
+          //時間帯に予約が入っている場合
           if(separatedByTime[i].length){
             const pattern = separatedByTime[i][0][2];
-
+            //パターン0,2の場合
             if(pattern === 0 || pattern === 2){
               const tempArray = [];
               for(let j=0; j<separatedByTime[i].length-1; j++){
@@ -1112,8 +1113,10 @@ const calcTreatTime = (id,menu) => {
             }else if(pattern === 3){
               intervalArray.push([]);
             }
+          }else if(i<separatedByTime.length-1 && separatedByTime[i+1].length){
+            intervalArray.push([separatedByTime[i+1][0][0] - timeStamps[i],timeStamps[i]]);
           }else{
-            intervalArray.push([[60*60*1000,timeStamps[i]]]);
+            intervalArray.push([[60*60*1000*2,timeStamps[i]]]);
           }
         }
         console.log('intervalArray:',intervalArray);
@@ -1136,6 +1139,31 @@ const calcTreatTime = (id,menu) => {
         });
 
         console.log('reservableArray:',reservableArray);
+
+        resolve(reservableArray);
+      })
+      .catch(e=>console.log(e));
+  });
+}
+
+const finalCheck = (date,startTime,endTime) => {
+  return new Promise((resolve,reject) => {
+    // let answer = null;
+    const select_query = {
+      text:`SELECT * FROM reservations WHERE scheduledate = '${date}';`
+    }
+    connection.query(select_query)
+      .then(res=>{
+        if(res.rows.length){
+          const check = res.rows.some(object=>{
+            return ((startTime>object.starttime && startTime<object.endtime)
+            || (startTime<=object.starttime && endTime>=object.endtime)
+            || (endTime>object.starttime && endTime<object.endtime));
+          });
+          resolve(check);
+        }else{
+          resolve(false);
+        }
       })
       .catch(e=>console.log(e));
   });
