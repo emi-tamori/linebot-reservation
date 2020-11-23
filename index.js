@@ -742,7 +742,7 @@ const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
                         "data":`time&${orderedMenu}&${selectedDate}&0`
                       },
                       "style": "primary",
-                      "color": "#00AA00",
+                      "color": `${color[0]}`,
                       "margin": "md"
                     },
                     {
@@ -753,7 +753,7 @@ const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
                         "data": `time&${orderedMenu}&${selectedDate}&1`
                       },
                       "style": "primary",
-                      "color": "#00AA00",
+                      "color": `${color[1]}`,
                       "margin": "md"
                     },
                     {
@@ -764,7 +764,7 @@ const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
                         "data": `time&${orderedMenu}&${selectedDate}&2`
                       },
                       "style": "primary",
-                      "color": "#00AA00",
+                      "color": `${color[2]}`,
                       "margin": "md"
                     }
                   ]
@@ -781,7 +781,7 @@ const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
                         "data": `time&${orderedMenu}&${selectedDate}&3`
                       },
                       "style": "primary",
-                      "color": "#00AA00",
+                      "color": `${color[3]}`,
                       "margin": "md"
                     },
                     {
@@ -792,7 +792,7 @@ const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
                         "data": `time&${orderedMenu}&${selectedDate}&4`
                       },
                       "style": "primary",
-                      "color": "#00AA00",
+                      "color": `${color[4]}`,
                       "margin": "md"
                     },
                     {
@@ -803,7 +803,7 @@ const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
                         "data": `time&${orderedMenu}&${selectedDate}&5`
                       },
                       "style": "primary",
-                      "color": "#00AA00",
+                      "color": `${color[5]}`,
                       "margin": "md"
                     }
                   ],
@@ -821,7 +821,7 @@ const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
                         "data": `time&${orderedMenu}&${selectedDate}&6`
                       },
                       "style": "primary",
-                      "color": "#00AA00",
+                      "color": `${color[6]}`,
                       "margin": "md"
                     },
                     {
@@ -832,7 +832,7 @@ const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
                         "data": `time&${orderedMenu}&${selectedDate}&7`
                       },
                       "style": "primary",
-                      "color": "#00AA00",
+                      "color": `${color[7]}`,
                       "margin": "md"
                     },
                     {
@@ -843,7 +843,7 @@ const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
                         "data": `time&${orderedMenu}&${selectedDate}&8`
                       },
                       "style": "primary",
-                      "color": "#00AA00",
+                      "color": `${color[8]}`,
                       "margin": "md"
                     }
                   ],
@@ -861,7 +861,7 @@ const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
                         "data": `time&${orderedMenu}&${selectedDate}&9`
                       },
                       "style": "primary",
-                      "color": "#00AA00",
+                      "color": `${color[9]}`,
                       "margin": "md"
                     },
                     {
