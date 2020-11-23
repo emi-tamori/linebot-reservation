@@ -11,6 +11,7 @@ const MENU = ['カット','シャンプー','カラーリング','ヘッドス�
 const HOLIDAY = ["月"];//定休日を設定
 const OPENTIME = 9;
 const CLOSETIME = 19;
+const FUTURE_LIMIT = 60; //何日先まで予約可能かの上限
 
 const config = {
     channelAccessToken:process.env.ACCESS_TOKEN,
@@ -234,10 +235,44 @@ const handlePostbackEvent = async (ev) => {
       askDate(ev,orderedMenu);
   }else if(splitData[0] === 'date'){
     const orderedMenu = splitData[1];
-    const selectedDate = ev.postback.params.date;
-    //checkReservable(ev,orderedMenu,selectedDate);
-    const reservableArray = await checkReservable(ev,orderedMenu,selectedDate);
-    askTime(ev,orderedMenu,selectedDate,reservableArray);
+      const selectedDate = ev.postback.params.date;
+
+      //「過去の日にち」、「定休日」、「２ヶ月先」の予約はできないようフィルタリングする
+      const today_y = new Date().getFullYear();
+      const today_m = new Date().getMonth() + 1;
+      const today_d = new Date().getDate();
+      const today = new Date(`${today_y}/${today_m}/${today_d} 0:00`).getTime() - 9*60*60*1000;
+      const targetDate = new Date(`${selectedDate} 0:00`).getTime() - 9*60*60*1000;
+
+      //選択日が過去でないことの判定
+      if(targetDate>=today){
+        const targetDay = new Date(`${selectedDate}`).getDay();
+        const dayCheck = REGULAR_COLOSE.some(day => day === targetDay);
+        //定休日でないことの判定
+        if(!dayCheck){
+          const futureLimit = today + FUTURE_LIMIT*24*60*60*1000;
+          //２ヶ月先でないことの判定
+          if(targetDate <= futureLimit){
+            const reservableArray = await checkReservable(ev,orderedMenu,selectedDate);
+            askTime(ev,orderedMenu,selectedDate,reservableArray);
+          }else{
+            return client.replyMessage(ev.replyToken,{
+              "type":"text",
+              "text":`${FUTURE_LIMIT}日より先の予約はできません><;`
+            });
+          }
+        }else{
+          return client.replyMessage(ev.replyToken,{
+            "type":"text",
+            "text":"定休日には予約できません><;"
+          });
+        }
+      }else{
+        return client.replyMessage(ev.replyToken,{
+          "type":"text",
+          "text":"過去の日にちには予約できません><;"
+        });
+      }
   }else if(splitData[0] === 'time'){
       const orderedMenu = splitData[1];
       const selectedDate = splitData[2];
@@ -739,7 +774,7 @@ const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
                       "action": {
                         "type": "postback",
                         "label": "9時-",
-                        "data":`time&${orderedMenu}&${selectedDate}&0`
+                        "data":`time&${orderedMenu}&${selectedDate}&${time[0]}`
                       },
                       "style": "primary",
                       "color": `${color[0]}`,
@@ -750,7 +785,7 @@ const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
                       "action": {
                         "type": "postback",
                         "label": "10時-",
-                        "data": `time&${orderedMenu}&${selectedDate}&1`
+                        "data": `time&${orderedMenu}&${selectedDate}&${time[1]}`
                       },
                       "style": "primary",
                       "color": `${color[1]}`,
@@ -761,7 +796,7 @@ const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
                       "action": {
                         "type": "postback",
                         "label": "11時-",
-                        "data": `time&${orderedMenu}&${selectedDate}&2`
+                        "data": `time&${orderedMenu}&${selectedDate}&${time[2]}`
                       },
                       "style": "primary",
                       "color": `${color[2]}`,
@@ -778,7 +813,7 @@ const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
                       "action": {
                         "type": "postback",
                         "label": "12時-",
-                        "data": `time&${orderedMenu}&${selectedDate}&3`
+                        "data": `time&${orderedMenu}&${selectedDate}&${time[3]}`
                       },
                       "style": "primary",
                       "color": `${color[3]}`,
@@ -789,7 +824,7 @@ const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
                       "action": {
                         "type": "postback",
                         "label": "13時-",
-                        "data": `time&${orderedMenu}&${selectedDate}&4`
+                        "data": `time&${orderedMenu}&${selectedDate}&${time[4]}`
                       },
                       "style": "primary",
                       "color": `${color[4]}`,
@@ -800,7 +835,7 @@ const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
                       "action": {
                         "type": "postback",
                         "label": "14時-",
-                        "data": `time&${orderedMenu}&${selectedDate}&5`
+                        "data": `time&${orderedMenu}&${selectedDate}&${time[5]}`
                       },
                       "style": "primary",
                       "color": `${color[5]}`,
@@ -818,7 +853,7 @@ const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
                       "action": {
                         "type": "postback",
                         "label": "15時-",
-                        "data": `time&${orderedMenu}&${selectedDate}&6`
+                        "data": `time&${orderedMenu}&${selectedDate}&${time[6]}`
                       },
                       "style": "primary",
                       "color": `${color[6]}`,
@@ -829,7 +864,7 @@ const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
                       "action": {
                         "type": "postback",
                         "label": "16時-",
-                        "data": `time&${orderedMenu}&${selectedDate}&7`
+                        "data": `time&${orderedMenu}&${selectedDate}&${time[7]}`
                       },
                       "style": "primary",
                       "color": `${color[7]}`,
@@ -840,7 +875,7 @@ const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
                       "action": {
                         "type": "postback",
                         "label": "17時-",
-                        "data": `time&${orderedMenu}&${selectedDate}&8`
+                        "data": `time&${orderedMenu}&${selectedDate}&${time[8]}`
                       },
                       "style": "primary",
                       "color": `${color[8]}`,
@@ -858,7 +893,7 @@ const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
                       "action": {
                         "type": "postback",
                         "label": "18時-",
-                        "data": `time&${orderedMenu}&${selectedDate}&9`
+                        "data": `time&${orderedMenu}&${selectedDate}&${time[9]}`
                       },
                       "style": "primary",
                       "color": `${color[9]}`,
@@ -869,7 +904,7 @@ const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
                       "action": {
                         "type": "postback",
                         "label": "19時-",
-                        "data": `time&${orderedMenu}&${selectedDate}&10`
+                        "data": `time&${orderedMenu}&${selectedDate}&${time[10]}`
                       },
                       "style": "primary",
                       "color": "#00AA00",
@@ -926,86 +961,60 @@ const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
 }
 
 //confirmation()予約確認をリプライする
-const confirmation = (ev,menu,date,time) => {
-    const splitDate = date.split('-');
-    const selectedTime = 9 + parseInt(time);
-    
-    //現在時刻のタイムスタンプを取得
-    const present = new Date().getTime();
-    //2ヶ月後取得
-    const twoMonthsLater = present + 2*30*24*3600*1000;
-    //予約日を数値へ変換
-    const reservationDayTime = new Date(`${date} ${selectedTime-9}:00`).getTime();
-    //予約日の曜日を取得
-    const week = new Date(reservationDayTime).getDay();
-    console.log("week = " + week);
-    const dayName = WEEK[week];
-    console.log("dayName = " + dayName);
+const confirmation = async (ev,menu,date,time,n) => {
+  const splitDate = date.split('-');
+  const selectedTime = 9 + parseInt(time);
+  const reservableArray = await checkReservable(ev,menu,date);
+  const candidates = reservableArray[parseInt(time)];
+  const n_dash = (n>=candidates.length-1) ? -1 : n+1;
+  console.log('n_dash:',n_dash);
 
-    if(reservationDayTime < present){
-      console.log("過去です");
-      return client.replyMessage(ev.replyToken,{
-        "type":"text",
-        "text":`過去の日にちは指定できません\uDBC0\uDC1B`
-    });
-    }else if(reservationDayTime >= twoMonthsLater){
-      console.log("2ヶ月以上先です");
-      return client.replyMessage(ev.replyToken,{
-        "type":"text",
-        "text":`２ヶ月以上先の日にちは指定できません\uDBC0\uDC1B`
-    });
-    }else if(dayName == HOLIDAY[0]){
-      console.log(HOLIDAY[0] + "は定休日です");
-      return client.replyMessage(ev.replyToken,{
-        "type":"text",
-        "text":`申し訳ございません。${HOLIDAY[0]}曜日 は定休日です。\uDBC0\uDC1B`
-    });
-    }else{
-      console.log("予約OKです");
-      return client.replyMessage(ev.replyToken,{
-        "type":"flex",
-        "altText":"menuSelect",
-        "contents":
-        {
-          "type": "bubble",
-          "body": {
-            "type": "box",
-            "layout": "vertical",
-            "contents": [
-              {
-                "type": "text",
-                "text": `次回予約は${splitDate[1]}月${splitDate[2]}日 ${selectedTime}時〜でよろしいですか？`,
-                "size": "lg",
-                "wrap": true
-              }
-            ]
-          },
-          "footer": {
-            "type": "box",
-            "layout": "horizontal",
-            "contents": [
-              {
-                "type": "button",
-                "action": {
-                  "type": "postback",
-                  "label": "はい",
-                  "data": `yes&${menu}&${date}&${time}`
-                }
-              },
-              {
-                "type": "button",
-                "action": {
-                  "type": "postback",
-                  "label": "いいえ",
-                  "data": `no&${menu}&${date}&${time}`
-                }
-              }
-            ]
+  const proposalTime = dateConversion(candidates[n]);
+
+  return client.replyMessage(ev.replyToken,{
+    "type":"flex",
+    "altText":"menuSelect",
+    "contents":
+    {
+      "type": "bubble",
+      "body": {
+        "type": "box",
+        "layout": "vertical",
+        "contents": [
+          {
+            "type": "text",
+            "text":  `次回予約は${proposalTime}でよろしいですか？`,
+            // "text": `次回予約は${splitDate[1]}月${splitDate[2]}日 ${selectedTime}時〜でよろしいですか？`,
+            "size": "lg",
+            "wrap": true
           }
-        }
-      });
+        ]
+      },
+      "footer": {
+        "type": "box",
+        "layout": "horizontal",
+        "contents": [
+          {
+            "type": "button",
+            "action": {
+              "type": "postback",
+              "label": "はい",
+              "data": `yes&${menu}&${date}&${candidates[n]}`
+            }
+          },
+          {
+            "type": "button",
+            "action": {
+              "type": "postback",
+              "label": "いいえ",
+              "data": `no&${menu}&${date}&${time}&${n_dash}`
+            }
+          }
+        ]
+      }
     }
- }
+  });
+}
    
 //timeConversion関数(日付、時刻をタイムスタンプ形式へ変更)
 const timeConversion = (date,time) => {
