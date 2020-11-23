@@ -2,11 +2,16 @@ const express = require('express');//express読み込み
 const app = express();
 const line = require('@line/bot-sdk');//@line/bot-sdk読み込み
 const { Client } = require('pg');//pgライブラリ読み込み
+
 const PORT = process.env.PORT || 5000
+
 const INITIAL_TREAT = [20,10,40,15,30,15,10];  //施術時間初期値
 const WEEK = [ "日", "月", "火", "水", "木", "金", "土" ];//曜日の表示を標準化
 const MENU = ['カット','シャンプー','カラーリング','ヘッドスパ','マッサージ＆スパ','顔そり','眉整え'];//メニュー名
 const HOLIDAY = ["月"];//定休日を設定
+const OPENTIME = 9;
+const CLOSETIME = 19;
+
 const config = {
     channelAccessToken:process.env.ACCESS_TOKEN,
     channelSecret:process.env.CHANNEL_SECRET
@@ -102,24 +107,25 @@ const handleMessageEvent = async (ev) => {
 
     if(text === '予約する'){
       const nextReservation = await checkNextReservation(ev);
-      if(nextReservation.length){
+      /*if(nextReservation.length){
         const startTimestamp = nextReservation[0].starttime;
         const date = dateConversion(startTimestamp);
         const orderedMenu = nextReservation[0].menu;
-        //console.log("orderedMenu = " + orderedMenu);
+        console.log("orderedMenu = " + orderedMenu);
         const menu = orderedMenu.split('%');
-        //console.log("menu = " + menu);
+        console.log("menu番号 = " + menu);
         menu.forEach(function(value,index,array){
           array[index] = MENU[value];
         });
-        console.log(menu);
+        console.log("menu名 = " + menu);
         return client.replyMessage(ev.replyToken,{
           "type":"text",
           "text":`次回予約は${date}、${menu}でお取りしてます。変更の場合は予約キャンセル後改めて予約をお願いします。`
         });
       }else{
         orderChoice(ev);
-      }
+      }*/
+      orderChoice(ev);
     }else if(text === '予約確認'){
       const nextReservation = await checkNextReservation(ev);
       if(typeof nextReservation === 'undefined'){
@@ -128,9 +134,14 @@ const handleMessageEvent = async (ev) => {
           "text":"次回予約は入っておりません。"
         });
       }else if(nextReservation.length){
-          const startTimestamp = nextReservation[0].starttime;
+        const startTimestamp = nextReservation[0].starttime;
         const date = dateConversion(startTimestamp);
-        const menu = MENU[parseInt(nextReservation[0].menu)];
+        const orderedMenu = nextReservation[0].menu;
+        const menu = orderedMenu.split('%');
+        menu.forEach(function(value,index,array){
+          array[index] = MENU[value];
+        });
+        console.log("menu = " + menu);
         return client.replyMessage(ev.replyToken,{
         "type":"text",
         "text":`次回予約は${date}、${menu}でお取りしてます\uDBC0\uDC22`
@@ -151,7 +162,13 @@ const handleMessageEvent = async (ev) => {
         });
       }else if(nextReservation.length){
         const startTimestamp = parseInt(nextReservation[0].starttime);
-        const menu = MENU[parseInt(nextReservation[0].menu)];
+        //const menu = MENU[parseInt(nextReservation[0].menu)];
+        const orderedMenu = nextReservation[0].menu;
+        const menu = orderedMenu.split('%');
+        menu.forEach(function(value,index,array){
+          array[index] = MENU[value];
+        });
+        console.log("menu = " + menu);
         const date = dateConversion(startTimestamp);
         const id = parseInt(nextReservation[0].id);
         return client.replyMessage(ev.replyToken,{
@@ -217,7 +234,11 @@ const handlePostbackEvent = async (ev) => {
       askDate(ev,orderedMenu);
   }else if(splitData[0] === 'date'){
       const orderedMenu = splitData[1];
+      //console.log('orderedMenu =' + orderedMenu);
       const selectedDate = ev.postback.params.date;
+      const treatTime = await calcTreatTime(ev.source.userId,orderedMenu);
+      console.log('treatTime in date:',treatTime);
+      checkAllReservation(ev,treatTime);
       askTime(ev,orderedMenu,selectedDate);
   }else if(splitData[0] === 'time'){
       const orderedMenu = splitData[1];
@@ -246,6 +267,10 @@ const handlePostbackEvent = async (ev) => {
     .catch(e=>console.log(e));
   }else if(splitData[0] === 'no'){
     // あとで何か入れる
+    return client.replyMessage(ev.replyToken,{
+      "type":"text",
+      "text":`終了します。`
+  });
   }else if(splitData[0] === 'delete'){
     const id = parseInt(splitData[1]);
     const deleteQuery = {
@@ -642,8 +667,9 @@ const askDate = (ev,orderedMenu) => {
               "contents": [
                 {
                   "type": "text",
-                  "text": "来店希望日を選んでください。",
+                  "text": `来店希望日を選んでください。\n${HOLIDAY}曜日は定休日です`,
                   "size": "md",
+                  "wrap": true,
                   "align": "center"
                 }
               ]
@@ -991,7 +1017,7 @@ const timeConversion = (date,time) => {
 //calcTreatTime(データベースから施術時間をとってくる)
 const calcTreatTime = (id,menu) => {
   return new Promise((resolve,reject)=>{
-    console.log('その2');
+    console.log('menu:',menu);
     const selectQuery = {
       text: 'SELECT * FROM users WHERE line_uid = $1;',
       values: [`${id}`]
@@ -1002,9 +1028,24 @@ const calcTreatTime = (id,menu) => {
         if(res.rows.length){
           const info = res.rows[0];
           const treatArray = [info.cuttime,info.shampootime,info.colortime,info.spatime,INITIAL_TREAT[4],INITIAL_TREAT[5],INITIAL_TREAT[6]];
+          console.log('treatArray = ',treatArray);
           const menuNumber = parseInt(menu);
+          if(menu.indexOf('%') === -1){
+            const　treatTime = treatArray[parseInt(menu)];
+            console.log('合計時間:',treatTime);
+            resolve(treatTime);
+           }else{
+            const splitMenu = menu.split('%')
+            let treatTime = 0;
+            splitMenu.forEach(value=>{
+             treatTime += treatArray[parseInt(value)];
+             });
+            console.log('合計時間：',treatTime);
+            resolve(treatTime);
+           }
           const treatTime = treatArray[menuNumber];
-          resolve(treatTime);
+
+          //resolve(treatTime);
         }else{
           console.log('LINE　IDに一致するユーザーが見つかりません。');
           return;
@@ -1014,8 +1055,8 @@ const calcTreatTime = (id,menu) => {
   });
  }
 
- //予約可能な時間をチェックする
- const checkReservable = (ev,menu,date) => {
+//checkAllReservation（予約データを取り出す）
+const checkReservable = (ev,menu,date) => {
   return new Promise( async (resolve,reject)=>{
     const id = ev.source.userId;
     const treatTime = await calcTreatTime(id,menu);
@@ -1138,6 +1179,25 @@ const calcTreatTime = (id,menu) => {
   });
 }
 
-
-
-
+const finalCheck = (date,startTime,endTime) => {
+  return new Promise((resolve,reject) => {
+    // let answer = null;
+    const select_query = {
+      text:`SELECT * FROM reservations WHERE scheduledate = '${date}';`
+    }
+    connection.query(select_query)
+      .then(res=>{
+        if(res.rows.length){
+          const check = res.rows.some(object=>{
+            return ((startTime>object.starttime && startTime<object.endtime)
+            || (startTime<=object.starttime && endTime>=object.endtime)
+            || (endTime>object.starttime && endTime<object.endtime));
+          });
+          resolve(check);
+        }else{
+          resolve(false);
+        }
+      })
+      .catch(e=>console.log(e));
+  });
+}
