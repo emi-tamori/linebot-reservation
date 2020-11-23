@@ -9,6 +9,7 @@ const INITIAL_TREAT = [20,10,40,15,30,15,10];  //施術時間初期値
 const WEEK = [ "日", "月", "火", "水", "木", "金", "土" ];//曜日の表示を標準化
 const MENU = ['カット','シャンプー','カラーリング','ヘッドスパ','マッサージ＆スパ','顔そり','眉整え'];//メニュー名
 const HOLIDAY = ["月"];//定休日を設定
+const REGULAR_COLOSE = [1]; //定休日の曜日
 const OPENTIME = 9;
 const CLOSETIME = 19;
 const FUTURE_LIMIT = 60; //何日先まで予約可能かの上限
