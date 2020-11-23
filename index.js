@@ -691,7 +691,7 @@ const askDate = (ev,orderedMenu) => {
 }
 
 //askTime関数（「時間を聞く」処理）
-const askTime = (ev,orderedMenu,selectedDate) => {
+const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
   const time = [];
   const color = [];
   //予約時間帯とボタン色配列を生成
