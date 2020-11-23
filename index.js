@@ -10,8 +10,8 @@ const WEEK = [ "日", "月", "火", "水", "木", "金", "土" ];//曜日の表�
 const MENU = ['カット','シャンプー','カラーリング','ヘッドスパ','マッサージ＆スパ','顔そり','眉整え'];//メニュー名
 const HOLIDAY = ["月"];//定休日を設定
 const REGULAR_COLOSE = [1]; //定休日の曜日
-const OPENTIME = 9;
-const CLOSETIME = 19;
+const OPENTIME = 9;//開店時間
+const CLOSETIME = 19;//閉店時間
 const FUTURE_LIMIT = 60; //何日先まで予約可能かの上限
 
 const config = {
@@ -127,50 +127,29 @@ const handleMessageEvent = async (ev) => {
       }else{
         orderChoice(ev);
       }*/
-      orderChoice(ev);
+      orderChoice(ev,'');
     }else if(text === '予約確認'){
       const nextReservation = await checkNextReservation(ev);
-      if(typeof nextReservation === 'undefined'){
-        return client.replyMessage(ev.replyToken,{
-          "type":"text",
-          "text":"次回予約は入っておりません。"
-        });
-      }else if(nextReservation.length){
+      if(nextReservation.length){
         const startTimestamp = nextReservation[0].starttime;
         const date = dateConversion(startTimestamp);
-        const orderedMenu = nextReservation[0].menu;
-        const menu = orderedMenu.split('%');
-        menu.forEach(function(value,index,array){
-          array[index] = MENU[value];
-        });
-        console.log("menu = " + menu);
-        return client.replyMessage(ev.replyToken,{
-        "type":"text",
-        "text":`次回予約は${date}、${menu}でお取りしてます\uDBC0\uDC22`
-        });
-      }
-      else{
+        const menu = MENU[parseInt(nextReservation[0].menu)];
         return client.replyMessage(ev.replyToken,{
           "type":"text",
-          "text":"次回予約は入っておりません。"
+          "text":`次回予約は${date}、${menu}でお取りしてます\uDBC0\uDC22`
         });
+      }else{
+        return client.replyMessage(ev.replyToken,{
+          "type":"text",
+          "text":"次回の予約は入っておりません。"
+        })
       }
+
     }else if(text === '予約キャンセル'){
       const nextReservation = await checkNextReservation(ev);
-      if(typeof nextReservation === 'undefined'){
-        return client.replyMessage(ev.replyToken,{
-          "type":"text",
-          "text":"次回予約は入っておりません。"
-        });
-      }else if(nextReservation.length){
+      if(nextReservation.length){
         const startTimestamp = parseInt(nextReservation[0].starttime);
-        //const menu = MENU[parseInt(nextReservation[0].menu)];
-        const orderedMenu = nextReservation[0].menu;
-        const menu = orderedMenu.split('%');
-        menu.forEach(function(value,index,array){
-          array[index] = MENU[value];
-        });
-        console.log("menu = " + menu);
+        const menu = MENU[parseInt(nextReservation[0].menu)];
         const date = dateConversion(startTimestamp);
         const id = parseInt(nextReservation[0].id);
         return client.replyMessage(ev.replyToken,{
