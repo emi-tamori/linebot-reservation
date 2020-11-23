@@ -236,10 +236,9 @@ const handlePostbackEvent = async (ev) => {
       const orderedMenu = splitData[1];
       //console.log('orderedMenu =' + orderedMenu);
       const selectedDate = ev.postback.params.date;
-      const treatTime = await calcTreatTime(ev.source.userId,orderedMenu);
       console.log('treatTime in date:',treatTime);
-      checkAllReservation(ev,treatTime);
-      askTime(ev,orderedMenu,selectedDate);
+      checkReservable(ev,treatTime);
+      //askTime(ev,orderedMenu,selectedDate);
   }else if(splitData[0] === 'time'){
       const orderedMenu = splitData[1];
       const selectedDate = splitData[2];
@@ -1055,7 +1054,7 @@ const calcTreatTime = (id,menu) => {
   });
  }
 
-//checkAllReservation（予約データを取り出す）
+//checkReservable（予約データを取り出す）
 const checkReservable = (ev,menu,date) => {
   return new Promise( async (resolve,reject)=>{
     const id = ev.source.userId;
@@ -1179,25 +1178,3 @@ const checkReservable = (ev,menu,date) => {
   });
 }
 
-const finalCheck = (date,startTime,endTime) => {
-  return new Promise((resolve,reject) => {
-    // let answer = null;
-    const select_query = {
-      text:`SELECT * FROM reservations WHERE scheduledate = '${date}';`
-    }
-    connection.query(select_query)
-      .then(res=>{
-        if(res.rows.length){
-          const check = res.rows.some(object=>{
-            return ((startTime>object.starttime && startTime<object.endtime)
-            || (startTime<=object.starttime && endTime>=object.endtime)
-            || (endTime>object.starttime && endTime<object.endtime));
-          });
-          resolve(check);
-        }else{
-          resolve(false);
-        }
-      })
-      .catch(e=>console.log(e));
-  });
-}
