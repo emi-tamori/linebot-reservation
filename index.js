@@ -233,12 +233,10 @@ const handlePostbackEvent = async (ev) => {
       const orderedMenu = splitData[1];
       askDate(ev,orderedMenu);
   }else if(splitData[0] === 'date'){
-      const orderedMenu = splitData[1];
-      //console.log('orderedMenu =' + orderedMenu);
-      const selectedDate = ev.postback.params.date;
-      console.log('treatTime in date:',treatTime);
-      checkReservable(ev,treatTime);
-      //askTime(ev,orderedMenu,selectedDate);
+    const orderedMenu = splitData[1];
+    const selectedDate = ev.postback.params.date;
+    checkReservable(ev,orderedMenu,selectedDate);
+    //askTime(ev,orderedMenu,selectedDate);
   }else if(splitData[0] === 'time'){
       const orderedMenu = splitData[1];
       const selectedDate = splitData[2];
