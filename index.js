@@ -1084,7 +1084,7 @@ const checkReservable = (ev,menu,date) => {
         const reservedArray = res.rows.map(object=>{
           return [parseInt(object.starttime),parseInt(object.endtime)];
         });
-        console.log('reservedArray:',reservedArray);//すでに入っている予約の開始時間と終了時間、タイムスタンプで配列の形で出力
+        console.log('reservedArray:',reservedArray);
 
         //各時間のタイムスタンプ
         // herokuサーバー基準なので、日本の時刻は９時間分進んでしまうため、引く
@@ -1100,15 +1100,15 @@ const checkReservable = (ev,menu,date) => {
           const tempArray = [];
           reservedArray.forEach(array=>{
             //パターン0
-            if(array[0]<timeStamps[i] && (array[1]>timeStamps[i] && array[1]<timeStamps[i+1])){
+            if(array[0]<=timeStamps[i] && (array[1]>timeStamps[i] && array[1]<timeStamps[i+1])){
               tempArray.push(array.concat([0]));
             }
             //パターン１
-            else if((array[0]>=timeStamps[i] && array[0]<timeStamps[i+1]) && array[1]>=timeStamps[i+1]){
+            else if((array[0]>timeStamps[i] && array[0]<timeStamps[i+1]) && array[1]>=timeStamps[i+1]){
               tempArray.push(array.concat([1]));
             }
             //パターン２
-            else if((array[0]>=timeStamps[i] && array[0]<timeStamps[i+1])&&(array[1]>array[0] && array[1]<timeStamps[i+1])){
+            else if((array[0]>timeStamps[i] && array[0]<timeStamps[i+1])&&(array[1]>array[0] && array[1]<timeStamps[i+1])){
               tempArray.push(array.concat([2]));
             }
             //パターン３
@@ -1128,7 +1128,8 @@ const checkReservable = (ev,menu,date) => {
               if(pattern === 0 || pattern === 2){
                 separatedByTime[i].push(separatedByTime[i+1][0]);
               }
-            }else{
+            }
+            else{
               //次の時間帯に予約が入っていなければとりあえず、timeStamps[i]から1時間+treatTime分のタイムスタンプを格納
               separatedByTime[i].push([timeStamps[i]+60*60*1000+treatTimeToMs]);
             }
@@ -1153,12 +1154,12 @@ const checkReservable = (ev,menu,date) => {
               console.log('temparray in 0 or 2:',tempArray);
               intervalArray.push(tempArray);
             }else if(pattern === 1){
-              intervalArray.push([separatedByTime[i][0][0]-timeStamps[i],timeStamps[i]]);
+              intervalArray.push([[separatedByTime[i][0][0]-timeStamps[i],timeStamps[i]]]);
             }else if(pattern === 3){
               intervalArray.push([]);
             }
           }else if(i<separatedByTime.length-1 && separatedByTime[i+1].length){
-            intervalArray.push([separatedByTime[i+1][0][0] - timeStamps[i],timeStamps[i]]);
+            intervalArray.push([[separatedByTime[i+1][0][0] - timeStamps[i],timeStamps[i]]]);
           }else{
             intervalArray.push([[60*60*1000+treatTime*60*1000,timeStamps[i]]]);
           }      
