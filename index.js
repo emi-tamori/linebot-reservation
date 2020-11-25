@@ -1065,7 +1065,7 @@ const calcTreatTime = (id,menu) => {
   });
  }
 
-//checkReservable（予約データを取り出す）
+//checkReservable（予約可能な時間をチェックする）
 const checkReservable = (ev,menu,date) => {
   return new Promise( async (resolve,reject)=>{
     const id = ev.source.userId;
@@ -1112,7 +1112,7 @@ const checkReservable = (ev,menu,date) => {
               tempArray.push(array.concat([2]));
             }
             //パターン３
-            else if(array[0]<timeStamps[i] && array[1]>timeStamps[i+1]){
+            else if(array[0]<=timeStamps[i] && array[1]>=timeStamps[i+1]){
               tempArray.push(array.concat([3]));
             }
           });
@@ -1142,6 +1142,7 @@ const checkReservable = (ev,menu,date) => {
         for(let i=0; i<separatedByTime.length; i++){
           //時間帯に予約が入っている場合
           if(separatedByTime[i].length){
+            //separatedByTime[i]の先頭のパターンを取得
             const pattern = separatedByTime[i][0][2];
             //パターン0,2の場合
             if(pattern === 0 || pattern === 2){
@@ -1149,6 +1150,7 @@ const checkReservable = (ev,menu,date) => {
               for(let j=0; j<separatedByTime[i].length-1; j++){
                 tempArray.push([separatedByTime[i][j+1][0]-separatedByTime[i][j][1], separatedByTime[i][j][1]]);
               }
+              console.log('temparray in 0 or 2:',tempArray);
               intervalArray.push(tempArray);
             }else if(pattern === 1){
               intervalArray.push([separatedByTime[i][0][0]-timeStamps[i],timeStamps[i]]);
@@ -1158,7 +1160,7 @@ const checkReservable = (ev,menu,date) => {
           }else if(i<separatedByTime.length-1 && separatedByTime[i+1].length){
             intervalArray.push([separatedByTime[i+1][0][0] - timeStamps[i],timeStamps[i]]);
           }else{
-            intervalArray.push([[60*60*1000*2,timeStamps[i]]]);
+            intervalArray.push([[60*60*1000+treatTime*60*1000,timeStamps[i]]]);
           }      
         }
         
