@@ -12,6 +12,7 @@ const HOLIDAY = ["月"];//定休日を設定
 const REGULAR_COLOSE = [1]; //定休日の曜日
 const OPENTIME = 9;
 const CLOSETIME = 19;
+const FUTURE_LIMIT = 60; //何日先まで予約可能かの上限
 
 const config = {
     channelAccessToken:process.env.ACCESS_TOKEN,
