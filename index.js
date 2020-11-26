@@ -59,6 +59,7 @@ const lineBot = (req,res) => {
     res.status(200).end();
     const events = req.body.events;
     const promises = [];
+
     for(let i=0;i<events.length;i++){
         const ev = events[i];
         switch(ev.type){
@@ -106,26 +107,7 @@ const handleMessageEvent = async (ev) => {
     const text = (ev.message.type === 'text') ? ev.message.text : '';
 
     if(text === '予約する'){
-      const nextReservation = await checkNextReservation(ev);
-      if(nextReservation.length){
-        const startTimestamp = nextReservation[0].starttime;
-        const date = dateConversion(startTimestamp);
-        const orderedMenu = nextReservation[0].menu;
-        console.log("orderedMenu = " + orderedMenu);
-        const menu = orderedMenu.split('%');
-        console.log("menu番号 = " + menu);
-        menu.forEach(function(value,index,array){
-          array[index] = MENU[value];
-        });
-        console.log("menu名 = " + menu);
-        return client.replyMessage(ev.replyToken,{
-          "type":"text",
-          "text":`次回予約は${date}、${menu}でお取りしてます。変更の場合は予約キャンセル後改めて予約をお願いします。`
-        });
-      }else{
-        orderChoice(ev);
-      }
-    //orderChoice(ev);
+      orderChoice(ev);
     }else if(text === '予約確認'){
       const nextReservation = await checkNextReservation(ev);
       if(typeof nextReservation === 'undefined'){
@@ -211,7 +193,8 @@ const handleMessageEvent = async (ev) => {
           "text":"次回予約は入っておりません。"
         });
       }
-    }else{
+    }
+    else{
         return client.replyMessage(ev.replyToken,{
             "type":"text",
             "text":`${profile.displayName}さん、今${text}って言いました？`
@@ -299,6 +282,58 @@ const handlePostbackEvent = async (ev) => {
   });
   }
 }
+
+//dateConversion関数(タイムスタンプを任意の日時、時刻の文字列へ変換)
+ const dateConversion = (timestamp) => {
+  const d = new Date(parseInt(timestamp));
+  const month = d.getMonth()+1;
+  const date = d.getDate();
+  const day = d.getDay();
+  const hour = ('0' + (d.getHours()+9)).slice(-2);
+  const min = ('0' + d.getMinutes()).slice(-2);
+  return `${month}月${date}日(${WEEK[day]}) ${hour}:${min}`;
+ }
+
+//calcTreatTime(データベースから施術時間をとってくる)
+const calcTreatTime = (id,menu) => {
+  return new Promise((resolve,reject)=>{
+    console.log('menu:',menu);
+    const selectQuery = {
+      text: 'SELECT * FROM users WHERE line_uid = $1;',
+      values: [`${id}`]
+    };
+    connection.query(selectQuery)
+      .then(res=>{
+        console.log('その3');
+        if(res.rows.length){
+          const info = res.rows[0];
+          const treatArray = [info.cuttime,info.shampootime,info.colortime,info.spatime,INITIAL_TREAT[4],INITIAL_TREAT[5],INITIAL_TREAT[6]];
+          console.log('treatArray = ',treatArray);
+          const menuNumber = parseInt(menu);
+          if(menu.indexOf('%') === -1){
+            const　treatTime = treatArray[parseInt(menu)];
+            console.log('合計時間:',treatTime);
+            resolve(treatTime);
+           }else{
+            const splitMenu = menu.split('%')
+            let treatTime = 0;
+            splitMenu.forEach(value=>{
+             treatTime += treatArray[parseInt(value)];
+             });
+            console.log('合計時間：',treatTime);
+            resolve(treatTime);
+           }
+          const treatTime = treatArray[menuNumber];
+
+          //resolve(treatTime);
+        }else{
+          console.log('LINE　IDに一致するユーザーが見つかりません。');
+          return;
+        }
+      })
+      .catch(e=>console.log(e));
+  });
+ }
 
 //orderChoice関数(「予約する」処理。Flex Message表示)
 const orderChoice = (ev) => {
@@ -475,168 +510,25 @@ const orderChoice = (ev) => {
   });
 }
 
-//otherChoice関数(「他のメニューを予約する」処理。Flex Message表示)
-const otherChoice = (ev,orderedMenu) => {
-  const splitData = orderedMenu.split('%');
-    console.log(splitData);
-
-  splitData.forEach(function( value, index, array ) {
-    array[index] = MENU[value];
-  });
-  console.log(splitData);
+//askDate関数（「予約日を聞く」処理）
+const askDate = (ev,orderedMenu) => {
 
   return client.replyMessage(ev.replyToken,{
       "type":"flex",
-      "altText":"menuSelect",
+      "altText":"予約日選択",
       "contents":
       {
           "type": "bubble",
-          "header": {
-            "type": "box",
-            "layout": "vertical",
-            "contents": [
-              {
-                "type": "text",
-                "text": "他にご希望はありますか？",
-                "size": "lg",
-                "align": "center"
-              }
-            ]
-          },
-          "hero": {
-            "type": "box",
-            "layout": "vertical",
-            "contents": [
-              {
-                "type": "text",
-                "text": `選択中：${splitData}`,
-                "size": "md",
-                "align": "center"
-              },
-              {
-                "type": "separator"
-              }
-            ]
-          },
           "body": {
             "type": "box",
             "layout": "vertical",
             "contents": [
               {
-                "type": "box",
-                "layout": "horizontal",
-                "contents": [
-                  {
-                    "type": "button",
-                    "action": {
-                      "type": "postback",
-                      "label": "カット",
-                      "data": `menu&${orderedMenu}%0`
-                    },
-                    "margin": "md",
-                    "style": "primary",
-                    "color": "#999999"
-                  },
-                  {
-                    "type": "button",
-                    "action": {
-                      "type": "postback",
-                      "label": "シャンプー",
-                      "data": `menu&${orderedMenu}%1`
-                    },
-                    "margin": "md",
-                    "style": "primary",
-                    "color": "#999999"
-                  }
-                ],
-                "margin": "md"
-              },
-              {
-                "type": "box",
-                "layout": "horizontal",
-                "contents": [
-                  {
-                    "type": "button",
-                    "action": {
-                      "type": "postback",
-                      "label": "カラーリング",
-                      "data": `menu&${orderedMenu}%2`
-                    },
-                    "margin": "md",
-                    "style": "primary",
-                    "color": "#999999"
-                  },
-                  {
-                    "type": "button",
-                    "action": {
-                      "type": "postback",
-                      "label": "ヘッドスパ",
-                      "data": `menu&${orderedMenu}%3`
-                    },
-                    "margin": "md",
-                    "style": "primary",
-                    "color": "#999999"
-                  }
-                ],
-                "margin": "md"
-              },
-              {
-                "type": "box",
-                "layout": "horizontal",
-                "contents": [
-                  {
-                    "type": "button",
-                    "action": {
-                      "type": "postback",
-                      "label": "マッサージ＆スパ",
-                      "data": `menu&${orderedMenu}%4`
-                    },
-                    "margin": "md",
-                    "style": "primary",
-                    "color": "#999999"
-                  },
-                  {
-                    "type": "button",
-                    "action": {
-                      "type": "postback",
-                      "label": "顔そり",
-                      "data": `menu&${orderedMenu}%5`
-                    },
-                    "margin": "md",
-                    "style": "primary",
-                    "color": "#999999"
-                  }
-                ],
-                "margin": "md"
-              },
-              {
-                "type": "box",
-                "layout": "horizontal",
-                "contents": [
-                  {
-                    "type": "button",
-                    "action": {
-                      "type": "postback",
-                      "label": "眉整え",
-                      "data": `menu&${orderedMenu}%6`
-                    },
-                    "margin": "md",
-                    "style": "primary",
-                    "color": "#999999"
-                  },
-                  {
-                    "type": "button",
-                    "action": {
-                      "type": "postback",
-                      "label": "選択終了",
-                      "data": `end&${orderedMenu}`
-                    },
-                    "margin": "md",
-                    "style": "primary",
-                    "color": "#0000ff"
-                  }
-                ],
-                "margin": "md"
+                "type": "text",
+                "text": `来店希望日を選んでください。\n${HOLIDAY}曜日は定休日です`,
+                "size": "md",
+                "wrap": true,
+                "align": "center"
               }
             ]
           },
@@ -647,56 +539,16 @@ const otherChoice = (ev,orderedMenu) => {
               {
                 "type": "button",
                 "action": {
-                  "type": "postback",
-                  "data": "cancel",
-                  "label": "キャンセル"
+                  "type": "datetimepicker",
+                  "label": "希望日を選択する",
+                  "data": `date&${orderedMenu}`,
+                  "mode": "date"
                 }
               }
             ]
           }
         }
   });
-}
-
-//askDate関数（「予約日を聞く」処理）
-const askDate = (ev,orderedMenu) => {
-
-    return client.replyMessage(ev.replyToken,{
-        "type":"flex",
-        "altText":"予約日選択",
-        "contents":
-        {
-            "type": "bubble",
-            "body": {
-              "type": "box",
-              "layout": "vertical",
-              "contents": [
-                {
-                  "type": "text",
-                  "text": `来店希望日を選んでください。\n${HOLIDAY}曜日は定休日です`,
-                  "size": "md",
-                  "wrap": true,
-                  "align": "center"
-                }
-              ]
-            },
-            "footer": {
-              "type": "box",
-              "layout": "vertical",
-              "contents": [
-                {
-                  "type": "button",
-                  "action": {
-                    "type": "datetimepicker",
-                    "label": "希望日を選択する",
-                    "data": `date&${orderedMenu}`,
-                    "mode": "date"
-                  }
-                }
-              ]
-            }
-          }
-    });
 }
 
 //askTime関数（「時間を聞く」処理）
@@ -892,37 +744,7 @@ const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
     });
  }
 
- //checkNextReservation関数(未来の予約があるかどうかを確認)
- const checkNextReservation = (ev) => {
-  return new Promise((resolve,reject)=>{
-    const id = ev.source.userId;
-    const nowTime = new Date().getTime();
-    console.log('nowTime:',nowTime);
-
-    const selectQuery = {
-      text:'SELECT * FROM reservations;'
-    };
-    connection.query(selectQuery)
-      .then(res=>{
-        console.log('res.rows:',res.rows);
-        if(res.rows.length){
-          const nextReservation = res.rows.filter(object1=>{
-            return object1.line_uid === id;
-          })
-          .filter(object2=>{
-            return parseInt(object2.starttime) >= nowTime;
-          });
-          console.log('nextReservation:',nextReservation);
-          resolve(nextReservation);
-        }else{
-          resolve([]);
-        }
-      })
-      .catch(e=>console.log(e));
-  });
-}
-
-//confirmation()予約確認をリプライする
+//confirmation関数（予約確認をリプライする）
 const confirmation = (ev,menu,date,time) => {
   const splitDate = date.split('-');
   console.log('splitDate = '+splitDate);
@@ -978,66 +800,38 @@ const confirmation = (ev,menu,date,time) => {
     }
   });
  }
-   
-//timeConversion関数(日付、時刻をタイムスタンプ形式へ変更)
-const timeConversion = (date,time) => {
-  const selectedTime = 9 + parseInt(time) - 9;
-  return new Date(`${date} ${selectedTime}:00`).getTime();
-}
 
- //dateConversion関数(タイムスタンプを任意の日時、時刻の文字列へ変換)
- const dateConversion = (timestamp) => {
-  const d = new Date(parseInt(timestamp));
-  const month = d.getMonth()+1;
-  const date = d.getDate();
-  const day = d.getDay();
-  const hour = ('0' + (d.getHours()+9)).slice(-2);
-  const min = ('0' + d.getMinutes()).slice(-2);
-  return `${month}月${date}日(${WEEK[day]}) ${hour}:${min}`;
- }
-
-//calcTreatTime(データベースから施術時間をとってくる)
-const calcTreatTime = (id,menu) => {
+//checkNextReservation関数(未来の予約があるかどうかを確認)
+ const checkNextReservation = (ev) => {
   return new Promise((resolve,reject)=>{
-    console.log('menu:',menu);
+    const id = ev.source.userId;
+    const nowTime = new Date().getTime();
+    console.log('nowTime:',nowTime);
+
     const selectQuery = {
-      text: 'SELECT * FROM users WHERE line_uid = $1;',
-      values: [`${id}`]
+      text:'SELECT * FROM reservations;'
     };
     connection.query(selectQuery)
       .then(res=>{
-        console.log('その3');
+        console.log('res.rows:',res.rows);
         if(res.rows.length){
-          const info = res.rows[0];
-          const treatArray = [info.cuttime,info.shampootime,info.colortime,info.spatime,INITIAL_TREAT[4],INITIAL_TREAT[5],INITIAL_TREAT[6]];
-          console.log('treatArray = ',treatArray);
-          const menuNumber = parseInt(menu);
-          if(menu.indexOf('%') === -1){
-            const　treatTime = treatArray[parseInt(menu)];
-            console.log('合計時間:',treatTime);
-            resolve(treatTime);
-           }else{
-            const splitMenu = menu.split('%')
-            let treatTime = 0;
-            splitMenu.forEach(value=>{
-             treatTime += treatArray[parseInt(value)];
-             });
-            console.log('合計時間：',treatTime);
-            resolve(treatTime);
-           }
-          const treatTime = treatArray[menuNumber];
-
-          //resolve(treatTime);
+          const nextReservation = res.rows.filter(object1=>{
+            return object1.line_uid === id;
+          })
+          .filter(object2=>{
+            return parseInt(object2.starttime) >= nowTime;
+          });
+          console.log('nextReservation:',nextReservation);
+          resolve(nextReservation);
         }else{
-          console.log('LINE　IDに一致するユーザーが見つかりません。');
-          return;
+          resolve([]);
         }
       })
       .catch(e=>console.log(e));
   });
- }
+}
 
-//checkReservable（予約可能な時間をチェックする）
+//checkReservable関数（予約可能な時間をチェックする）
 const checkReservable = (ev,menu,date) => {
   return new Promise( async (resolve,reject)=>{
     const id = ev.source.userId;
@@ -1163,3 +957,223 @@ const checkReservable = (ev,menu,date) => {
       .catch(e=>console.log(e));
   });
 }
+
+//finalCheck関数
+const finalCheck = (date,startTime,endTime) => {
+  return new Promise((resolve,reject) => {
+    const select_query = {
+      text:`SELECT * FROM reservations WHERE scheduledate = '${date}';`
+    }
+    connection.query(select_query)
+      .then(res=>{
+        if(res.rows.length){
+          const check = res.rows.some(object=>{
+            return ((startTime>object.starttime && startTime<object.endtime)
+            || (startTime<=object.starttime && endTime>=object.endtime)
+            || (endTime>object.starttime && endTime<object.endtime));
+          });
+          resolve(check);
+        }else{
+          resolve(false);
+        }
+      })
+      .catch(e=>console.log(e));
+  });
+}
+
+
+
+
+//otherChoice関数(「他のメニューを予約する」処理。Flex Message表示)
+/*const otherChoice = (ev,orderedMenu) => {
+  const splitData = orderedMenu.split('%');
+    console.log(splitData);
+
+  splitData.forEach(function( value, index, array ) {
+    array[index] = MENU[value];
+  });
+  console.log(splitData);
+
+  return client.replyMessage(ev.replyToken,{
+      "type":"flex",
+      "altText":"menuSelect",
+      "contents":
+      {
+          "type": "bubble",
+          "header": {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+              {
+                "type": "text",
+                "text": "他にご希望はありますか？",
+                "size": "lg",
+                "align": "center"
+              }
+            ]
+          },
+          "hero": {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+              {
+                "type": "text",
+                "text": `選択中：${splitData}`,
+                "size": "md",
+                "align": "center"
+              },
+              {
+                "type": "separator"
+              }
+            ]
+          },
+          "body": {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+              {
+                "type": "box",
+                "layout": "horizontal",
+                "contents": [
+                  {
+                    "type": "button",
+                    "action": {
+                      "type": "postback",
+                      "label": "カット",
+                      "data": `menu&${orderedMenu}%0`
+                    },
+                    "margin": "md",
+                    "style": "primary",
+                    "color": "#999999"
+                  },
+                  {
+                    "type": "button",
+                    "action": {
+                      "type": "postback",
+                      "label": "シャンプー",
+                      "data": `menu&${orderedMenu}%1`
+                    },
+                    "margin": "md",
+                    "style": "primary",
+                    "color": "#999999"
+                  }
+                ],
+                "margin": "md"
+              },
+              {
+                "type": "box",
+                "layout": "horizontal",
+                "contents": [
+                  {
+                    "type": "button",
+                    "action": {
+                      "type": "postback",
+                      "label": "カラーリング",
+                      "data": `menu&${orderedMenu}%2`
+                    },
+                    "margin": "md",
+                    "style": "primary",
+                    "color": "#999999"
+                  },
+                  {
+                    "type": "button",
+                    "action": {
+                      "type": "postback",
+                      "label": "ヘッドスパ",
+                      "data": `menu&${orderedMenu}%3`
+                    },
+                    "margin": "md",
+                    "style": "primary",
+                    "color": "#999999"
+                  }
+                ],
+                "margin": "md"
+              },
+              {
+                "type": "box",
+                "layout": "horizontal",
+                "contents": [
+                  {
+                    "type": "button",
+                    "action": {
+                      "type": "postback",
+                      "label": "マッサージ＆スパ",
+                      "data": `menu&${orderedMenu}%4`
+                    },
+                    "margin": "md",
+                    "style": "primary",
+                    "color": "#999999"
+                  },
+                  {
+                    "type": "button",
+                    "action": {
+                      "type": "postback",
+                      "label": "顔そり",
+                      "data": `menu&${orderedMenu}%5`
+                    },
+                    "margin": "md",
+                    "style": "primary",
+                    "color": "#999999"
+                  }
+                ],
+                "margin": "md"
+              },
+              {
+                "type": "box",
+                "layout": "horizontal",
+                "contents": [
+                  {
+                    "type": "button",
+                    "action": {
+                      "type": "postback",
+                      "label": "眉整え",
+                      "data": `menu&${orderedMenu}%6`
+                    },
+                    "margin": "md",
+                    "style": "primary",
+                    "color": "#999999"
+                  },
+                  {
+                    "type": "button",
+                    "action": {
+                      "type": "postback",
+                      "label": "選択終了",
+                      "data": `end&${orderedMenu}`
+                    },
+                    "margin": "md",
+                    "style": "primary",
+                    "color": "#0000ff"
+                  }
+                ],
+                "margin": "md"
+              }
+            ]
+          },
+          "footer": {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+              {
+                "type": "button",
+                "action": {
+                  "type": "postback",
+                  "data": "cancel",
+                  "label": "キャンセル"
+                }
+              }
+            ]
+          }
+        }
+  });
+}*/
+ 
+//timeConversion関数(日付、時刻をタイムスタンプ形式へ変更)
+/*const timeConversion = (date,time) => {
+  const selectedTime = 9 + parseInt(time) - 9;
+  return new Date(`${date} ${selectedTime}:00`).getTime();
+}*/
+
+
+
+
+
