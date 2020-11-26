@@ -272,7 +272,6 @@ const handlePostbackEvent = async (ev) => {
     })
     .catch(e=>console.log(e));
   }else if(splitData[0] === 'no'){
-    // あとで何か入れる
     return client.replyMessage(ev.replyToken,{
       "type":"text",
       "text":`終了します。`
@@ -971,7 +970,8 @@ const confirmation = (ev,menu,date,time) => {
             "contents": [
               {
                 "type": "text",
-                "text": `次回予約は${splitDate[1]}月${splitDate[2]}日 ${selectedTime}時〜でよろしいですか？`,
+                //"text": `次回予約は${splitDate[1]}月${splitDate[2]}日 ${selectedTime}時〜でよろしいですか？`,
+                "text":  `次回予約は${proposalTime}でよろしいですか？`,
                 "size": "lg",
                 "wrap": true
               }
