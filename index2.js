@@ -55,20 +55,6 @@ connection.query(create_userTable)
   })
   .catch(e=>console.log(e));
 
-//Gmail用設定
-// const smtp_config = {
-//   service: 'gmail',
-//   host: 'smtp.gmail.com',
-//   port: 465,
-//   secure: true,
-//   auth:{
-//     user:'kentaro523@gmail.com',
-//     pass:'python357'
-//   }
-// };
-
-// const transporter = nodemailer.createTransport(smtp_config);
-
 app
     .use(express.static(path.join(__dirname,'public')))
     .use(multipart())
@@ -222,7 +208,6 @@ const handlePostbackEvent = async (ev) => {
         const newOrdered = splitData[2];
         const orderedMenu = ordered ? ordered + '%' + newOrdered : newOrdered;
         orderChoice(ev,orderedMenu);
-        // askDate(ev,orderedMenu);
     }
 
     else if(splitData[0] === 'end'){
@@ -308,7 +293,7 @@ const handlePostbackEvent = async (ev) => {
         const endTime = fixedTime + treatTime*60*1000;
 
         //予約確定前の最終チェック→予約ブッキング無しfalse、予約ブッキングありtrue
-        const check = finalCheck(selectedDate,fixedTime,endTime);
+        const check = await finalCheck(selectedDate,fixedTime,endTime);
 
         if(!check){
           const insertQuery = {
@@ -322,18 +307,6 @@ const handlePostbackEvent = async (ev) => {
                 "type":"text",
                 "text":"予約が完了しました。"
               });
-              //Gmail送信
-              // const message = {
-              //   from: 'kentaro523@gmail.com',
-              //   to: 'kenkenkentaro523@gmail.com',
-              //   subject: 'test',
-              //   text: 'test body'
-              // };
-  
-              // transporter.sendMail(message,(err,response)=>{
-              //   if(err) console.error(err);
-              //   console.log(response);
-              // });
             })
             .catch(e=>console.log(e));
         }else{
@@ -1017,19 +990,19 @@ const checkReservable = (ev,menu,date) => {
           const tempArray = [];
           reservedArray.forEach(array=>{
             //パターン0
-            if(array[0]<timeStamps[i] && (array[1]>timeStamps[i] && array[1]<timeStamps[i+1])){
+            if(array[0]<=timeStamps[i] && (array[1]>timeStamps[i] && array[1]<timeStamps[i+1])){
               tempArray.push(array.concat([0]));
             }
             //パターン１
-            else if((array[0]>=timeStamps[i] && array[0]<timeStamps[i+1]) && array[1]>=timeStamps[i+1]){
+            else if((array[0]>timeStamps[i] && array[0]<timeStamps[i+1]) && array[1]>=timeStamps[i+1]){
               tempArray.push(array.concat([1]));
             }
             //パターン２
-            else if((array[0]>=timeStamps[i] && array[0]<timeStamps[i+1])&&(array[1]>array[0] && array[1]<timeStamps[i+1])){
+            else if((array[0]>timeStamps[i] && array[0]<timeStamps[i+1])&&(array[1]>array[0] && array[1]<timeStamps[i+1])){
               tempArray.push(array.concat([2]));
             }
             //パターン３
-            else if(array[0]<timeStamps[i] && array[1]>timeStamps[i+1]){
+            else if(array[0]<=timeStamps[i] && array[1]>=timeStamps[i+1]){
               tempArray.push(array.concat([3]));
             }
           });
@@ -1045,7 +1018,8 @@ const checkReservable = (ev,menu,date) => {
               if(pattern === 0 || pattern === 2){
                 separatedByTime[i].push(separatedByTime[i+1][0]);
               }
-            }else{
+            }
+            else{
               //次の時間帯に予約が入っていなければとりあえず、timeStamps[i]から1時間+treatTime分のタイムスタンプを格納
               separatedByTime[i].push([timeStamps[i]+60*60*1000+treatTimeToMs]);
             }
@@ -1059,6 +1033,7 @@ const checkReservable = (ev,menu,date) => {
         for(let i=0; i<separatedByTime.length; i++){
           //時間帯に予約が入っている場合
           if(separatedByTime[i].length){
+            //separatedByTime[i]の先頭のパターンを取得
             const pattern = separatedByTime[i][0][2];
             //パターン0,2の場合
             if(pattern === 0 || pattern === 2){
@@ -1066,16 +1041,17 @@ const checkReservable = (ev,menu,date) => {
               for(let j=0; j<separatedByTime[i].length-1; j++){
                 tempArray.push([separatedByTime[i][j+1][0]-separatedByTime[i][j][1], separatedByTime[i][j][1]]);
               }
+              console.log('temparray in 0 or 2:',tempArray);
               intervalArray.push(tempArray);
             }else if(pattern === 1){
-              intervalArray.push([separatedByTime[i][0][0]-timeStamps[i],timeStamps[i]]);
+              intervalArray.push([[separatedByTime[i][0][0]-timeStamps[i],timeStamps[i]]]);
             }else if(pattern === 3){
               intervalArray.push([]);
             }
           }else if(i<separatedByTime.length-1 && separatedByTime[i+1].length){
-            intervalArray.push([separatedByTime[i+1][0][0] - timeStamps[i],timeStamps[i]]);
+            intervalArray.push([[separatedByTime[i+1][0][0] - timeStamps[i],timeStamps[i]]]);
           }else{
-            intervalArray.push([[60*60*1000*2,timeStamps[i]]]);
+            intervalArray.push([[60*60*1000+treatTime*60*1000,timeStamps[i]]]);
           }      
         }
         
@@ -1108,7 +1084,6 @@ const checkReservable = (ev,menu,date) => {
 
 const finalCheck = (date,startTime,endTime) => {
   return new Promise((resolve,reject) => {
-    // let answer = null;
     const select_query = {
       text:`SELECT * FROM reservations WHERE scheduledate = '${date}';`
     }

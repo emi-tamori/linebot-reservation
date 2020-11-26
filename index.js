@@ -924,7 +924,18 @@ const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
 //confirmation()予約確認をリプライする
 const confirmation = (ev,menu,date,time) => {
     const splitDate = date.split('-');
+    console.log('splitDate = '+splitDate);
     const selectedTime = 9 + parseInt(time);
+    console.log('selectedTime = ' + selectedTime);
+    const reservableArray = await checkReservable(ev,menu,date);
+    console.log('reservableArra =', reservableArra);
+    const candidates = reservableArray[parseInt(time)];
+    console.log('candidates = '+candidates);
+    const n_dash = (n>=candidates.length-1) ? -1 : n+1;
+    console.log('n_dash:',n_dash);
+
+    const proposalTime = dateConversion(candidates[n])
+    console.log('proposalTime='+proposalTime);
     
     //現在時刻のタイムスタンプを取得
     const present = new Date().getTime();
@@ -986,7 +997,7 @@ const confirmation = (ev,menu,date,time) => {
                 "action": {
                   "type": "postback",
                   "label": "はい",
-                  "data": `yes&${menu}&${date}&${time}`
+                  "data": `yes&${menu}&${date}&${candidates[n]}`
                 }
               },
               {
@@ -994,7 +1005,7 @@ const confirmation = (ev,menu,date,time) => {
                 "action": {
                   "type": "postback",
                   "label": "いいえ",
-                  "data": `no&${menu}&${date}&${time}`
+                  "data": `no&${menu}&${date}&${time}&${n_dash}`
                 }
               }
             ]
