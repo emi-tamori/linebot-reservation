@@ -106,7 +106,7 @@ const handleMessageEvent = async (ev) => {
     const text = (ev.message.type === 'text') ? ev.message.text : '';
 
     if(text === '予約する'){
-      /*const nextReservation = await checkNextReservation(ev);
+      const nextReservation = await checkNextReservation(ev);
       if(nextReservation.length){
         const startTimestamp = nextReservation[0].starttime;
         const date = dateConversion(startTimestamp);
@@ -124,8 +124,8 @@ const handleMessageEvent = async (ev) => {
         });
       }else{
         orderChoice(ev);
-      }*/
-      orderChoice(ev);
+      }
+      //orderChoice(ev);
     }else if(text === '予約確認'){
       const nextReservation = await checkNextReservation(ev);
       if(typeof nextReservation === 'undefined'){
@@ -272,6 +272,7 @@ const handlePostbackEvent = async (ev) => {
     })
     .catch(e=>console.log(e));
   }else if(splitData[0] === 'no'){
+    // あとで何か入れる
     return client.replyMessage(ev.replyToken,{
       "type":"text",
       "text":`終了します。`
@@ -924,18 +925,7 @@ const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
 //confirmation()予約確認をリプライする
 const confirmation = (ev,menu,date,time) => {
     const splitDate = date.split('-');
-    console.log('splitDate = '+splitDate);
     const selectedTime = 9 + parseInt(time);
-    console.log('selectedTime = ' + selectedTime);
-    const reservableArray = await checkReservable(ev,menu,date);
-    console.log('reservableArra =', reservableArra);
-    const candidates = reservableArray[parseInt(time)];
-    console.log('candidates = '+candidates);
-    const n_dash = (n>=candidates.length-1) ? -1 : n+1;
-    console.log('n_dash:',n_dash);
-
-    const proposalTime = dateConversion(candidates[n])
-    console.log('proposalTime='+proposalTime);
     
     //現在時刻のタイムスタンプを取得
     const present = new Date().getTime();
@@ -981,8 +971,7 @@ const confirmation = (ev,menu,date,time) => {
             "contents": [
               {
                 "type": "text",
-                //"text": `次回予約は${splitDate[1]}月${splitDate[2]}日 ${selectedTime}時〜でよろしいですか？`,
-                "text":  `次回予約は${proposalTime}でよろしいですか？`,
+                "text": `次回予約は${splitDate[1]}月${splitDate[2]}日 ${selectedTime}時〜でよろしいですか？`,
                 "size": "lg",
                 "wrap": true
               }
@@ -997,7 +986,7 @@ const confirmation = (ev,menu,date,time) => {
                 "action": {
                   "type": "postback",
                   "label": "はい",
-                  "data": `yes&${menu}&${date}&${candidates[n]}`
+                  "data": `yes&${menu}&${date}&${time}`
                 }
               },
               {
@@ -1005,7 +994,7 @@ const confirmation = (ev,menu,date,time) => {
                 "action": {
                   "type": "postback",
                   "label": "いいえ",
-                  "data": `no&${menu}&${date}&${time}&${n_dash}`
+                  "data": `no&${menu}&${date}&${time}`
                 }
               }
             ]
@@ -1199,5 +1188,3 @@ const checkReservable = (ev,menu,date) => {
       .catch(e=>console.log(e));
   });
 }
-
-
