@@ -840,7 +840,7 @@ const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
                     "color": `${color[9]}`,
                     "margin": "md"
                   },
-                  {
+                  /*{
                     "type": "button",
                     "action": {
                       "type": "postback",
@@ -850,13 +850,13 @@ const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
                     "style": "primary",
                     "color": "#999999",
                     "margin": "md"
-                  },
+                  },*/
                   {
                     "type": "button",
                     "action": {
                       "type": "postback",
-                      "label": " ",
-                      "data": "null"
+                      "label": "キャンセル",
+                      "data": "cancel"
                     },
                     "style": "primary",
                     "color": "#999999",
