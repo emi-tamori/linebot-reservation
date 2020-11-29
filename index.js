@@ -287,7 +287,6 @@ const handlePostbackEvent = async (ev) => {
 
     //予約不可の時間帯は-1が返ってくるためそれを条件分岐
     if(selectedTime >= 0){
-      console.log('selectedTime = ',selectedTime);
       confirmation(ev,orderedMenu,selectedDate,selectedTime,0);
     }else{
       return client.replyMessage(ev.replyToken,{
@@ -1319,6 +1318,7 @@ const finalCheck = (date,startTime,endTime) => {
   const selectedTime = 9 + parseInt(time) - 9;
   return new Date(`${date} ${selectedTime}:00`).getTime();
 }*/
+
 
 
 
