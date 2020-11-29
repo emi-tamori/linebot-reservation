@@ -111,7 +111,7 @@ const handleMessageEvent = async (ev) => {
     if(text === '予約する'){
       const nextReservation = await checkNextReservation(ev);
       if(nextReservation.length){
-        const startTimestamp = linebot-reservation[0].starttime;
+        const startTimestamp = nextReservation[0].starttime;
         const date = dateConversion(startTimestamp);
         const orderedMenu = nextReservation[0].menu;
         console.log("orderedMenu = " + orderedMenu);
