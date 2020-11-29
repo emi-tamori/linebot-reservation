@@ -111,7 +111,7 @@ const handleMessageEvent = async (ev) => {
     if(text === '予約する'){
       const nextReservation = await checkNextReservation(ev);
       if(nextReservation.length){
-        const startTimestamp = nextReservation[0].starttime;
+        const startTimestamp = linebot-reservation[0].starttime;
         const date = dateConversion(startTimestamp);
         const orderedMenu = nextReservation[0].menu;
         console.log("orderedMenu = " + orderedMenu);
@@ -167,7 +167,7 @@ const handleMessageEvent = async (ev) => {
         const startTimestamp = parseInt(nextReservation[0].starttime);
         const menu = MENU[parseInt(nextReservation[0].menu)];
         const date = dateConversion(startTimestamp);
-        
+
         const id = parseInt(nextReservation[0].id);
         return client.replyMessage(ev.replyToken,{
           "type":"flex",
@@ -287,6 +287,7 @@ const handlePostbackEvent = async (ev) => {
 
     //予約不可の時間帯は-1が返ってくるためそれを条件分岐
     if(selectedTime >= 0){
+      console.log('selectedTime = ',selectedTime);
       confirmation(ev,orderedMenu,selectedDate,selectedTime,0);
     }else{
       return client.replyMessage(ev.replyToken,{
