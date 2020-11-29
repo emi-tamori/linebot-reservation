@@ -284,9 +284,14 @@ const handlePostbackEvent = async (ev) => {
     const orderedMenu = splitData[1];
     const selectedDate = splitData[2];
     const selectedTime = splitData[3];
+    //過ぎた時間
+    const targetDateTime = new Date(`${selectedDate} ${9+parseInt(selectedTime)}:00`).getTime() - 9*60*60*1000;
+    console.log('targetDateTime:',targetDateTime);
+    const nowTime = new Date().getTime();
+    console.log('nowTime:',nowTime);
 
     //予約不可の時間帯は-1が返ってくるためそれを条件分岐
-    if(selectedTime >= 0){
+    if(selectedTime >= 0 && targetDateTime > nowTime){
       confirmation(ev,orderedMenu,selectedDate,selectedTime,0);
     }else{
       return client.replyMessage(ev.replyToken,{
