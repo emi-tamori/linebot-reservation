@@ -226,17 +226,15 @@ const handlePostbackEvent = async (ev) => {
   const data = ev.postback.data;
   const splitData = data.split('&');
   const timeLimit = ev.postback.timeStamps;
-  const overTime = parseIn(timeLimit) + TIME_LIMIT;
 
   if(splitData[0] === 'menu'){
     console.log('timeLimit ='+timeLimit);
-    console.log('overTime' + overTime);
-    if(timeLimit > timeLimit + TIME_LIMIT){
+    /*if(timeLimit > timeLimit + TIME_LIMIT){
       return client.replyMessage(ev.replyToken,{
         "type":"text",
         "text":"3分以上経過しました。"
       });
-    }
+    }*/
     const ordered = splitData[1];
     const newOrdered = splitData[2];
     const orderedMenu = ordered ? ordered + '%' + newOrdered : newOrdered;
