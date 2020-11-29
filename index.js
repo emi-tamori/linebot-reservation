@@ -226,7 +226,7 @@ const handlePostbackEvent = async (ev) => {
   const data = ev.postback.data;
   const splitData = data.split('&');
   const timeLimit = ev.postback.timeStamps;
-  const overTime = timeLimit + TIME_LIMIT;
+  const overTime = parseIn(timeLimit) + TIME_LIMIT;
 
   if(splitData[0] === 'menu'){
     console.log('timeLimit ='+timeLimit);
