@@ -167,6 +167,7 @@ const handleMessageEvent = async (ev) => {
         const startTimestamp = parseInt(nextReservation[0].starttime);
         const menu = MENU[parseInt(nextReservation[0].menu)];
         const date = dateConversion(startTimestamp);
+        
         const id = parseInt(nextReservation[0].id);
         return client.replyMessage(ev.replyToken,{
           "type":"flex",
