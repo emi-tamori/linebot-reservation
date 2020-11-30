@@ -225,7 +225,7 @@ const handlePostbackEvent = async (ev) => {
   const profile = await client.getProfile(ev.source.userId);
   const data = ev.postback.data;
   const splitData = data.split('&');
-  const timeLimit = ev.postback.timeStamps;
+  const timeLimit = ev.postback.timestamp;
 
   if(splitData[0] === 'menu'){
     console.log('timeLimit ='+timeLimit);
