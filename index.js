@@ -295,12 +295,17 @@ const handlePostbackEvent = async (ev) => {
       if(selectedTime >= 0){
         confirmation(ev,orderedMenu,selectedDate,selectedTime,0);
       }else{
-            return client.replyMessage(ev.replyToken,{
-              "type":"text",
-              "text":"申し訳ありません。この時間帯には予約可能な時間がありません><;"
-            });
-          }
-    }
+        return client.replyMessage(ev.replyToken,{
+          "type":"text",
+          "text":"申し訳ありません。この時間帯には予約可能な時間がありません><;"
+        });
+      }
+    }else{
+      return client.replyMessage(ev.replyToken,{
+        "type":"text",
+        "text":"申し訳ありません。過去の時間は選べません><;"
+      });
+}
   }else if(splitData[0] === 'yes'){
     const orderedMenu = splitData[1];
         const selectedDate = splitData[2];
