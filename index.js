@@ -1013,7 +1013,7 @@ const checkReservable = (ev,menu,date) => {
         //各時間のタイムスタンプ
         // herokuサーバー基準なので、日本の時刻は９時間分進んでしまうため、引く
         const timeStamps = [];
-        for(let i=OPENTIME; i<CLOSETIME; i++){
+        for(let i=OPENTIME; i<CLOSETIME+1; i++){
           timeStamps.push(new Date(`${date} ${i}:00`).getTime()-9*60*60*1000);
         }
         console.log('timestamps',timeStamps);
