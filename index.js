@@ -1043,24 +1043,33 @@ const checkReservable = (ev,menu,date) => {
           separatedByTime.push(tempArray);
         }
 
+        console.log('separatedByTime1:',separatedByTime);
+
         //ある時間帯の最後の要素がパターン0とパターン2の場合、次の時間帯の最初の要素を加える
         for(let i=0; i<separatedByTime.length; i++){
-          if(separatedByTime[i].length){
+          //対象時間帯の予約が存在し、かつ最後の時間帯でない場合
+          if(separatedByTime[i].length && i !== separatedByTime.length-1){
+            //次の時間帯の予約が存在する場合
             if(separatedByTime[i+1].length){
+              //パターン0,2の場合は、次の時間帯の最初の予約のstarttimeを加える
               const l = separatedByTime[i].length - 1;
               const pattern = separatedByTime[i][l][2];
-              if(pattern === 0 || pattern === 2){
-                separatedByTime[i].push(separatedByTime[i+1][0]);
-              }
+              if(pattern === 0 || pattern === 2) separatedByTime[i].push(separatedByTime[i+1][0]);
             }
             else{
               //次の時間帯に予約が入っていなければとりあえず、timeStamps[i]から1時間+treatTime分のタイムスタンプを格納
               separatedByTime[i].push([timeStamps[i]+60*60*1000+treatTimeToMs]);
             }
           }
+          //対象時間帯の予約が存在し、かつ最後の時間帯の場合（separatedByTime[i+1]を検知できないため特別扱いする）
+          else if(separatedByTime[i].length && i === separatedByTime.length-1){
+            const l = separatedByTime[i].length - 1;
+            const pattern = separatedByTime[i][l][2];
+            if(pattern === 0 || pattern === 2) separatedByTime[i].push([timeStamps[i] + 60*60*1000 + treatTimeToMs]);
+          }
         }
 
-        console.log('separatedByTime:',separatedByTime);
+        console.log('separatedByTime2:',separatedByTime);
 
         //予約と予約の間隔を格納する3次元配列を生成する
         const intervalArray = [];
