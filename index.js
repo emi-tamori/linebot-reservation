@@ -13,7 +13,6 @@ const REGULAR_COLOSE = [1]; //定休日の曜日
 const OPENTIME = 9;
 const CLOSETIME = 19;
 const FUTURE_LIMIT = 60; //何日先まで予約可能かの上限
-const TIME_LIMIT = 180000;//時間制限（3分をミリ秒で）
 
 const config = {
     channelAccessToken:process.env.ACCESS_TOKEN,
@@ -225,16 +224,8 @@ const handlePostbackEvent = async (ev) => {
   const profile = await client.getProfile(ev.source.userId);
   const data = ev.postback.data;
   const splitData = data.split('&');
-  const timeLimit = ev.postback.timestamp;
 
   if(splitData[0] === 'menu'){
-    console.log('timeLimit ='+timeLimit);
-    /*if(timeLimit > timeLimit + TIME_LIMIT){
-      return client.replyMessage(ev.replyToken,{
-        "type":"text",
-        "text":"3分以上経過しました。"
-      });
-    }*/
     const ordered = splitData[1];
     const newOrdered = splitData[2];
     const orderedMenu = ordered ? ordered + '%' + newOrdered : newOrdered;
@@ -293,20 +284,22 @@ const handlePostbackEvent = async (ev) => {
     const orderedMenu = splitData[1];
     const selectedDate = splitData[2];
     const selectedTime = splitData[3];
-    //過ぎた時間
+    //選んだ時間が過去の時間かを判定する
     const targetDateTime = new Date(`${selectedDate} ${9+parseInt(selectedTime)}:00`).getTime() - 9*60*60*1000;
     console.log('targetDateTime:',targetDateTime);
     const nowTime = new Date().getTime();
     console.log('nowTime:',nowTime);
 
-    //予約不可の時間帯は-1が返ってくるためそれを条件分岐
-    if(selectedTime >= 0 && targetDateTime > nowTime){
-      confirmation(ev,orderedMenu,selectedDate,selectedTime,0);
-    }else{
-      return client.replyMessage(ev.replyToken,{
-        "type":"text",
-        "text":"申し訳ありません。この時間帯には予約可能な時間がありません><;"
-      });
+    if(targetDateTime>nowTime){
+      //予約不可の時間帯は-1が返ってくるためそれを条件分岐
+      if(selectedTime >= 0){
+        confirmation(ev,orderedMenu,selectedDate,selectedTime,0);
+      }else{
+            return client.replyMessage(ev.replyToken,{
+              "type":"text",
+              "text":"申し訳ありません。この時間帯には予約可能な時間がありません><;"
+            });
+          }
     }
   }else if(splitData[0] === 'yes'){
     const orderedMenu = splitData[1];
