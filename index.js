@@ -13,6 +13,23 @@ const REGULAR_COLOSE = [1]; //定休日の曜日
 const OPENTIME = 9;
 const CLOSETIME = 19;
 const FUTURE_LIMIT = 60; //何日先まで予約可能かの上限
+const STAFFS = ['ken','emi','taro'];//スタッフを設定
+//３日分のシフト
+const SHIFT1 = {
+  ken:[0,0,0,0,0,1,1,1,1,1],
+  emi:[1,1,1,1,1,1,1,1,1,1],
+  taro:[0,0,0,0,0,0,0,0,0,0]
+};
+const SHIFT2 = {
+  ken:[1,1,1,1,1,1,1,1,1,1],
+  emi:[0,0,0,0,0,0,0,0,0,0],
+  taro:[0,0,0,0,0,1,1,1,1,1]
+};
+const SHIFT3 = {
+  ken:[1,0,0,0,1,1,1,1,1,1],
+  emi:[0,0,0,0,1,1,1,1,1,1],
+  taro:[1,1,1,1,1,1,1,0,0,0]
+};
 
 const config = {
     channelAccessToken:process.env.ACCESS_TOKEN,
@@ -52,6 +69,24 @@ connection.query(create_reservationTable)
  })
  .catch(e=>console.log(e));
  
+ //スキーマの作成
+ const create_schema ={
+  text:'CREATE SCHEMA reservations'
+};
+connection.query(create_schema)
+  .then(()=>console.log('schema created successfully'))
+  .catch(e=>console.log(e));
+
+//スタッフごとの予約テーブルの作成
+STAFFS.forEach(name=>{
+  const create_table = {
+    text:`CREATE TABLE IF NOT EXISTS reservations.${name} (id SERIAL NOT NULL, line_uid VARCHAR(100), name VARCHAR(100), scheduledate DATE, starttime BIGINT, endtime BIGINT, menu VARCHAR(20));`
+  };
+  connection.query(create_table)
+    .then(()=>console.log(`${name}'s table created successfully`))
+    .catch(e=>console.log(e));
+});
+
 app
 .post('/hook',line.middleware(config),(req,res)=> lineBot(req,res))
 .listen(PORT,()=>console.log(`Listening on ${PORT}`));
