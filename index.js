@@ -295,7 +295,9 @@ const handlePostbackEvent = async (ev) => {
           const futureLimit = today + FUTURE_LIMIT*24*60*60*1000;
           //２ヶ月先でないことの判定
           if(targetDate <= futureLimit){
-            const reservableArray = await checkReservable(ev,orderedMenu,selectedDate);
+            for (let i = 0; i < SHIFTS.length; i++) {
+              const reservableArray[i] = await checkReservable(ev,orderedMenu,selectedDate);
+            }
             askTime(ev,orderedMenu,selectedDate,reservableArray);
           }else{
             return client.replyMessage(ev.replyToken,{
