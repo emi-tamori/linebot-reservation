@@ -295,10 +295,12 @@ const handlePostbackEvent = async (ev) => {
           const futureLimit = today + FUTURE_LIMIT*24*60*60*1000;
           //２ヶ月先でないことの判定
           if(targetDate <= futureLimit){
-            for (let i = 0; i < SHIFTS.length; i++) {
-              const reservableArray[i] = await checkReservable(ev,orderedMenu,selectedDate);
+            const reservableArray = [];
+            for (let i = 0; i < STAFFS.length; i++) {
+              reservableArray[i] = await checkReservable(ev,orderedMenu,selectedDate,i);
             }
-            askTime(ev,orderedMenu,selectedDate,reservableArray);
+            //askTime(ev,orderedMenu,selectedDate,reservableArray);
+            console.log('reservableArray=',reservableArray);
           }else{
             return client.replyMessage(ev.replyToken,{
               "type":"text",
@@ -1027,7 +1029,7 @@ const confirmation = async (ev,menu,date,time,n) => {
 }
 
 //checkReservable関数（予約可能な時間をチェックする）
-const checkReservable = (ev,menu,date) => {
+const checkReservable = (ev,menu,date,num) => {
   return new Promise( async (resolve,reject)=>{
     const id = ev.source.userId;
     const treatTime = await calcTreatTime(id,menu);
@@ -1035,7 +1037,7 @@ const checkReservable = (ev,menu,date) => {
     const treatTimeToMs = treatTime*60*1000;
 
     const select_query = {
-      text:'SELECT * FROM reservations WHERE scheduledate = $1 ORDER BY starttime ASC;',
+      text:`SELECT * FROM reservations.${STAFFS[num]} WHERE scheduledate = $1 ORDER BY starttime ASC;`,
       values:[`${date}`]
     };
 
