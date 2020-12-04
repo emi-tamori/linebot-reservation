@@ -69,7 +69,7 @@ connection.query(create_reservationTable)
  })
  .catch(e=>console.log(e));
  
- //スキーマの作成
+//スキーマの作成
  const create_schema ={
   text:'CREATE SCHEMA reservations'
 };
