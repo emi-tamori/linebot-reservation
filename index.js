@@ -1141,6 +1141,8 @@ const checkReservable = (ev,menu,date,num) => {
               tempArray.push(target);
               interval -= treatTimeToMs;
               target += treatTimeToMs;
+              console.log('interval = '+interval);
+              console.log('target = ' +target);
             }            
           });
           reservableArray.push(tempArray);
