@@ -20,16 +20,6 @@ const SHIFT1 = {
   emi:[1,1,1,1,1,1,1,1,1,1],
   taro:[0,0,0,0,0,0,0,0,0,0]
 };
-const SHIFT2 = {
-  ken:[1,1,1,1,1,1,1,1,1,1],
-  emi:[0,0,0,0,0,0,0,0,0,0],
-  taro:[0,0,0,0,0,1,1,1,1,1]
-};
-const SHIFT3 = {
-  ken:[1,0,0,0,1,1,1,1,1,1],
-  emi:[0,0,0,0,1,1,1,1,1,1],
-  taro:[1,1,1,1,1,1,1,0,0,0]
-};
 
 const config = {
     channelAccessToken:process.env.ACCESS_TOKEN,
@@ -59,19 +49,19 @@ connection.query(create_userTable)
 .catch(e=>console.log(e));
 
 //予約データベースを作成
-const create_reservationTable = {
-  text:'CREATE TABLE IF NOT EXISTS reservations (id SERIAL NOT NULL, line_uid VARCHAR(255), name VARCHAR(100), scheduledate DATE, starttime BIGINT, endtime BIGINT, menu VARCHAR(50));'
- };
+//const create_reservationTable = {
+  //text:'CREATE TABLE IF NOT EXISTS reservations (id SERIAL NOT NULL, line_uid VARCHAR(255), name VARCHAR(100), scheduledate DATE, starttime BIGINT, endtime BIGINT, menu VARCHAR(50));'
+ //};
 //予約データベースクエリ実行
-connection.query(create_reservationTable)
- .then(()=>{
-     console.log('table users created successfully!!');
- })
- .catch(e=>console.log(e));
+//connection.query(create_reservationTable)
+ //.then(()=>{
+     //console.log('table users created successfully!!');
+ //})
+ //.catch(e=>console.log(e));
  
 //スキーマの作成
  const create_schema ={
-  text:'CREATE SCHEMA reservations'
+  text:'CREATE SCHEMA IF NOT EXISTS reservations'
 };
 connection.query(create_schema)
   .then(()=>console.log('schema created successfully'))
@@ -1033,7 +1023,7 @@ const checkReservable = (ev,menu,date,num) => {
   return new Promise( async (resolve,reject)=>{
     const id = ev.source.userId;
     const treatTime = await calcTreatTime(id,menu);
-    console.log('treatTime:',treatTime);
+    //console.log('treatTime:',treatTime);
     const treatTimeToMs = treatTime*60*1000;
 
     const select_query = {
@@ -1055,7 +1045,7 @@ const checkReservable = (ev,menu,date,num) => {
         for(let i=OPENTIME; i<CLOSETIME+1; i++){
           timeStamps.push(new Date(`${date} ${i}:00`).getTime()-9*60*60*1000);
         }
-        console.log('timestamps',timeStamps);
+        //console.log('timestamps',timeStamps);
 
         //この日の予約を各時間帯に関する予約へ分割し、それを3次元配列に格納していく。
         const separatedByTime = [];
@@ -1082,7 +1072,7 @@ const checkReservable = (ev,menu,date,num) => {
           separatedByTime.push(tempArray);
         }
 
-        console.log('separatedByTime1:',separatedByTime);
+        //console.log('separatedByTime1:',separatedByTime);
 
         //ある時間帯の最後の要素がパターン0とパターン2の場合、次の時間帯の最初の要素を加える
         for(let i=0; i<separatedByTime.length; i++){
