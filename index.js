@@ -1152,7 +1152,7 @@ const checkReservable = (ev,menu,date,num) => {
 
       
         for(key in SHIFT1){
-          console.log(key + "さんの番号は、" + customers[key] + "です。") ;
+          console.log(key + "さんの番号は、" + SHIFT1[key] + "です。") ;
         }
 
         
