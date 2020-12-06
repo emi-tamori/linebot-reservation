@@ -1150,7 +1150,13 @@ const checkReservable = (ev,menu,date,num) => {
         console.log('reservableArray:',reservableArray);
         const shift = SHIFT1[`${STAFFS[num]}`];
         console.log('shift = ' + shift);
-
+        const filteredArray = [];
+        for(let i=0; i<shift.length; i++){
+          if(shift[i] === 1){
+            filteredArray.push(reservableArray[i]);
+          }else{
+            filteredArray.push([]);
+          }
         resolve(reservableArray);
       })
       .catch(e=>console.log(e));
