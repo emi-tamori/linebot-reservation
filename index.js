@@ -1154,6 +1154,11 @@ const checkReservable = (ev,menu,date,num) => {
         for(key in SHIFT1){
           console.log(key + "さんの番号は、" + SHIFT1[key] + "です。") ;
         }
+        Object.keys(SHIFT1).forEach(key => {
+          SHIFT1[key].forEach(elm => {
+            console.log(elm)
+          })
+        })
 
         
         
