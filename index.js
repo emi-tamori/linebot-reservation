@@ -1154,11 +1154,15 @@ const checkReservable = (ev,menu,date,num) => {
         for(key in SHIFT1){
           console.log(key + "さんの番号は、" + SHIFT1[key] + "です。") ;
         }
-        Object.keys(SHIFT1).forEach(key => {
+        reservableArray.forEach(function( value ) {
+          console.log( value );
+        });
+
+        /*Object.keys(SHIFT1).forEach(key => {
           SHIFT1[key].forEach(elm => {
             console.log(elm)
           })
-        })
+        })*/
 
         
         
