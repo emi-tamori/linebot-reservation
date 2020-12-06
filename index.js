@@ -1130,6 +1130,7 @@ const checkReservable = (ev,menu,date,num) => {
         console.log('intervalArray:',intervalArray);
         console.log('treatTime:',treatTime);
 
+
         //reservableArrayを生成
         const reservableArray = [];
         intervalArray.forEach(array2=>{
@@ -1141,14 +1142,21 @@ const checkReservable = (ev,menu,date,num) => {
               tempArray.push(target);
               interval -= treatTimeToMs;
               target += treatTimeToMs;
-              console.log('interval = '+interval);
-              console.log('target = ' +target);
             }            
           });
           reservableArray.push(tempArray);
         });
 
         console.log('reservableArray:',reservableArray);
+
+
+      
+        for(key in SHIFT1){
+          console.log(key + "さんの番号は、" + customers[key] + "です。") ;
+        }
+
+        
+        
 
         resolve(reservableArray);
       })
