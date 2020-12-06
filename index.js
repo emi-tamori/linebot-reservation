@@ -1157,7 +1157,7 @@ const checkReservable = (ev,menu,date,num) => {
           }else{
             filteredArray.push([]);
           }
-        resolve(reservableArray);
+        resolve(filteredArray);
       })
       .catch(e=>console.log(e));
   });
