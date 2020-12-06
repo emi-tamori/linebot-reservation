@@ -1150,8 +1150,8 @@ const checkReservable = (ev,menu,date,num) => {
         console.log('reservableArray:',reservableArray);
 
       
-        for(const key in SHIFT1){
-          console.log(key) ;
+        for(key in SHIFT1){
+          console.log(SHIFT1[key][0]) ;
           
         }
         
