@@ -1151,27 +1151,10 @@ const checkReservable = (ev,menu,date,num) => {
 
       
         for(key in SHIFT1){
-          for(let i=0; i<SHIFT1.length; i++){
-          console.log(SHIFT1[key][i]) ;
+          console.log(SHIFT1[key][0]) ;
+          
         }
         
-        /*for( var i = 0; i<array.length; i++) {
-　　　　　if( array[i] == 1) break;
-　　　　　console.log( array[i] );
-}*/
-        /*reservableArray.forEach(function( value ) {
-          console.log( value );
-        });
-        var result = SHIFT1[key].filter( function( value ) {
-          return value > 0;
-      })
-      console.log( value );
-
-        Object.keys(SHIFT1).forEach(key => {
-          SHIFT1[key].forEach(elm => {
-            console.log(elm)
-          })
-        })*/
 
         
         
