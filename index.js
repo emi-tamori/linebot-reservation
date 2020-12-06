@@ -1158,7 +1158,8 @@ const checkReservable = (ev,menu,date,num) => {
             filteredArray.push([]);
           }
         resolve(reservableArray);
-      })
+      }
+    })
       .catch(e=>console.log(e));
   });
 }
