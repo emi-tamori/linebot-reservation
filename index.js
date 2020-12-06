@@ -1148,16 +1148,8 @@ const checkReservable = (ev,menu,date,num) => {
         });
 
         console.log('reservableArray:',reservableArray);
-
-      
-        for(key in SHIFT1){
-          console.log(SHIFT1[key][0]) ;
-          
-        }
-        
-
-        
-        
+        const shift = SHIFT1[`${STAFFS[num]}`];
+        console.log('shift = ' + shift);
 
         resolve(reservableArray);
       })
