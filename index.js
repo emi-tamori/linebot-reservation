@@ -289,8 +289,8 @@ const handlePostbackEvent = async (ev) => {
             for (let i = 0; i < STAFFS.length; i++) {
               reservableArray[i] = await checkReservable(ev,orderedMenu,selectedDate,i);
             }
-            askTime(ev,orderedMenu,selectedDate,reservableArray);
             console.log('reservableArray=',reservableArray);
+            askTime(ev,orderedMenu,selectedDate,reservableArray);
           }else{
             return client.replyMessage(ev.replyToken,{
               "type":"text",
@@ -721,8 +721,12 @@ const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
   const time = [];
   const color = [];
   //予約時間帯とボタン色配列を生成
-  for(let i=0;i<reservableArray.length;i++){
-    if(reservableArray[i].length){
+  for(let i=0; i<CLOSETIME-OPENTIME; i++){
+    let count = 0;
+    for(let j=0; j<reservableArray.length; j++){
+      if(reservableArray[j][i].length) count++;
+    }
+    if(count>0){
       time.push(i);
       color.push('#00AA00');
     }else{
@@ -934,10 +938,54 @@ const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
 
 //confirmation関数（予約確認をリプライする）
 const confirmation = async (ev,menu,date,time,n) => {
+  //各スタッフの予約数
+  const numberOfReservations = await getNumberOfReservations(date);
+  console.log('numberOfReservations:',numberOfReservations);
   const splitDate = date.split('-');
   const selectedTime = 9 + parseInt(time);
-  const reservableArray = await checkReservable(ev,menu,date);
-  const candidates = reservableArray[parseInt(time)];
+
+  //スタッフ人数分のreservableArrayを取得
+  const reservableArray = [];
+  for(let i=0; i<STAFFS.length; i++){
+    const staff_reservable = await checkReservable(ev,menu,date,i);
+    reservableArray.push(staff_reservable);
+  }
+
+  console.log('reservableArray=',reservableArray);
+
+  //対象時間の候補抜き出し
+  const targets = reservableArray.map( array => {
+    return array[parseInt(time)];
+  });
+  console.log('targets:',targets);
+
+  //誰の予約とするかを決定する（その日の予約数が一番少ないスタッフ）
+  const maskingArray = [];
+  for(let i=0; i<targets.length; i++){
+    if(targets[i].length){
+      maskingArray.push(numberOfReservations[i]);
+    }else{
+      maskingArray.push(-1);
+    }
+  }
+  console.log('maskignArray=',maskingArray);
+
+  //予約可能かつ予約回数が一番少ないスタッフを選定する
+  let tempNumber = 1000;
+  let staffNumber;
+  maskingArray.forEach((value,index)=>{
+    if(value>=0 && value<tempNumber){
+      tempNumber = value;
+      staffNumber = index;
+    }
+  });
+
+  const candidates = targets[staffNumber];
+  console.log('candidates=',candidates);
+
+
+  //const reservableArray = await checkReservable(ev,menu,date);
+  //const candidates = reservableArray[parseInt(time)];
   const n_dash = (n>=candidates.length-1) ? -1 : n+1;
   console.log('n_dash:',n_dash);
 
