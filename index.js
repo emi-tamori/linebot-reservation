@@ -189,7 +189,7 @@ const handleMessageEvent = async (ev) => {
         //Gmail送信設定
         const message = {
           from    : 'monsan.emi83@gmail.com',   
-          to      : 'wakewakaruwa@yahoo.co.jp',
+          to      : 'monsan.emi83@gmail.com',
           subject : 'テストメール',
           text    : 'LINE bot予約用テストメール送信'
         };
