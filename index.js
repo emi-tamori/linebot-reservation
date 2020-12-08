@@ -185,32 +185,6 @@ const handleMessageEvent = async (ev) => {
         "type":"text",
         "text":`次回予約は${date}、${menu}でお取りしてます\uDBC0\uDC22`
         });
-      }else if(text === 'メール送信'){
-        //Gmail送信設定
-        const message = {
-          from    : 'monsan.emi83@gmail.com',   
-          to      : 'monsan.emi83@gmail.com',
-          subject : 'テストメール',
-          text    : 'LINE bot予約用テストメール送信'
-        };
-  
-        const auth = {
-          type: 'OAuth2',
-          user: 'monsan.emi83@gmail.com',
-          clientId: process.env.GMAIL_CLIENT_ID,
-          clientSecret: process.env.GMAIL_CLIENT_SECRET,
-          refreshToken: process.env.GMAIL_REFRESH_TOKEN
-        };
-  
-        const transport = {
-          service: 'gmail',
-          auth: auth
-        };
-  
-        const transporter = nodemailer.createTransport(transport);
-        transporter.sendMail(message,(err,response)=>{
-          console.log(err || response);
-        });
       }else{
         return client.replyMessage(ev.replyToken,{
           "type":"text",
@@ -270,6 +244,33 @@ const handleMessageEvent = async (ev) => {
           "text":"次回予約は入っておりません。"
         });
       }
+    }
+    else if(text === 'メール送信'){
+      //Gmail送信設定
+      const message = {
+        from    : 'monsan.emi83@gmail.com',   
+        to      : 'monsan.emi83@gmail.com',
+        subject : 'テストメール',
+        text    : 'LINE bot予約用テストメール送信'
+      };
+
+      const auth = {
+        type: 'OAuth2',
+        user: 'monsan.emi83@gmail.com',
+        clientId: process.env.GMAIL_CLIENT_ID,
+        clientSecret: process.env.GMAIL_CLIENT_SECRET,
+        refreshToken: process.env.GMAIL_REFRESH_TOKEN
+      };
+
+      const transport = {
+        service: 'gmail',
+        auth: auth
+      };
+
+      const transporter = nodemailer.createTransport(transport);
+      transporter.sendMail(message,(err,response)=>{
+        console.log(err || response);
+      });
     }
     else{
       return client.replyMessage(ev.replyToken,{
