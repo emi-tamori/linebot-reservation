@@ -2,24 +2,31 @@ const express = require('express');//express読み込み
 const app = express();
 const line = require('@line/bot-sdk');//@line/bot-sdk読み込み
 const { Client } = require('pg');//pgライブラリ読み込み
+const nodemailer = require('nodemailer');
 
 const PORT = process.env.PORT || 5000
 
 const INITIAL_TREAT = [20,10,40,15,30,15,10];  //施術時間初期値
-const WEEK = [ "日", "月", "火", "水", "木", "金", "土" ];//曜日の表示を標準化
 const MENU = ['カット','シャンプー','カラーリング','ヘッドスパ','マッサージ＆スパ','顔そり','眉整え'];//メニュー名
+const WEEK = [ "日", "月", "火", "水", "木", "金", "土" ];//曜日の表示を標準化
 const HOLIDAY = ["月"];//定休日を設定
 const REGULAR_COLOSE = [1]; //定休日の曜日
-const OPENTIME = 9;
-const CLOSETIME = 19;
-const FUTURE_LIMIT = 60; //何日先まで予約可能かの上限
+const OPENTIME = 9;//開店時間
+const CLOSETIME = 19;//閉店時間
+const FUTURE_LIMIT = 3; //何日先まで予約可能かの上限
 const STAFFS = ['ken','emi','taro'];//スタッフを設定
-//３日分のシフト
+//シフト
 const SHIFT1 = {
   ken:[0,0,0,0,0,0,0,0,0,1],
   emi:[1,1,1,1,1,1,1,1,1,1],
   taro:[0,1,1,1,0,0,0,0,0,0]
 };
+
+const MAIL = {
+  ken: 'monsan.emi83@gmail.com',
+  emi: 'monsan.emi83@gmail.com',
+  taro: 'monsan.emi83@gmail.com'
+}
 
 const config = {
     channelAccessToken:process.env.ACCESS_TOKEN,
@@ -27,6 +34,7 @@ const config = {
 };
 
 const client = new line.Client(config);
+
 //Postgresを使うためのパラメータ初期設定
 const connection = new Client({
     user:process.env.PG_USER,
@@ -89,6 +97,8 @@ const lineBot = (req,res) => {
 
     for(let i=0;i<events.length;i++){
         const ev = events[i];
+        console.log("ev:",ev);
+
         switch(ev.type){
             case 'follow'://友達登録で発火
                 promises.push(greeting_follow(ev));
@@ -115,6 +125,7 @@ const greeting_follow = async (ev) => {
       text:'INSERT INTO users (line_uid,display_name,timestamp,cuttime,shampootime,colortime,spatime) VALUES($1,$2,$3,$4,$5,$6,$7);',
       values:[ev.source.userId,profile.displayName,ev.timestamp,INITIAL_TREAT[0],INITIAL_TREAT[1],INITIAL_TREAT[2],INITIAL_TREAT[3]]   
   };
+
   connection.query(table_insert)
   .then(()=>{
       console.log('insert successfully!!')
@@ -174,8 +185,33 @@ const handleMessageEvent = async (ev) => {
         "type":"text",
         "text":`次回予約は${date}、${menu}でお取りしてます\uDBC0\uDC22`
         });
-      }
-      else{
+      }else if(text === 'メール'){
+        //Gmail送信設定
+        const message = {
+          from    : 'monsan.emi83@gmail.com',   
+          to      : 'monsan.emi83@gmail.com',
+          subject : 'テストメール',
+          text    : 'LINE bot予約用テストメール送信'
+        };
+  
+        const auth = {
+          type: 'OAuth2',
+          user: 'monsan.emi83@gmail.com',
+          clientId: process.env.GMAIL_CLIENT_ID,
+          clientSecret: process.env.GMAIL_CLIENT_SECRET,
+          refreshToken: process.env.GMAIL_REFRESH_TOKEN
+        };
+  
+        const transport = {
+          service: 'gmail',
+          auth: auth
+        };
+  
+        const transporter = nodemailer.createTransport(transport);
+        transporter.sendMail(message,(err,response)=>{
+          console.log(err || response);
+        });
+      }else{
         return client.replyMessage(ev.replyToken,{
           "type":"text",
           "text":"次回予約は入っておりません。"
@@ -285,9 +321,12 @@ const handlePostbackEvent = async (ev) => {
           const futureLimit = today + FUTURE_LIMIT*24*60*60*1000;
           //２ヶ月先でないことの判定
           if(targetDate <= futureLimit){
+
+            //スタッフ人数分のreservableArrayを取得
             const reservableArray = [];
             for (let i = 0; i < STAFFS.length; i++) {
-              reservableArray[i] = await checkReservable(ev,orderedMenu,selectedDate,i);
+              const staff_reservable = await checkReservable(ev,orderedMenu,selectedDate,i);
+              reservableArray.push(staff_reservable);
             }
             console.log('reservableArray=',reservableArray);
             askTime(ev,orderedMenu,selectedDate,reservableArray);
@@ -313,6 +352,7 @@ const handlePostbackEvent = async (ev) => {
     const orderedMenu = splitData[1];
     const selectedDate = splitData[2];
     const selectedTime = splitData[3];
+
     //選んだ時間が過去の時間かを判定する
     const targetDateTime = new Date(`${selectedDate} ${9+parseInt(selectedTime)}:00`).getTime() - 9*60*60*1000;
     console.log('targetDateTime:',targetDateTime);
@@ -334,24 +374,40 @@ const handlePostbackEvent = async (ev) => {
         "type":"text",
         "text":"申し訳ありません。過去の時間は選べません><;"
       });
-}
+    }
   }else if(splitData[0] === 'yes'){
     const orderedMenu = splitData[1];
-        const selectedDate = splitData[2];
-        const fixedTime = parseInt(splitData[3]);
+    const selectedDate = splitData[2];
+    const fixedTime = parseInt(splitData[3]);
+    const staffNumber = parseInt(splitData[4]);
        
         //施術時間の取得
         const treatTime = await calcTreatTime(ev.source.userId,orderedMenu);
+
+        //予約日時の表記取得
+        const date = dateConversion(fixedTime);
+
+        //メニュー表記の取得
+        const menuArray = orderedMenu.split('%');
+        let menu = '';
+        menuArray.forEach((value,index) => {
+          if(index !== 0){
+            menu += ',' + MENU[parseInt(value)];
+          }else{
+            menu += MENU[parseInt(value)];
+          }
+
+        })
 
         //予約完了時間の計算
         const endTime = fixedTime + treatTime*60*1000;
 
         //予約確定前の最終チェック→予約ブッキング無しfalse、予約ブッキングありtrue
-        const check = await finalCheck(selectedDate,fixedTime,endTime);
+        const check = await finalCheck(selectedDate,fixedTime,endTime,staffNumber);
 
         if(!check){
           const insertQuery = {
-            text:'INSERT INTO reservations (line_uid, name, scheduledate, starttime, endtime, menu) VALUES($1,$2,$3,$4,$5,$6);',
+            text:`INSERT INTO reservations.${STAFFS[staffNumber]} (line_uid, name, scheduledate, starttime, endtime, menu) VALUES($1,$2,$3,$4,$5,$6);`,
             values:[ev.source.userId,profile.displayName,selectedDate,fixedTime,endTime,orderedMenu]
           };
           connection.query(insertQuery)
@@ -359,8 +415,35 @@ const handlePostbackEvent = async (ev) => {
               console.log('データ格納成功！');
               client.replyMessage(ev.replyToken,{
                 "type":"text",
-                "text":"予約が完了しました。"
+                "text":`${date}に${menu}で予約をお取りしたました（スタッフ：${STAFFS[staffNumber]}）`
               });
+
+              //Gmail送信設定
+              const message = {
+                from: 'monsan.emi83@gmail.com',
+                to: MAIL[`${STAFFS[staffNumber]}`],
+                subject: `${STAFFS[staffNumber]}さんに予約が入りました！！`,
+                text: `${date}に${menu}で予約が入りました！`
+              };
+
+              const auth = {
+                type: 'OAuth2',
+                user: '	monsan.emi83@gmail.com',
+                clientId: process.env.GMAIL_CLIENT_ID,
+                clientSecret: process.env.GMAIL_CLIENT_SECRET,
+                refreshToken: process.env.GMAIL_REFRESH_TOKEN
+              };
+
+              const transport = {
+                service: 'gmail',
+                auth: auth
+              };
+
+              const transporter = nodemailer.createTransport(transport);
+              transporter.sendMail(message,(err,response)=>{
+                console.log(err || response);
+              });
+
             })
             .catch(e=>console.log(e));
         }else{
@@ -413,6 +496,7 @@ const handlePostbackEvent = async (ev) => {
   const day = d.getDay();
   const hour = ('0' + (d.getHours()+9)).slice(-2);
   const min = ('0' + d.getMinutes()).slice(-2);
+  console.log(`${month}月${date}日(${WEEK[day]}) ${hour}:${min}`);
   return `${month}月${date}日(${WEEK[day]}) ${hour}:${min}`;
  }
 
@@ -677,7 +761,6 @@ const orderChoice = (ev,selected) => {
 
 //askDate関数（「予約日を聞く」処理）
 const askDate = (ev,orderedMenu) => {
-
   return client.replyMessage(ev.replyToken,{
       "type":"flex",
       "altText":"予約日選択",
@@ -934,7 +1017,7 @@ const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
           }
         }       
   });
- }
+}
 
 //confirmation関数（予約確認をリプライする）
 const confirmation = async (ev,menu,date,time,n) => {
@@ -1019,7 +1102,7 @@ const confirmation = async (ev,menu,date,time,n) => {
             "action": {
               "type": "postback",
               "label": "はい",
-              "data": `yes&${menu}&${date}&${candidates[n]}`
+              "data": `yes&${menu}&${date}&${candidates[n]}&${staffNumber}`
             }
           },
           {
@@ -1071,7 +1154,7 @@ const checkReservable = (ev,menu,date,num) => {
   return new Promise( async (resolve,reject)=>{
     const id = ev.source.userId;
     const treatTime = await calcTreatTime(id,menu);
-    //console.log('treatTime:',treatTime);
+    console.log('treatTime:',treatTime);
     const treatTimeToMs = treatTime*60*1000;
 
     const select_query = {
@@ -1085,7 +1168,7 @@ const checkReservable = (ev,menu,date,num) => {
         const reservedArray = res.rows.map(object=>{
           return [parseInt(object.starttime),parseInt(object.endtime)];
         });
-        console.log('reservedArray:',reservedArray);
+        //console.log('reservedArray:',reservedArray);
 
         //各時間のタイムスタンプ
         // herokuサーバー基準なので、日本の時刻は９時間分進んでしまうため、引く
@@ -1146,7 +1229,7 @@ const checkReservable = (ev,menu,date,num) => {
           }
         }
 
-        console.log('separatedByTime2:',separatedByTime);
+        //console.log('separatedByTime2:',separatedByTime);
 
         //予約と予約の間隔を格納する3次元配列を生成する
         const intervalArray = [];
@@ -1175,8 +1258,8 @@ const checkReservable = (ev,menu,date,num) => {
           }      
         }
         
-        console.log('intervalArray:',intervalArray);
-        console.log('treatTime:',treatTime);
+        //console.log('intervalArray:',intervalArray);
+        //console.log('treatTime:',treatTime);
 
 
         //reservableArrayを生成
@@ -1195,27 +1278,28 @@ const checkReservable = (ev,menu,date,num) => {
           reservableArray.push(tempArray);
         });
 
-        console.log('reservableArray:',reservableArray);
+        //シフトによりマスキング
         const shift = SHIFT1[`${STAFFS[num]}`];
         console.log('shift = ' + shift);
         const filteredArray = [];
-        for(let i=0; i<shift.length; i++){
-          if(shift[i] === 1){
-            filteredArray.push(reservableArray[i]);
+        reservableArray.forEach((value,index) => {
+          if(shift[index]){
+            filteredArray.push(value);
           }else{
             filteredArray.push([]);
           }
+        });
         resolve(filteredArray);
-      }})
+      })
       .catch(e=>console.log(e));
-  });
-}
+    });
+  }
 
 //finalCheck関数
-const finalCheck = (date,startTime,endTime) => {
+const finalCheck = (date,startTime,endTime,staffNumber) => {
   return new Promise((resolve,reject) => {
     const select_query = {
-      text:`SELECT * FROM reservations WHERE scheduledate = '${date}';`
+      text:`SELECT * FROM reservations.${STAFFS[staffNumber]} WHERE scheduledate = '${date}';`
     }
     connection.query(select_query)
       .then(res=>{
@@ -1234,12 +1318,23 @@ const finalCheck = (date,startTime,endTime) => {
   });
 }
 
-
-
-
-
-
-
-
-
+//予約選択日における各スタッフの予約数を取得する
+const getNumberOfReservations = (date) => { 
+  return new Promise((resolve,reject) => {
+    const numberOfReservations = [];
+    for(let i=0; i<STAFFS.length; i++){
+      const select_query = {
+        text:`SELECT * FROM reservations.${STAFFS[i]} WHERE scheduledate = $1 ORDER BY starttime ASC;`,
+        values:[`${date}`]
+      }
+      connection.query(select_query)
+        .then(res=>{
+          console.log('res.rows.length=',res.rows.length);
+          numberOfReservations.push(res.rows.length);
+          if(i === STAFFS.length - 1) resolve(numberOfReservations);
+        })
+        .catch(e=>console.log(e));
+    }
+  })
+}
 
