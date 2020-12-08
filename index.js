@@ -185,7 +185,7 @@ const handleMessageEvent = async (ev) => {
         "type":"text",
         "text":`次回予約は${date}、${menu}でお取りしてます\uDBC0\uDC22`
         });
-      }else if(text === 'メール'){
+      }else if(text === 'メール送信'){
         //Gmail送信設定
         const message = {
           from    : 'monsan.emi83@gmail.com',   
