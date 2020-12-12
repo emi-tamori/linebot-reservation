@@ -274,7 +274,7 @@ const handleMessageEvent = async (ev) => {
       // LINE送信
         client.pushMessage(U4e581b97b39203ff8b11ce6e28f1fca2,{
           "type":"text",
-          text: `${date}に${menu}で予約が入りました！`
+          text: `予約が入りました！`
         });
     
     }
