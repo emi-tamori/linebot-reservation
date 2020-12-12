@@ -28,7 +28,7 @@ const MAIL = {
   taro: 'monsan.emi83@gmail.com'
 }
 
-const LINE = "U4e581b97b39203ff8b11ce6e28f1fca2";
+const LINE = "U0f2a5a2f3f3f85ce8dcee21f7a300571";
 const config = {
     channelAccessToken:process.env.ACCESS_TOKEN,
     channelSecret:process.env.CHANNEL_SECRET
