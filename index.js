@@ -266,11 +266,17 @@ const handleMessageEvent = async (ev) => {
         service: 'gmail',
         auth: auth
       };
-
       const transporter = nodemailer.createTransport(transport);
       transporter.sendMail(message,(err,response)=>{
         console.log(err || response);
       });
+
+      // LINE送信
+        client.pushMessage(U4e581b97b39203ff8b11ce6e28f1fca2,{
+          "type":"text",
+          text: `${date}に${menu}で予約が入りました！`
+        });
+    
     }
     else{
       return client.replyMessage(ev.replyToken,{
@@ -444,6 +450,11 @@ const handlePostbackEvent = async (ev) => {
               transporter.sendMail(message,(err,response)=>{
                 console.log(err || response);
               });
+              // LINE送信
+              client.pushMessage(U0f2a5a2f3f3f85ce8dcee21f7a300571,{
+                　"type":"text",
+                　text: `${date}に${menu}で予約が入りました！`
+                });
 
             })
             .catch(e=>console.log(e));
