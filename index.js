@@ -247,7 +247,7 @@ const handleMessageEvent = async (ev) => {
     }
     else if(text === 'メール送信'){
       //Gmail送信設定
-      const message = {
+      /*const message = {
         from    : 'monsan.emi83@gmail.com',   
         to      : 'wakewakaruwa@yahoo.co.jp',
         subject : 'テストメール',
@@ -269,7 +269,7 @@ const handleMessageEvent = async (ev) => {
       const transporter = nodemailer.createTransport(transport);
       transporter.sendMail(message,(err,response)=>{
         console.log(err || response);
-      });
+      });*/
 
       // LINE送信
         client.pushMessage(U4e581b97b39203ff8b11ce6e28f1fca2,{
