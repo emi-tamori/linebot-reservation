@@ -28,6 +28,7 @@ const MAIL = {
   taro: 'monsan.emi83@gmail.com'
 }
 
+const LINE = "U4e581b97b39203ff8b11ce6e28f1fca2";
 const config = {
     channelAccessToken:process.env.ACCESS_TOKEN,
     channelSecret:process.env.CHANNEL_SECRET
@@ -272,7 +273,7 @@ const handleMessageEvent = async (ev) => {
       });*/
 
       // LINE送信
-        client.pushMessage(U4e581b97b39203ff8b11ce6e28f1fca2,{
+        client.pushMessage(LINE,{
           "type":"text",
           text: `予約が入りました！`
         });
