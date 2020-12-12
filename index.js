@@ -249,7 +249,7 @@ const handleMessageEvent = async (ev) => {
       //Gmail送信設定
       /*const message = {
         from    : 'monsan.emi83@gmail.com',   
-        to      : 'wakewakaruwa@yahoo.co.jp',
+        to      : 'monsan.emi83@gmail.com',
         subject : 'テストメール',
         text    : 'LINE bot予約用テストメール送信'
       };
@@ -450,11 +450,6 @@ const handlePostbackEvent = async (ev) => {
               transporter.sendMail(message,(err,response)=>{
                 console.log(err || response);
               });
-              // LINE送信
-              client.pushMessage(U0f2a5a2f3f3f85ce8dcee21f7a300571,{
-                　"type":"text",
-                　text: `${date}に${menu}で予約が入りました！`
-                });
 
             })
             .catch(e=>console.log(e));
