@@ -2,9 +2,11 @@
 <html lang="ja"> 
     <head> <%- include ("../partials/header.ejs") %> </head> 
     <body> 
-        <h1>トップページです</h1> 
-        <a href='/users'>顧客管理画面</a> 
-        <a href='/reservations'>予約管理画面</a> 
+        <div class="toppage"> 
+            <img src="/biyouin.jpg" class="img"> 
+            <a type="button" class="btn btn-lg btn-outline-primary" id="toUsers" href="/users"><i class="fas fa-users"></i> 顧客情報</a> 
+            <a type="button" class="btn btn-lg btn-outline-primary" id="toReservations" href="/reservations"><i class="fas fa-book"></i></span> 予約管理</a> 
+        </div> 
         <%- include ("../partials/footer.ejs") %> 
     </body> 
     </html>
