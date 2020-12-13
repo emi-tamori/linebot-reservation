@@ -7,7 +7,7 @@ const nodemailer = require('nodemailer');//nodemailer読み込み
 const path = require('path');//pathパッケージ読み込み
 
 //ルーティングの設定(./routers/index.jsの設定)
-//const express = require('express'); 
+const express = require('express'); 
 const router = express.Router(); 
 router .get('/',(req,res)=>{ res.render('pages/index'); }) 
 .get('/users',(req,res)=>{ res.render('pages/users'); }) 
