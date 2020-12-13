@@ -6,7 +6,7 @@ const { Client } = require('pg');
 const router = require('./routers/index');
 const apiRouter = require('./routers/api');
 const multipart = require('connect-multiparty');
-// const nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer');
 
 const PORT = process.env.PORT || 5000
 
@@ -16,7 +16,19 @@ const WEEK = [ "日", "月", "火", "水", "木", "金", "土" ];
 const OPENTIME = 9; //開店時間
 const CLOSETIME = 19; //閉店時間
 const REGULAR_COLOSE = [4]; //定休日の曜日
-const FUTURE_LIMIT = 60; //何日先まで予約可能かの上限
+const FUTURE_LIMIT = 3; //何日先まで予約可能かの上限
+
+const STAFFS = ['ken','emi','taro'];
+const SHIFT1 = {
+  ken:[0,0,0,0,0,1,1,1,1,1],
+  emi:[0,1,0,1,1,1,1,1,1,1],
+  taro:[0,0,0,0,0,0,0,0,0,0]
+};
+const MAIL = {
+  ken: 'kentaro523@gmail.com',
+  emi: 'kenkenkentaro523@gmail.com',
+  taro: 'kentaro1q81@gmail.com'
+}
 
 const config = {
     channelAccessToken:process.env.ACCESS_TOKEN,
@@ -35,16 +47,7 @@ const connection = new Client({
 
 connection.connect();
 
-const create_reservationTable = {
-  text:'CREATE TABLE IF NOT EXISTS reservations (id SERIAL NOT NULL, line_uid VARCHAR(255), name VARCHAR(100), scheduledate DATE, starttime BIGINT, endtime BIGINT, menu VARCHAR(50));'
-};
-
-connection.query(create_reservationTable)
-  .then(()=>{
-      console.log('table users created successfully!!');
-  })
-  .catch(e=>console.log(e));
-
+//ユーザーテーブルの作成
 const create_userTable = {
   text:'CREATE TABLE IF NOT EXISTS users (id SERIAL NOT NULL, line_uid VARCHAR(255), display_name VARCHAR(255), timestamp VARCHAR(255), cuttime SMALLINT, shampootime SMALLINT, colortime SMALLINT, spatime SMALLINT);'
 };
@@ -54,6 +57,24 @@ connection.query(create_userTable)
       console.log('table users created successfully!!');
   })
   .catch(e=>console.log(e));
+
+//スキーマの作成
+const create_schema ={
+  text:'CREATE SCHEMA IF NOT EXISTS reservations'
+};
+connection.query(create_schema)
+  .then(()=>console.log('schema created successfully'))
+  .catch(e=>console.log(e));
+
+//スタッフごとの予約テーブルの作成
+STAFFS.forEach(name=>{
+  const create_table = {
+    text:`CREATE TABLE IF NOT EXISTS reservations.${name} (id SERIAL NOT NULL, line_uid VARCHAR(100), name VARCHAR(100), scheduledate DATE, starttime BIGINT, endtime BIGINT, menu VARCHAR(20));`
+  };
+  connection.query(create_table)
+    .then(()=>console.log(`${name}'s table created successfully`))
+    .catch(e=>console.log(e));
+})
 
 app
     .use(express.static(path.join(__dirname,'public')))
@@ -182,13 +203,14 @@ const handleMessageEvent = async (ev) => {
             }
           }
         });
-      }else{
+      }   
+      else{
         return client.replyMessage(ev.replyToken,{
           "type":"text",
           "text":"次回予約は入っておりません。"
         });
       }
-    }
+    } 
     else{
       return client.replyMessage(ev.replyToken,{
         "type":"text",
@@ -243,7 +265,15 @@ const handlePostbackEvent = async (ev) => {
           const futureLimit = today + FUTURE_LIMIT*24*60*60*1000;
           //２ヶ月先でないことの判定
           if(targetDate <= futureLimit){
-            const reservableArray = await checkReservable(ev,orderedMenu,selectedDate);
+
+            //スタッフ人数分のreservableArrayを取得
+            const reservableArray = [];
+            for(let i=0; i<STAFFS.length; i++){
+              const staff_reservable = await checkReservable(ev,orderedMenu,selectedDate,i);
+              reservableArray.push(staff_reservable);
+            }
+            console.log('reservableArray:',reservableArray);
+            // const reservableArray = await checkReservable(ev,orderedMenu,selectedDate);
             askTime(ev,orderedMenu,selectedDate,reservableArray);
           }else{
             return client.replyMessage(ev.replyToken,{
@@ -270,13 +300,26 @@ const handlePostbackEvent = async (ev) => {
         const selectedDate = splitData[2];
         const selectedTime = splitData[3];
 
-        //予約不可の時間帯は-1が返ってくるためそれを条件分岐
-        if(selectedTime >= 0){
-          confirmation(ev,orderedMenu,selectedDate,selectedTime,0);
+        //選んだ時間が過去の時間かを判定する
+        const targetDateTime = new Date(`${selectedDate} ${9+parseInt(selectedTime)}:00`).getTime() - 9*60*60*1000;
+        console.log('targetDateTime:',targetDateTime);
+        const nowTime = new Date().getTime();
+        console.log('nowTime:',nowTime);
+
+        if(targetDateTime>nowTime){
+          //予約不可の時間帯は-1が返ってくるためそれを条件分岐
+          if(selectedTime >= 0){
+            confirmation(ev,orderedMenu,selectedDate,selectedTime,0);
+          }else{
+            return client.replyMessage(ev.replyToken,{
+              "type":"text",
+              "text":"申し訳ありません。この時間帯には予約可能な時間がありません><;"
+            });
+          }
         }else{
           return client.replyMessage(ev.replyToken,{
             "type":"text",
-            "text":"申し訳ありません。この時間帯には予約可能な時間がありません><;"
+            "text":"申し訳ありません。過去の時間は選べません><;"
           });
         }
     }
@@ -285,19 +328,35 @@ const handlePostbackEvent = async (ev) => {
         const orderedMenu = splitData[1];
         const selectedDate = splitData[2];
         const fixedTime = parseInt(splitData[3]);
+        const staffNumber = parseInt(splitData[4]);
        
         //施術時間の取得
         const treatTime = await calcTreatTime(ev.source.userId,orderedMenu);
+
+        //予約日時の表記取得
+        const date = dateConversion(fixedTime);
+
+        //メニュー表記の取得
+        const menuArray = orderedMenu.split('%');
+        let menu = '';
+        menuArray.forEach((value,index) => {
+          if(index !== 0){
+            menu += ',' + MENU[parseInt(value)];
+          }else{
+            menu += MENU[parseInt(value)];
+          }
+          
+        })
 
         //予約完了時間の計算
         const endTime = fixedTime + treatTime*60*1000;
 
         //予約確定前の最終チェック→予約ブッキング無しfalse、予約ブッキングありtrue
-        const check = await finalCheck(selectedDate,fixedTime,endTime);
+        const check = await finalCheck(selectedDate,fixedTime,endTime,staffNumber);
 
         if(!check){
           const insertQuery = {
-            text:'INSERT INTO reservations (line_uid, name, scheduledate, starttime, endtime, menu) VALUES($1,$2,$3,$4,$5,$6);',
+            text:`INSERT INTO reservations.${STAFFS[staffNumber]} (line_uid, name, scheduledate, starttime, endtime, menu) VALUES($1,$2,$3,$4,$5,$6);`,
             values:[ev.source.userId,profile.displayName,selectedDate,fixedTime,endTime,orderedMenu]
           };
           connection.query(insertQuery)
@@ -305,7 +364,33 @@ const handlePostbackEvent = async (ev) => {
               console.log('データ格納成功！');
               client.replyMessage(ev.replyToken,{
                 "type":"text",
-                "text":"予約が完了しました。"
+                "text":`${date}に${menu}で予約をお取りしたました（スタッフ：${STAFFS[staffNumber]}）`
+              });
+
+              //Gmail送信設定
+              const message = {
+                from: 'kentaro523@gmail.com',
+                to: MAIL[`${STAFFS[staffNumber]}`],
+                subject: `${STAFFS[staffNumber]}さんに予約が入りました！！`,
+                text: `${date}に${menu}で予約が入りました！`
+              };
+        
+              const auth = {
+                type: 'OAuth2',
+                user: 'kentaro523@gmail.com',
+                clientId: process.env.GMAIL_CLIENT_ID,
+                clientSecret: process.env.GMAIL_CLIENT_SECRET,
+                refreshToken: process.env.GMAIL_REFRESH_TOKEN
+              };
+        
+              const transport = {
+                service: 'gmail',
+                auth: auth
+              };
+        
+              const transporter = nodemailer.createTransport(transport);
+              transporter.sendMail(message,(err,response)=>{
+                console.log(err || response);
               });
             })
             .catch(e=>console.log(e));
@@ -660,9 +745,14 @@ const askDate = (ev,orderedMenu) => {
 const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
   const time = [];
   const color = [];
-  //予約時間帯とボタン色配列を生成
-  for(let i=0;i<reservableArray.length;i++){
-    if(reservableArray[i].length){
+
+  //予約可能時間帯とボタン色配列を生成
+  for(let i=0; i<CLOSETIME-OPENTIME; i++){
+    let count = 0;
+    for(let j=0; j<reservableArray.length; j++){
+      if(reservableArray[j][i].length) count++;
+    }
+    if(count>0){
       time.push(i);
       color.push('#00AA00');
     }else{
@@ -873,10 +963,53 @@ const askTime = (ev,orderedMenu,selectedDate,reservableArray) => {
 }
 
 const confirmation = async (ev,menu,date,time,n) => {
+  //各スタッフの予約数
+  const numberOfReservations = await getNumberOfReservations(date);
+  console.log('numberOfReservations:',numberOfReservations);
   const splitDate = date.split('-');
   const selectedTime = 9 + parseInt(time);
-  const reservableArray = await checkReservable(ev,menu,date);
-  const candidates = reservableArray[parseInt(time)];
+
+  //スタッフ人数分のreservableArrayを取得
+  const reservableArray = [];
+  for(let i=0; i<STAFFS.length; i++){
+    const staff_reservable = await checkReservable(ev,menu,date,i);
+    reservableArray.push(staff_reservable);
+  }
+
+  console.log('reservableArray=',reservableArray);
+
+  //対象時間の候補抜き出し
+  const targets = reservableArray.map( array => {
+    return array[parseInt(time)];
+  });
+  console.log('targets:',targets);
+
+  //誰の予約とするかを決定する（その日の予約数が一番少ないスタッフ）
+  const maskingArray = [];
+  for(let i=0; i<targets.length; i++){
+    if(targets[i].length){
+      maskingArray.push(numberOfReservations[i]);
+    }else{
+      maskingArray.push(-1);
+    }
+  }
+  console.log('maskignArray=',maskingArray);
+
+  //予約可能かつ予約回数が一番少ないスタッフを選定する
+  let tempNumber = 1000;
+  let staffNumber;
+  maskingArray.forEach((value,index)=>{
+    if(value>=0 && value<tempNumber){
+      tempNumber = value;
+      staffNumber = index;
+    }
+  });
+
+  const candidates = targets[staffNumber];
+  console.log('candidates=',candidates);
+
+  // const reservableArray = await checkReservable(ev,menu,date);
+  // const candidates = reservableArray[parseInt(time)];
   const n_dash = (n>=candidates.length-1) ? -1 : n+1;
   console.log('n_dash:',n_dash);
 
@@ -895,7 +1028,6 @@ const confirmation = async (ev,menu,date,time,n) => {
           {
             "type": "text",
             "text":  `次回予約は${proposalTime}でよろしいですか？`,
-            // "text": `次回予約は${splitDate[1]}月${splitDate[2]}日 ${selectedTime}時〜でよろしいですか？`,
             "size": "lg",
             "wrap": true
           }
@@ -910,7 +1042,7 @@ const confirmation = async (ev,menu,date,time,n) => {
             "action": {
               "type": "postback",
               "label": "はい",
-              "data": `yes&${menu}&${date}&${candidates[n]}`
+              "data": `yes&${menu}&${date}&${candidates[n]}&${staffNumber}`
             }
           },
           {
@@ -956,7 +1088,7 @@ const checkNextReservation = (ev) => {
   });
 }
 
-const checkReservable = (ev,menu,date) => {
+const checkReservable = (ev,menu,date,num) => {
   return new Promise( async (resolve,reject)=>{
     const id = ev.source.userId;
     const treatTime = await calcTreatTime(id,menu);
@@ -964,7 +1096,7 @@ const checkReservable = (ev,menu,date) => {
     const treatTimeToMs = treatTime*60*1000;
 
     const select_query = {
-      text:'SELECT * FROM reservations WHERE scheduledate = $1 ORDER BY starttime ASC;',
+      text:`SELECT * FROM reservations.${STAFFS[num]} WHERE scheduledate = $1 ORDER BY starttime ASC;`,
       values:[`${date}`]
     };
 
@@ -974,15 +1106,17 @@ const checkReservable = (ev,menu,date) => {
         const reservedArray = res.rows.map(object=>{
           return [parseInt(object.starttime),parseInt(object.endtime)];
         });
-        console.log('reservedArray:',reservedArray);
+
+        // console.log('reservedArray:',reservedArray);
 
         //各時間のタイムスタンプ
         // herokuサーバー基準なので、日本の時刻は９時間分進んでしまうため、引く
         const timeStamps = [];
-        for(let i=OPENTIME; i<CLOSETIME; i++){
+        for(let i=OPENTIME; i<CLOSETIME+1; i++){
           timeStamps.push(new Date(`${date} ${i}:00`).getTime()-9*60*60*1000);
         }
-        console.log('timestamps',timeStamps);
+
+        // console.log('timestamps',timeStamps);
 
         //この日の予約を各時間帯に関する予約へ分割し、それを3次元配列に格納していく。
         const separatedByTime = [];
@@ -1009,24 +1143,33 @@ const checkReservable = (ev,menu,date) => {
           separatedByTime.push(tempArray);
         }
 
+        // console.log('separatedByTime1:',separatedByTime);
+
         //ある時間帯の最後の要素がパターン0とパターン2の場合、次の時間帯の最初の要素を加える
         for(let i=0; i<separatedByTime.length; i++){
-          if(separatedByTime[i].length){
+          //対象時間帯の予約が存在し、かつ最後の時間帯でない場合
+          if(separatedByTime[i].length && i !== separatedByTime.length-1){
+            //次の時間帯の予約が存在する場合
             if(separatedByTime[i+1].length){
+              //パターン0,2の場合は、次の時間帯の最初の予約のstarttimeを加える
               const l = separatedByTime[i].length - 1;
               const pattern = separatedByTime[i][l][2];
-              if(pattern === 0 || pattern === 2){
-                separatedByTime[i].push(separatedByTime[i+1][0]);
-              }
+              if(pattern === 0 || pattern === 2) separatedByTime[i].push(separatedByTime[i+1][0]);
             }
             else{
               //次の時間帯に予約が入っていなければとりあえず、timeStamps[i]から1時間+treatTime分のタイムスタンプを格納
               separatedByTime[i].push([timeStamps[i]+60*60*1000+treatTimeToMs]);
             }
           }
+          //対象時間帯の予約が存在し、かつ最後の時間帯の場合（separatedByTime[i+1]を検知できないため特別扱いする）
+          else if(separatedByTime[i].length && i === separatedByTime.length-1){
+            const l = separatedByTime[i].length - 1;
+            const pattern = separatedByTime[i][l][2];
+            if(pattern === 0 || pattern === 2) separatedByTime[i].push([timeStamps[i] + 60*60*1000 + treatTimeToMs]);
+          }
         }
 
-        console.log('separatedByTime:',separatedByTime);
+        // console.log('separatedByTime2:',separatedByTime);
 
         //予約と予約の間隔を格納する3次元配列を生成する
         const intervalArray = [];
@@ -1055,8 +1198,8 @@ const checkReservable = (ev,menu,date) => {
           }      
         }
         
-        console.log('intervalArray:',intervalArray);
-        console.log('treatTime:',treatTime);
+        // console.log('intervalArray:',intervalArray);
+        // console.log('treatTime:',treatTime);
 
         //reservableArrayを生成
         const reservableArray = [];
@@ -1074,18 +1217,26 @@ const checkReservable = (ev,menu,date) => {
           reservableArray.push(tempArray);
         });
 
-        console.log('reservableArray:',reservableArray);
-
-        resolve(reservableArray);
+        //シフトによりマスキング
+        const shift = SHIFT1[`${STAFFS[num]}`];
+        const filteredArray = [];
+        reservableArray.forEach((value,index) => {
+          if(shift[index]){
+            filteredArray.push(value);
+          }else{
+            filteredArray.push([]);
+          }
+        });
+        resolve(filteredArray);
       })
       .catch(e=>console.log(e));
   });
 }
 
-const finalCheck = (date,startTime,endTime) => {
+const finalCheck = (date,startTime,endTime,staffNumber) => {
   return new Promise((resolve,reject) => {
     const select_query = {
-      text:`SELECT * FROM reservations WHERE scheduledate = '${date}';`
+      text:`SELECT * FROM reservations.${STAFFS[staffNumber]} WHERE scheduledate = '${date}';`
     }
     connection.query(select_query)
       .then(res=>{
@@ -1102,4 +1253,24 @@ const finalCheck = (date,startTime,endTime) => {
       })
       .catch(e=>console.log(e));
   });
+}
+
+//予約選択日における各スタッフの予約数を取得する
+const getNumberOfReservations = (date) => { 
+  return new Promise((resolve,reject) => {
+    const numberOfReservations = [];
+    for(let i=0; i<STAFFS.length; i++){
+      const select_query = {
+        text:`SELECT * FROM reservations.${STAFFS[i]} WHERE scheduledate = $1 ORDER BY starttime ASC;`,
+        values:[`${date}`]
+      }
+      connection.query(select_query)
+        .then(res=>{
+          console.log('res.rows.length=',res.rows.length);
+          numberOfReservations.push(res.rows.length);
+          if(i === STAFFS.length - 1) resolve(numberOfReservations);
+        })
+        .catch(e=>console.log(e));
+    }
+  })
 }

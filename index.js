@@ -2,7 +2,18 @@ const express = require('express');//express読み込み
 const app = express();
 const line = require('@line/bot-sdk');//@line/bot-sdk読み込み
 const { Client } = require('pg');//pgライブラリ読み込み
-const nodemailer = require('nodemailer');
+const router = require('./routers/index');//./routers/index.jsファイルを読み込む宣言
+const nodemailer = require('nodemailer');//nodemailer読み込み
+const path = require('path');//pathパッケージ読み込み
+
+//ルーティングの設定(./routers/index.jsの設定)
+//const express = require('express'); 
+const router = express.Router(); 
+router .get('/',(req,res)=>{ res.render('pages/index'); }) 
+.get('/users',(req,res)=>{ res.render('pages/users'); }) 
+.get('/reservations',(req,res)=>{ res.render('pages/reservations'); }); 
+module.exports = router;
+
 
 const PORT = process.env.PORT || 5000
 
@@ -87,8 +98,12 @@ STAFFS.forEach(name=>{
 });
 
 app
-.post('/hook',line.middleware(config),(req,res)=> lineBot(req,res))
-.listen(PORT,()=>console.log(`Listening on ${PORT}`));
+  .use(express.static(path.join(__dirname,'public')))
+  .use('/',router)//https://herokuアプリ名.herokuapp.com/へアクセスされた時に、routerファイルで設定されたルーティングを行う
+  .post('/hook',line.middleware(config),(req,res)=> lineBot(req,res))
+  .set('views', path.join(__dirname, 'views'))
+  .set('view engine', 'ejs')
+  .listen(PORT,()=>console.log(`Listening on ${PORT}`));
 
 //lineBot関数（イベントタイプによって実行関数を振り分け）
 const lineBot = (req,res) => {
