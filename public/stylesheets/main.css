@@ -31,6 +31,8 @@ body {
 .navbar {
   width: 98vw;
   margin-bottom: 2vw;
+  margin-left: auto;
+  margin-right: auto;
   padding: 0.5vw 2vw;
 }
 .navbar-brand {
