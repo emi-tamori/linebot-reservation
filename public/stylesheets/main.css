@@ -45,3 +45,5 @@ body {
 .nav-item {
   font-size: 2.5vw;
 }
+/* 顧客管理画面 */ 
+#usersPage{ text-align:center; }
