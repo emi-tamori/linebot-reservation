@@ -18,7 +18,7 @@ module.exports = {
             .then(users=>{ 
                 connection.query(pickup_reservations) 
                 .then(reservations=>{ 
-                    const data = { users:users, reservations:reservations } 
+                    const data = { users:users.rows, reservations:reservations.rows } 
                     console.log('data in model:',data); 
                     resolve(data); 
                 }) 
