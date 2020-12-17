@@ -1,33 +1,33 @@
 /* 共通 */
 body {
-    width: auto;
-    margin: 0 auto;
-  }
-  /* トップページ */
-  .toppage {
-    text-align: center;
-  }
-  .top-font {
-    font-family: 'ヒラギノ丸ゴ ProN', 'Hiragino Maru Gothic ProN', sans-serif;
-    font-size: 4.5vw;
-  }
-  .top-string {
-    margin-top: 1vw;
-  }
-  #toUsers {
-    margin: 2vw 2vw;
-    width: 26vw;
-    font-size: 2.5vw;
-  }
-  #toReservations {
-    margin: 2vw 2vw;
-    width: 26vw;
-    font-size: 2.5vw;
-  }
-  .img {
-    width: 70vw;
-  }
-  /* ナビゲーションバー */ 
+  width: auto;
+  margin: 0 auto;
+}
+/* トップページ */
+.toppage {
+  text-align: center;
+}
+.top-font {
+  font-family: 'ヒラギノ丸ゴ ProN', 'Hiragino Maru Gothic ProN', sans-serif;
+  font-size: 4.5vw;
+}
+.top-string {
+  margin-top: 1vw;
+}
+#toUsers {
+  margin: 2vw 2vw;
+  width: 26vw;
+  font-size: 2.5vw;
+}
+#toReservations {
+  margin: 2vw 2vw;
+  width: 26vw;
+  font-size: 2.5vw;
+}
+.img {
+  width: 70vw;
+}
+/* ナビゲーションバー */
 .navbar {
   width: 98vw;
   margin-bottom: 2vw;
@@ -45,5 +45,62 @@ body {
 .nav-item {
   font-size: 2.5vw;
 }
-/* 顧客管理画面 */ 
-#usersPage{ text-align:center; }
+/* 顧客管理画面 */
+#usersPage {
+  text-align: center;
+}
+/* 顧客管理画面 */
+#usersPage {
+  text-align: center;
+}
+#usersTable {
+  margin-top: 2vw;
+  margin-left: 2vw;
+}
+.uTitles {
+  border: solid 1px #aaa;
+  text-align: center;
+  background: #333;
+  color: #fff;
+  font-size: 2vw;
+  margin-top: 1vw;
+}
+.uElements {
+  border: solid 1px #aaa;
+  text-align: center;
+  font-size: 2vw;
+  height: 3vh;
+}
+.row-id {
+  width: 6vw;
+  font-size: 2vw;
+  margin-left: 1vw;
+}
+.row-name {
+  width: 23w;
+  font-size: 2.5vw;
+}
+.row-resist {
+  width: 18vw;
+  font-size: 2.5vw;
+}
+.row-cut {
+  width: 8vw;
+  font-size: 2.5vw;
+}
+.row-shampoo {
+  width: 10vw;
+  font-size: 2.5vw;
+}
+.row-color {
+  width: 8vw;
+  font-size: 2.5vw;
+}
+.row-spa {
+  width: 8vw;
+  font-size: 2.5vw;
+}
+.row-nextrev {
+  width: 18vw;
+  font-size: 2.5vw;
+}
