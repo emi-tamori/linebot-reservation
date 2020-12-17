@@ -257,32 +257,35 @@
                 divHeader.onmouseleave = () => { 
                     document.removeEventListener('mousemove',onMouseMove); 
                     divHeader.onmouseleave = null; 
-                } } 
-                // タッチイベント 
-                divHeader.ontouchstart = (event) =>{ 
+                } 
+            } 
+            // タッチイベント 
+            divHeader.ontouchstart = (event) =>{ 
+                const e = event.changedTouches[0]; 
+                let shiftX = e.clientX - divCard.getBoundingClientRect().left; 
+                let shiftY = e.clientY - divCard.getBoundingClientRect().top; 
+                const moveAt = (pageX,pageY) => { 
+                    if(pageX-shiftX>=0){ 
+                        divCard.style.left = pageX - shiftX + 'px'; 
+                    }else{ 
+                        divCard.style.left = 0 + 'px'; 
+                    } if(pageY-shiftY>=0){ 
+                        divCard.style.top = pageY - shiftY + 'px'; 
+                    }else{ 
+                        divCard.style.top = 0; 
+                    } 
+                } 
+                moveAt(e.pageX,e.pageY); 
+                const onMouseMove = (event) => { 
                     const e = event.changedTouches[0]; 
-                    let shiftX = e.clientX - divCard.getBoundingClientRect().left; 
-                    let shiftY = e.clientY - divCard.getBoundingClientRect().top; 
-                    const moveAt = (pageX,pageY) => { 
-                        if(pageX-shiftX>=0){ 
-                            divCard.style.left = pageX - shiftX + 'px'; 
-                        }else{ 
-                            divCard.style.left = 0 + 'px'; 
-                        } if(pageY-shiftY>=0){ 
-                            divCard.style.top = pageY - shiftY + 'px'; 
-                        }else{ 
-                            divCard.style.top = 0; 
-                        } } 
-                        moveAt(e.pageX,e.pageY); 
-                        const onMouseMove = (event) => { 
-                            const e = event.changedTouches[0]; 
-                            moveAt(e.pageX,e.pageY); 
-                        } 
-                        document.addEventListener('touchmove',onMouseMove); 
-                        divHeader.ontouchend = () => { 
-                            document.removeEventListener('touchmove',onMouseMove); 
-                            divHeader.ontouchend = null; 
-                        } } 
-                        divHeader.ondragstart = () => { return false; }
+                    moveAt(e.pageX,e.pageY); 
+                } 
+                document.addEventListener('touchmove',onMouseMove); 
+                divHeader.ontouchend = () => { 
+                    document.removeEventListener('touchmove',onMouseMove); 
+                    divHeader.ontouchend = null; 
+                } 
+            } 
+            divHeader.ondragstart = () => { return false; }
 
  })();
