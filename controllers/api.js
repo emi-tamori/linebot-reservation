@@ -1,7 +1,6 @@
 const Data = require('../models/Data'); 
 
 module.exports = {
-    
     getData: (req,res) => { 
     Data.findData() 
     .then(data=>{ 

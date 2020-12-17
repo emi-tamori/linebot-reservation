@@ -22,6 +22,8 @@ module.exports = {
                     console.log('data in model:',data); 
                     resolve(data); 
                 }) 
-                .catch(e=>console.log(e)) }) 
-                .catch(e=>console.log(e)) }); 
-            } }
+                .catch(e=>console.log(e)) 
+            }) 
+                .catch(e=>console.log(e)) 
+            }); 
+        } }
