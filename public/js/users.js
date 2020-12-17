@@ -228,8 +228,7 @@
                 divFooter.appendChild(closeButton); 
                 divCard.appendChild(divFooter); 
                 document.body.appendChild(divCard); 
-            }
-            // マウスイベント 
+                            // マウスイベント 
             divHeader.onmousedown = (e) =>{ 
                 let shiftX = e.clientX - divCard.getBoundingClientRect().left; 
                 let shiftY = e.clientY - divCard.getBoundingClientRect().top; 
@@ -287,5 +286,5 @@
                 } 
             } 
             divHeader.ondragstart = () => { return false; }
-
+            }
  })();
