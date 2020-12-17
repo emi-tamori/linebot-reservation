@@ -286,6 +286,8 @@ const createTable = (data) => {
                 divHeader.ontouchend = null; 
             } 
         } 
-        divHeader.ondragstart = () => { return false; }
+        divHeader.ondragstart = () => { 
+            return false; 
+        }
     }
 })();
