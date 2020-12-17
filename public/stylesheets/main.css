@@ -104,3 +104,83 @@ body {
   width: 18vw;
   font-size: 2.5vw;
 }
+/* 顧客情報カード */ .card-user {
+  position: absolute;
+  width: 40vw;
+  height: auto;
+  text-align: left;
+  border: 1px solid #aaa;
+  box-shadow: 2px 2px 4px #888;
+  font-size: 2vw;
+}
+.card-header {
+  padding: 1vw;
+  background-color: #09f;
+  font-size: 2vw;
+}
+.card-body {
+  padding: 0.5vw 2vw;
+}
+.form-group {
+  margin: 0vw 1vw;
+}
+.label_user {
+  margin-bottom: 0;
+}
+.name-input {
+  width: 32vw;
+  height: 4vw;
+  font-size: 2.5vw;
+}
+.time-input {
+  width: 14vw;
+  height: 4vw;
+  font-size: 2.5vw;
+}
+.menu-time {
+  margin-right: 3vw;
+}
+.form-control {
+  padding: 0.5vw 0.5vw;
+}
+#usercard-button-area {
+  margin: 1vw 1vw;
+}
+.card-button {
+  font-size: 2vw;
+  padding: 1vw 1vw;
+  width: 14vw;
+  margin: 2vw 2vw;
+}
+.card-footer {
+  padding: 1vw 0;
+  background-color: #aaa;
+  font-size: 2vw;
+}
+.closeButton {
+  width: 30vw;
+}
+#close-form:hover {
+  background-color: #333;
+  cursor: pointer;
+}
+#close-form:active {
+  background-color: #333;
+  cursor: pointer;
+}
+.row-cut:hover {
+  background-color: rgb(222, 231, 97);
+  cursor: pointer;
+}
+.row-shampoo:hover {
+  background-color: rgb(222, 231, 97);
+  cursor: pointer;
+}
+.row-color:hover {
+  background-color: rgb(222, 231, 97);
+  cursor: pointer;
+}
+.row-spa:hover {
+  background-color: rgb(222, 231, 97);
+  cursor: pointer;
+}
