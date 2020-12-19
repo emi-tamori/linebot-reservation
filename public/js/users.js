@@ -49,6 +49,8 @@ const createTable = (data) => {
                 nextReservationDate 
             ]
             ); 
+            //idの昇順に並び替え
+            usersData.sort((a,b)=>{ if(a[0] < b[0]) return -1; if(a[0] > b[0]) return 1; return 0; });
         }); 
         // 次回予約日を計算し、usersDataへpushする 
         const l = usersData.length+1; //表題の分＋１している 
