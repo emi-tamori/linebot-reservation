@@ -204,6 +204,40 @@ const createTable = (data) => {
         //編集ボタンクリック時の動作 
         editButton.addEventListener('click',()=>{ 
             //クリック時の処理を後で実装
+            //formのactionを設定　paramとしてidをつける 
+            formElement.setAttribute('action',`api/users/${userDataArray[0]}`); 
+            //各インプットの入力をできるようにする 
+            input_name.disabled = false; 
+            input_cut.disabled = false; 
+            input_shampoo.disabled = false; 
+            input_color.disabled = false; 
+            input_spa.disabled = false; 
+            //送信ボタンの生成 
+            const sendButton = document.createElement('input'); 
+            sendButton.value = '送信'; 
+            sendButton.type = 'button'; 
+            sendButton.setAttribute('class','btn btn-warning card-button'); 
+            //sendButtonクリック時の処理 
+            sendButton.addEventListener('click',(e)=>{ 
+                e.preventDefault(); 
+                if(!isNaN(document.userInfo.cuttime.value) && !isNaN(document.userInfo.shampootime.value) && !isNaN(document.userInfo.colortime.value) && !isNaN(document.userInfo.spatime.value)){ 
+                    const data = new FormData(formElement); 
+                    console.log('FormData:',...data.entries()); 
+                    fetch(`/api/users/${userDataArray[0]}`,{ method:'POST', body:data, creadentials:'same-origin' }) 
+                    .then(response=>{ 
+                        console.log('response:',response); 
+                    }) 
+                    .catch(e=>{ 
+                        throw e; 
+                    }); 
+                }else{ 
+                    alert('時間は半角数値を入力してください。'); 
+                } 
+            }); 
+            divButton.appendChild(sendButton); 
+            //編集ボタンと削除ボタンを消す 
+            deleteButton.style.display = 'none'; 
+            editButton.style.display = 'none';
         }); 
         divButton.appendChild(editButton); 
         //削除ボタンの作成 

@@ -24,6 +24,20 @@ module.exports = {
                 }) 
                 .catch(e=>console.log(e)) 
             }) 
-                .catch(e=>console.log(e)) 
-            }); 
-        } }
+            .catch(e=>console.log(e)) 
+        }); 
+    },
+    updateUser: ({id,name,cuttime,shampootime,colortime,spatime}) => { 
+        return new Promise((resolve,reject)=>{ 
+            const update_query = { 
+                text:`UPDATE users SET (display_name,cuttime,shampootime,colortime,spatime) = ('${name}',${cuttime},${shampootime},${colortime},${spatime}) WHERE id=${id};`
+            }
+            connection.query(update_query) 
+            .then(res=>{ 
+                console.log('お客さま情報更新成功'); 
+                resolve('お客さま情報更新成功'); 
+            }) 
+            .catch(e=>console.log(e.stack)); 
+        }); 
+    }
+}
