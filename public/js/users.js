@@ -227,16 +227,13 @@ const createTable = (data) => {
                     .then(response=>{ 
                         console.log('response:',response); 
                         if(response.ok){
-                            response.text()
-                            .then(text=>alert(`${text}`))
+                            response.text() 
+                            .then(text=>{ alert(`${text}`); 
+                            document.location.reload(); 
+                            }) 
                             .catch(e=>console.log(e));
                         }else{
                             alert('HTTPレスポンスエラーです');
-                            response.text()
-                            .then(text=>{ alert(`${text}`);
-                            ocument.location.reload(); 
-                        })
-                        .catch(e=>console.log(e));
                         }
                     }) 
                     .catch(e=>{ 
